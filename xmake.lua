@@ -1,6 +1,10 @@
--- project("selecppion")
-
-add_rules("mode.debug", "mode.release")
+project("selecppion")
+    set_languages("c++23")
+    set_version("0.1.0")
+    set_optimize("fastest")
+    -- set_defaultmode("debug")
+    set_defaultmode("release")
+    add_rules("mode.debug", "mode.release")
 
 -- Clean configuration:
 -- xmake f -c
@@ -53,18 +57,11 @@ if is_kind("cl") then
     add_cxxflags("/utf-8")
 end
 
-set_languages("c++23")
-set_version("0.1.0")
-
--- set_defaultmode("debug")
-set_optimize("fastest")
-set_defaultmode("release")
-
-
 add_requires("taocpp-json 2025.03.11")
 add_requires("snitch")
 add_requires("spdlog", {configs = {header_only = false}})
 add_requires("argparse")
+add_requires("node_crunch2")
 
 target("selecppion")
     set_kind("shared")

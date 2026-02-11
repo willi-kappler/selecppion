@@ -18,13 +18,17 @@
 #include <stdfloat>
 
 // External includes:
-// #include <nc_config.hpp>
+#include <nc_config.hpp>
+#include <tao/json.hpp>
+
+using namespace NodeCrunch2;
 
 namespace Selecppion {
 class SEConfiguration {
     public:
         // Server configuration:
         // Maybe add NodeCrunch2 NCConfiguration here
+        NCConfiguration nc_config;
         std::float64_t target_fitness1;
         std::float64_t target_fitness2;
         std::string result_filename;
@@ -42,7 +46,7 @@ class SEConfiguration {
         uint32_t randomize_count;
         uint8_t population_kind;
         std::vector<uint8_t> mutation_operations;
-        
+
         // Population specific configuration:
         uint8_t min_num_of_individuals;
         std::float64_t sine_base;
@@ -51,7 +55,7 @@ class SEConfiguration {
         std::float64_t limit_range;
 
         // Constructor:
-        SEConfiguration();
+        SEConfiguration(NCConfiguration);
 
         // Default special member functions:
         SEConfiguration(SEConfiguration&&) = default;
@@ -62,6 +66,8 @@ class SEConfiguration {
         SEConfiguration& operator=(const SEConfiguration&) = delete;
         SEConfiguration& operator=(const SEConfiguration&&) = delete;
 };
+
+[[nodiscard]] SEConfiguration se_config_from_json(const tao::json::value);
 
 [[nodiscard]] SEConfiguration se_config_from_string(std::string_view);
 

@@ -1,4 +1,4 @@
-project("selecppion")
+set_project("selecppion")
     set_languages("c++23")
     set_version("0.1.0")
     set_optimize("fastest")
@@ -57,6 +57,18 @@ if is_kind("cl") then
     add_cxxflags("/utf-8")
 end
 
+package("node_crunch2")
+    set_homepage("https://github.com/willi-kappler/node_crunch2")
+    set_description("A node crunching library")
+    add_urls("https://github.com/willi-kappler/node_crunch2.git")
+    add_versions("latest", "main")
+
+    on_install(function (package)
+        import("package.tools.xmake").install(package)
+    end)
+package_end()
+
+
 add_requires("taocpp-json 2025.03.11")
 add_requires("snitch")
 add_requires("spdlog", {configs = {header_only = false}})
@@ -69,6 +81,7 @@ target("selecppion")
         add_rules("utils.symbols.export_all", {export_classes = true})
     end
     add_files("src/*.cpp")
+    add_packages("node_crunch2")
     add_packages("taocpp-json")
     add_packages("spdlog")
     -- For spdlog, so that every object file sees the global logger:

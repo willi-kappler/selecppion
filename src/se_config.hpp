@@ -41,6 +41,7 @@ class SEConfiguration {
         uint32_t node_population_size;
         uint32_t num_of_iterations;
         uint32_t num_of_mutations;
+        bool random_num_of_mutations;
         bool accept_new_best;
         bool randomize_population;
         uint32_t randomize_count;

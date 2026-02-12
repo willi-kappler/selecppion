@@ -59,6 +59,10 @@ SEConfiguration::SEConfiguration(NCConfiguration nc_config):
 
     if (auto v = json_config.find("result_filename"); v != nullptr) {
         se_config.result_filename = v->as<std::string>();
+
+        if (se_config.result_filename.size() == 0) {
+            throw SEConfigurationException("result_filename is empty!");
+        }
     }
 
     if (auto v = json_config.find("save_new_fitness"); v != nullptr) {
@@ -75,18 +79,38 @@ SEConfiguration::SEConfiguration(NCConfiguration nc_config):
 
     if (auto v = json_config.find("server_population_size"); v != nullptr) {
         se_config.server_population_size = v->as<uint32_t>();
+
+        if (se_config.server_population_size < 2) {
+            throw SEConfigurationException("server_population_size < 2!");
+        }
     }
 
     if (auto v = json_config.find("node_population_size"); v != nullptr) {
         se_config.node_population_size = v->as<uint32_t>();
+
+        if (se_config.node_population_size < 2) {
+            throw SEConfigurationException("node_population_size < 2!");
+        }
     }
 
     if (auto v = json_config.find("num_of_iterations"); v != nullptr) {
         se_config.num_of_iterations = v->as<uint32_t>();
+
+        if (se_config.num_of_iterations < 2) {
+            throw SEConfigurationException("num_of_iterations < 2!");
+        }
     }
 
     if (auto v = json_config.find("num_of_mutations"); v != nullptr) {
         se_config.num_of_mutations = v->as<uint32_t>();
+
+        if (se_config.num_of_mutations == 0) {
+            throw SEConfigurationException("num_of_mutations == 0!");
+        }
+    }
+
+    if (auto v = json_config.find("random_num_of_mutations"); v != nullptr) {
+        se_config.random_num_of_mutations = v->as<bool>();
     }
 
     if (auto v = json_config.find("accept_new_best"); v != nullptr) {
@@ -103,6 +127,10 @@ SEConfiguration::SEConfiguration(NCConfiguration nc_config):
 
     if (auto v = json_config.find("population_kind"); v != nullptr) {
         se_config.population_kind = v->as<uint8_t>();
+
+        if ((se_config.population_kind < 1) || (se_config.population_kind > 8)) {
+            throw SEConfigurationException("population_kind must be between 1 and 8!");
+        }
     }
 
     if (auto v = json_config.find("mutation_operations"); v != nullptr) {
@@ -123,10 +151,18 @@ SEConfiguration::SEConfiguration(NCConfiguration nc_config):
 
     if (auto v = json_config.find("sine_amplitude"); v != nullptr) {
         se_config.sine_amplitude = v->as<double>();
+
+        if (se_config.sine_amplitude <= 0.0) {
+            throw SEConfigurationException("sine_amplitude must be > 0!");
+        }
     }
 
     if (auto v = json_config.find("sine_frequency"); v != nullptr) {
         se_config.sine_frequency = v->as<double>();
+
+        if (se_config.sine_frequency <= 0.0) {
+            throw SEConfigurationException("sine_frequency must be > 0!");
+        }
     }
 
     if (auto v = json_config.find("limit_range"); v != nullptr) {

@@ -10,8 +10,12 @@
 #include <fstream>
 #include <iostream>
 
+// External includes:
+#include <tao/json/contrib/vector_traits.hpp>
+
 // Local includes:
 #include "se_config.hpp"
+#include "se_exceptions.hpp"
 
 namespace Selecppion {
 
@@ -101,11 +105,13 @@ SEConfiguration::SEConfiguration(NCConfiguration nc_config):
         se_config.population_kind = v->as<uint8_t>();
     }
 
-    /*
     if (auto v = json_config.find("mutation_operations"); v != nullptr) {
-        se_config.mutation_operations = v->as<std::vector<uint8_t>>();
+        se_config.mutation_operations = std::vector<uint8_t>();
+
+        for (auto data: v->get_array()) {
+            se_config.mutation_operations.push_back(data.as<uint8_t>());
+        }
     }
-    */
 
     if (auto v = json_config.find("min_num_of_individuals"); v != nullptr) {
         se_config.min_num_of_individuals = v->as<uint8_t>();
@@ -143,7 +149,7 @@ SEConfiguration::SEConfiguration(NCConfiguration nc_config):
         std::string file_contents {std::istreambuf_iterator<char>(in_file), std::istreambuf_iterator<char>()};
         return se_config_from_string(file_contents);
     } else {
-        // TODO: Throw exception
+        throw SEConfigurationException("Open file error");
     }
 }
 

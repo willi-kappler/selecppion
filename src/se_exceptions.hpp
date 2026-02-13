@@ -43,6 +43,11 @@ public:
   SEConfigurationException(const char *msg): std::runtime_error(msg) { }
 };
 
+class SEIndividualException: public std::runtime_error {
+public:
+  SEIndividualException(const char *msg): std::runtime_error(msg) { }
+};
+
 }
 
 #endif // FILE_SE_EXCEPTIONS_HPP_INCLUDED

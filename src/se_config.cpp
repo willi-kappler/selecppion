@@ -11,14 +11,13 @@
 #include <iostream>
 
 // External includes:
-#include <tao/json/contrib/vector_traits.hpp>
+//#include <tao/json/contrib/vector_traits.hpp>
 
 // Local includes:
 #include "se_config.hpp"
 #include "se_exceptions.hpp"
 
 namespace Selecppion {
-
 SEConfiguration::SEConfiguration(NCConfiguration nc_config):
     nc_config(nc_config),
     target_fitness1(0.0),
@@ -39,10 +38,10 @@ SEConfiguration::SEConfiguration(NCConfiguration nc_config):
     mutation_operations(),
 
     min_num_of_individuals(2),
-    sine_base(100),
-    sine_amplitude(50),
-    sine_frequency(10),
-    limit_range(10)
+    sine_base(100.0),
+    sine_amplitude(50.0),
+    sine_frequency(10.0),
+    limit_range(10.0)
 {}
 
 [[nodiscard]] SEConfiguration se_config_from_json(const tao::json::value json_config) {
@@ -188,5 +187,4 @@ SEConfiguration::SEConfiguration(NCConfiguration nc_config):
         throw SEConfigurationException("Open file error");
     }
 }
-
 }

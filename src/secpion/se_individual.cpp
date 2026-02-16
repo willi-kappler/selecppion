@@ -13,7 +13,7 @@
 #include "se_individual.hpp"
 #include "se_exceptions.hpp"
 
-namespace Selecppion {
+namespace secpion {
 const std::float64_t SE_FLOAT_MAX = std::numeric_limits<std::float64_t>::max();
 
 SEIndividual::SEIndividual():

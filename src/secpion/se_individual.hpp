@@ -16,7 +16,7 @@
 #include <stdfloat>
 #include <unordered_map>
 
-namespace Selecppion {
+namespace secpion {
 class SEIndividual {
     private:
         std::float64_t fitness1;

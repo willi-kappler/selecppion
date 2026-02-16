@@ -21,6 +21,10 @@ set_project("selecppion")
 -- rm -rf build/ .xmake ~/.xmake/
 -- xmake -a -r
 
+-- Just clean cache and update:
+-- xrepo clean
+-- xrepo update-repo
+
 -- For all compilers:
 set_warnings("all", "extra", "pedantic", "error")
 
@@ -56,7 +60,7 @@ end
 
 package("node_crunch2")
     set_homepage("https://github.com/willi-kappler/node_crunch2")
-    set_description("A node crunching library")
+    set_description("A C++ library for distributed computing.")
     add_urls("https://github.com/willi-kappler/node_crunch2.git")
     add_versions("latest", "main")
 
@@ -77,20 +81,22 @@ target("selecppion")
     if is_plat("windows") then
         add_rules("utils.symbols.export_all", {export_classes = true})
     end
-    add_files("src/*.cpp")
+    add_files("src/secpion/*.cpp")
     add_packages("node_crunch2")
     add_packages("taocpp-json")
     add_packages("spdlog")
     -- For spdlog, so that every object file sees the global logger:
     add_defines("SPDLOG_COMPILED_LIB", {public = true})
     -- Tell xmake which headers to give to the user when installing it:
-    add_headerfiles("src/*.hpp")
+    add_headerfiles("src/(secpion/*.hpp)")
 
 target("se_test")
     set_kind("binary")
     add_files("tests/test_all.cpp")
+    add_packages("node_crunch2")
     add_packages("snitch")
     add_packages("spdlog")
+    add_packages("taocpp-json")
     add_deps("selecppion")
     add_includedirs("src")
     set_default(false) -- Don't build by default

@@ -11,7 +11,7 @@
 
 #include <stdexcept>
 
-namespace Selecppion {
+namespace secpion {
 /*
 class NCInvalidKeyException: public std::invalid_argument {
 public:

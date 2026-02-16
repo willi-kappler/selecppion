@@ -17,12 +17,12 @@
 #include <stdfloat>
 
 // External includes:
-#include <nc_config.hpp>
+#include <nodcru2/nc_config.hpp>
 #include <tao/json.hpp>
 
-using namespace NodeCrunch2;
+using namespace nodcru2;
 
-namespace Selecppion {
+namespace secpion {
 class SEConfiguration {
     public:
         // Server configuration:

@@ -17,8 +17,9 @@
 #include "se_config.hpp"
 #include "se_exceptions.hpp"
 
-namespace Selecppion {
+namespace secpion {
 SEConfiguration::SEConfiguration(NCConfiguration nc_config):
+    // Server configuration:
     nc_config(nc_config),
     target_fitness1(0.0),
     target_fitness2(0.0),
@@ -28,6 +29,7 @@ SEConfiguration::SEConfiguration(NCConfiguration nc_config):
     share_only_best(true),
     server_population_size(10),
 
+    // Node configuration:
     node_population_size(10),
     num_of_iterations(1000),
     num_of_mutations(10),

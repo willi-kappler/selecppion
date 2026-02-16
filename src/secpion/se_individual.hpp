@@ -15,6 +15,10 @@
 #include <string_view>
 #include <stdfloat>
 #include <unordered_map>
+#include <memory>
+
+// External includes:
+#include <tao/json.hpp>
 
 namespace secpion {
 class SEIndividual {
@@ -32,11 +36,11 @@ class SEIndividual {
         void se_randomize();
         void se_calculate_fitness1();
         void se_calculate_fitness2();
-        SEIndividual se_clone_internal(); // TODO: use smart pointer
-        SEIndividual se_clone(); // TODO: use smart pointer
+        std::unique_ptr<SEIndividual> se_clone_internal();
+        std::unique_ptr<SEIndividual> se_clone();
         void se_from_server();
-        void se_to_json(); // TODO: use tao json
-        void se_from_json(); // TODO: use tao json
+        tao::json::value se_to_json();
+        void se_from_json(const tao::json::value);
         std::float64_t se_actual_fitness();
         void se_new_best_individual();
 };

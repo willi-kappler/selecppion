@@ -44,6 +44,42 @@ void SEIndividual::se_calculate_fitness1() {
 }
 
 void SEIndividual::se_calculate_fitness2() {
+    // Can be implemented but is not needed.
 }
 
+std::unique_ptr<SEIndividual> SEIndividual::se_clone_internal() {
+    std::unique_ptr<SEIndividual> clone = se_clone();
+    clone->mut_op_counter = mut_op_counter;
+    clone->fitness1 = fitness1;
+    clone->fitness2 = fitness2;
+
+    return clone;
+}
+
+std::unique_ptr<SEIndividual> SEIndividual::se_clone() {
+    throw SEIndividualException("() must be implemented!");
+}
+
+void SEIndividual::se_from_server() {
+    throw SEIndividualException("() must be implemented!");
+}
+
+tao::json::value SEIndividual::se_to_json() {
+    throw SEIndividualException("() must be implemented!");
+}
+
+void SEIndividual::se_from_json(const tao::json::value) {
+    throw SEIndividualException("() must be implemented!");
+}
+
+std::float64_t SEIndividual::se_actual_fitness() {
+    // Can be changed if the fitness needs to be adjusted.
+    return fitness1;
+}
+
+void SEIndividual::se_new_best_individual() {
+    // Can be implemented but is not needed.
+    // This method will be called whenever there is a new
+    // best individual on the server or in a population.
+}
 }

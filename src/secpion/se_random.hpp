@@ -18,28 +18,50 @@
 #include <cstdint>
 #include <stdfloat>
 #include <vector>
+#include <concepts>
 
 namespace secpion {
-class SERandomLehmer64 {
+template <typename T>
+concept SERandomAlgorithm = requires(T rnd_algo, uint64_t s) {
+    { rnd_algo.next_u64() } -> std::convertible_to<uint64_t>;
+    { rnd_algo.seed(s) };
+};
+
+class SEAlgorithmLehmer64 {
     private:
         __uint128_t state;
 
     public:
-        void seed(uint64_t s);
-        uint64_t get_uint64();
-        uint64_t get_uint64_n(uint64_t n);
-        uint64_t get_uint64_n_slow(uint64_t n);
-        uint32_t get_uint32_n(uint32_t n);
-        uint16_t get_uint16_n(uint16_t n);
-        uint8_t get_uint8_n(uint8_t n);
+        void seed(uint64_t);
+        uint64_t next_u64();
+        SEAlgorithmLehmer64();
+};
 
-        std::float64_t get_float64_01();
+template <SERandomAlgorithm T>
+class SERandomGenerator {
+    private:
+        T random_algorithm;
 
-        template <typename T>
-        void shuffle(std::vector<T>& vec);
+    public:
+        void seed(uint64_t);
+        void seed();
+
+        uint64_t get_uint64(uint64_t);
+        uint32_t get_uint32(uint32_t);
+        uint16_t get_uint16(uint16_t);
+        uint8_t get_uint8(uint8_t) ;
+        size_t get_size_t(size_t);
+
+        std::float64_t get_float64();
+
+        template <typename U>
+        void shuffle(std::vector<U>&);
+
+        template <typename U>
+        U choice(std::vector<U>&);
 
         // Constructor:
-        SERandomLehmer64();
+        SERandomGenerator();
 };
 
 }

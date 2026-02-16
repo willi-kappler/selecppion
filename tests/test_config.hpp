@@ -102,3 +102,12 @@ TEST_CASE("Test valid JSON configuration", "[configuration]" ) {
     REQUIRE(config1.sine_frequency == 22.22);
     REQUIRE(config1.limit_range == 33.33);
 }
+
+/*
+C++ raw string literal:
+std::string multi_line = R"(
+        Line 1
+        Line 2
+        Line 3
+    )";
+*/

@@ -48,6 +48,10 @@ public:
   SEIndividualException(const char *msg): std::runtime_error(msg) { }
 };
 
+class SERNGException: public std::runtime_error {
+public:
+  SERNGException(const char *msg): std::runtime_error(msg) { }
+};
 }
 
 #endif // FILE_SE_EXCEPTIONS_HPP_INCLUDED

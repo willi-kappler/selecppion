@@ -22,6 +22,9 @@
 #include <random>
 #include <algorithm>
 
+// Local includes:
+#include "se_exceptions.hpp"
+
 namespace secpion {
 template <typename T>
 concept SERandomAlgorithm = requires(T rnd_algo, uint64_t s) {
@@ -139,7 +142,7 @@ class SERandomGenerator {
 
         template <typename U>
         void shuffle(std::vector<U>& v) {
-            if (v.empty()) return;
+            if (v.size() < 2) return;
 
             // We iterate backwards from the last element to the second element (Knuth)
             for (size_t i = v.size() - 1; i > 0; --i) {
@@ -154,15 +157,16 @@ class SERandomGenerator {
 
         template <typename U>
         U choice(std::vector<U>& v) {
-            U result;
             size_t len = v.size();
 
-            if (len > 0) {
+            if (len == 0) {
+                throw SERNGException("Called choice() with empty vector!");
+            } else if (len == 1) {
+                return v[0];
+            } else {
                 size_t i = get_size_t(len);
-                result = v[i];
+                return v[i];
             }
-
-            return result;
         }
 
         // Constructor:
@@ -172,3 +176,24 @@ class SERandomGenerator {
 }
 
 #endif // FILE_SE_RANDOM_HPP_INCLUDED
+
+/*
+
+#include <chrono>
+#include <cstdint>
+
+uint64_t generateBetterSeed() {
+    uint64_t time = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+
+    // A simple "SplitMix" style hash to scramble the bits
+    // This spreads the 'entropy' across all 64 bits
+    time ^= (time >> 33);
+    time *= 0xff51afd7ed558ccdULL;
+    time ^= (time >> 33);
+    time *= 0xc4ceb9fe1a85ec53ULL;
+    time ^= (time >> 33);
+
+    return time;
+}
+
+*/

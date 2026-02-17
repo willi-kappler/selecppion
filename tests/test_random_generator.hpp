@@ -154,12 +154,11 @@ TEST_CASE("Test shuffle and choice using Lehmer64", "[random]" ) {
     // With empty vector:
     v = {};
     REQUIRE_THROWS_AS(gen.choice(v), SERNGException);
-
 }
 
 // Test WyRand:
 
-TEST_CASE("Create some random numbers using Lehmer64", "[random]" ) {
+TEST_CASE("Create some random numbers using WyRand", "[random]" ) {
     SERandomGenerator<SEAlgorithmWyRand> gen = SERandomGenerator<SEAlgorithmWyRand>();
 
     // Test for 64 bit integer values
@@ -213,7 +212,7 @@ TEST_CASE("Create some random numbers using Lehmer64", "[random]" ) {
     }
 }
 
-TEST_CASE("Test seed using Lehmer64", "[random]" ) {
+TEST_CASE("Test seed using WyRand", "[random]" ) {
     SERandomGenerator<SEAlgorithmWyRand> gen1 = SERandomGenerator<SEAlgorithmWyRand>();
     SERandomGenerator<SEAlgorithmWyRand> gen2 = SERandomGenerator<SEAlgorithmWyRand>();
 
@@ -249,7 +248,7 @@ TEST_CASE("Test seed using Lehmer64", "[random]" ) {
     REQUIRE(v1 == v2);
 }
 
-TEST_CASE("Test shuffle and choice using Lehmer64", "[random]" ) {
+TEST_CASE("Test shuffle and choice using WyRand", "[random]" ) {
     SERandomGenerator<SEAlgorithmWyRand> gen = SERandomGenerator<SEAlgorithmWyRand>();
 
     // Test shuffle:
@@ -288,7 +287,6 @@ TEST_CASE("Test shuffle and choice using Lehmer64", "[random]" ) {
     // With empty vector:
     v = {};
     REQUIRE_THROWS_AS(gen.choice(v), SERNGException);
-
 }
 
 /*

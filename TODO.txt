@@ -1,16 +1,6 @@
 TODO:
 - add more test cases for invalid configurations.
-- Choose pseudo random number generator:
-    https://github.com/imneme/pcg-cpp
-    https://github.com/imneme/pcg-cpp/tree/master/sample
-    https://github.com/WarpRules/WFLCG
-    https://github.com/MLeadbetter/prng
-    https://github.com/SommerEngineering/FastRng
-    https://github.com/BrutPitt/fastPRNG
-    https://en.cppreference.com/w/cpp/numeric/random.html
-    https://github.com/wangyi-fudan/wyhash
-    https://lemire.me/blog/2019/03/19/the-fastest-conventional-random-number-generator-that-can-pass-big-crush/
-
+- add pcg: https://www.pcg-random.org/index.html, https://github.com/imneme/pcg-c-basic
 
 
 Done:

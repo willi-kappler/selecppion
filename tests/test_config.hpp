@@ -3,7 +3,7 @@
     Written by Willi Kappler, MIT License
     https://github.com/willi-kappler/selecppion
 
-    This file includes all the test cases.
+    This file contains the tests for the configuration class.
 
     Run only configuration tests:
     xmake run -w ./ se_test [configuration]
@@ -110,4 +110,14 @@ std::string multi_line = R"(
         Line 2
         Line 3
     )";
+*/
+
+/*
+Test for exception:
+
+TEST_CASE("Create invalid default configuration", "[configuration]" ) {
+    REQUIRE_THROWS_AS(NCConfiguration("12345"), NCInvalidKeyException);
+}
+
+
 */

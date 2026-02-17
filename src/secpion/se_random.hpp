@@ -19,6 +19,8 @@
 #include <stdfloat>
 #include <vector>
 #include <concepts>
+#include <random>
+#include <algorithm>
 
 namespace secpion {
 template <typename T>
@@ -27,14 +29,47 @@ concept SERandomAlgorithm = requires(T rnd_algo, uint64_t s) {
     { rnd_algo.seed(s) };
 };
 
+// Lehmer64:
 class SEAlgorithmLehmer64 {
     private:
         __uint128_t state;
 
     public:
-        void seed(uint64_t);
-        uint64_t next_u64();
-        SEAlgorithmLehmer64();
+        void seed(uint64_t s) {
+            state = s;
+        }
+
+        uint64_t next_u64() {
+            state *= 0xda942042e4dd58b5;
+            return state >> 64;
+        }
+
+        SEAlgorithmLehmer64():
+            state(0x9e3779b97f4a7c15) {}
+};
+
+// WyRand / WyHash:
+class SEAlgorithmWyRand {
+    private:
+        uint64_t state;
+
+    public:
+        void seed(uint64_t s) {
+            state = s;
+        }
+
+        uint64_t next_u64() {
+            state += 0x60bee2bee120fc15;
+            __uint128_t tmp;
+            tmp = (__uint128_t) state * 0xa3b195354a39b70d;
+            uint64_t m1 = (tmp >> 64) ^ tmp;
+            tmp = (__uint128_t) m1 * 0x1b03738712fad5c9;
+            uint64_t m2 = (tmp >> 64) ^ tmp;
+            return m2;
+        }
+
+        SEAlgorithmWyRand():
+            state(0x9e3779b97f4a7c15) {}
 };
 
 template <SERandomAlgorithm T>
@@ -43,27 +78,97 @@ class SERandomGenerator {
         T random_algorithm;
 
     public:
-        void seed(uint64_t);
-        void seed();
+        void seed(uint64_t s) {
+            // Prevention: Most PRNGs fail if state is 0
+            if (s == 0) s = 0xDEADC0DE;
 
-        uint64_t get_uint64(uint64_t);
-        uint32_t get_uint32(uint32_t);
-        uint16_t get_uint16(uint16_t);
-        uint8_t get_uint8(uint8_t) ;
-        size_t get_size_t(size_t);
+            s = (s ^ (s >> 30)) * 0xbf58476d1ce4e5b9ULL;
+            s = (s ^ (s >> 27)) * 0x94d049bb133111ebULL;
+            s = s ^ (s >> 31);
 
-        std::float64_t get_float64();
+            random_algorithm.seed(s);
+        }
+
+        void seed() {
+            std::random_device rd;
+            uint64_t s = (static_cast<uint64_t>(rd()) << 32) | rd();
+            random_algorithm.seed(s);
+        }
+
+        uint64_t get_uint64(uint64_t n) {
+            // We want a value in [0, n)
+            if (n == 0) return 0;
+
+            // This is Lemire's nearly-divisionless algorithm
+            __uint128_t product = (__uint128_t) random_algorithm.next_u64() * n;
+
+            uint64_t low_part = static_cast<uint64_t>(product);
+
+            if (low_part < n) {
+                // This division only happens rarely
+                uint64_t threshold = -n % n;
+                while (low_part < threshold) {
+                    product = (__uint128_t) random_algorithm.next_u64() * n;
+                    low_part = static_cast<uint64_t>(product);
+                }
+            }
+
+            return static_cast<uint64_t>(product >> 64);
+        }
+
+        uint32_t get_uint32(uint32_t n) {
+            return get_uint64(n);
+        }
+
+        uint16_t get_uint16(uint16_t n) {
+            return get_uint64(n);
+        }
+
+        uint8_t get_uint8(uint8_t n) {
+            return get_uint64(n);
+        }
+
+        size_t get_size_t(size_t n) {
+            return get_uint64(n);
+        }
+
+        std::float64_t get_float64() {
+            const uint64_t v = (random_algorithm.next_u64() >> 11);
+            return v * (1.0 / 9007199254740992.0);
+        }
 
         template <typename U>
-        void shuffle(std::vector<U>&);
+        void shuffle(std::vector<U>& v) {
+            if (v.empty()) return;
+
+            // We iterate backwards from the last element to the second element (Knuth)
+            for (size_t i = v.size() - 1; i > 0; --i) {
+
+                // Pick a random index j from 0 to i (inclusive)
+                size_t j = get_size_t(i + 1);
+
+                // Swap the elements
+                std::swap(v[i], v[j]);
+            }
+        }
 
         template <typename U>
-        U choice(std::vector<U>&);
+        U choice(std::vector<U>& v) {
+            U result;
+            size_t len = v.size();
+
+            if (len > 0) {
+                size_t i = get_size_t(len);
+                result = v[i];
+            }
+
+            return result;
+        }
 
         // Constructor:
-        SERandomGenerator();
+        SERandomGenerator():
+            random_algorithm() {}
 };
-
 }
 
 #endif // FILE_SE_RANDOM_HPP_INCLUDED

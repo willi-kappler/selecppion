@@ -15,16 +15,35 @@
 #include "se_random.hpp"
 
 namespace secpion {
+// Lehmer64
 SEAlgorithmLehmer64::SEAlgorithmLehmer64():
     state(0x9e3779b97f4a7c15) {}
 
 void SEAlgorithmLehmer64::seed(uint64_t s) {
-    state = state ^ s;
+    state = s;
 }
 
 uint64_t SEAlgorithmLehmer64::next_u64() {
     state *= 0xda942042e4dd58b5;
     return state >> 64;
+}
+
+// WyRand:
+SEAlgorithmWyRand::SEAlgorithmWyRand():
+    state(0x9e3779b97f4a7c15) {}
+
+void SEAlgorithmWyRand::seed(uint64_t s) {
+    state = s;
+}
+
+uint64_t SEAlgorithmWyRand::next_u64() {
+    state += 0x60bee2bee120fc15;
+    __uint128_t tmp;
+    tmp = (__uint128_t) state * 0xa3b195354a39b70d;
+    uint64_t m1 = (tmp >> 64) ^ tmp;
+    tmp = (__uint128_t) m1 * 0x1b03738712fad5c9;
+    uint64_t m2 = (tmp >> 64) ^ tmp;
+    return m2;
 }
 
 template <SERandomAlgorithm T>
@@ -127,24 +146,15 @@ U SERandomGenerator<T>::choice(std::vector<U>& v) {
 template <SERandomAlgorithm T>
 SERandomGenerator<T>::SERandomGenerator():
     random_algorithm() {}
+
+// The compiler needs to generate this for the linker:
+template class SERandomGenerator<secpion::SEAlgorithmLehmer64>;
+template class SERandomGenerator<secpion::SEAlgorithmWyRand>;
+
+// May use a "template include" file (*.tpp):
+// Rename se_random.cpp to se_random.tpp and
+// include this file in se_random.hpp at the bottom.
 }
-
-/*
-
-uint64_t wyhash64_x;
-
-
-uint64_t wyhash64() {
-  wyhash64_x += 0x60bee2bee120fc15;
-  __uint128_t tmp;
-  tmp = (__uint128_t) wyhash64_x * 0xa3b195354a39b70d;
-  uint64_t m1 = (tmp >> 64) ^ tmp;
-  tmp = (__uint128_t)m1 * 0x1b03738712fad5c9;
-  uint64_t m2 = (tmp >> 64) ^ tmp;
-  return m2;
-}
-
-*/
 
 /*
 

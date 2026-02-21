@@ -22,13 +22,6 @@
 
 using namespace secpion;
 
-// Define test cases for multiple types:
-// TEMPLATE_TEST_CASE(NAME, TAGS, TYPES...) { /* test code for TestType */ }
-//
-// Or use a templated function:
-// test_random_numbers<G>() {}
-//
-
 template <typename G>
 void gen_random_numbers() {
     G gen;
@@ -175,7 +168,7 @@ TEST_CASE("Test seed", "[random]" ) {
 
 TEST_CASE("Test shuffle and choice", "[random]" ) {
     gen_shuffle_choice<SERandomGenerator<SEAlgorithmLehmer64>>();
-    gen_shuffle_choice<SERandomGenerator<SEAlgorithmLehmer64>>();
+    gen_shuffle_choice<SERandomGenerator<SEAlgorithmWyRand>>();
 }
 
 /*

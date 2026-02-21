@@ -7,7 +7,6 @@
 
     Sources:
         https://lemire.me/blog/2019/03/19/the-fastest-conventional-random-number-generator-that-can-pass-big-crush/
-        https://www.pcg-random.org/index.html
 
 
 */
@@ -74,30 +73,6 @@ class SEAlgorithmWyRand {
 
         SEAlgorithmWyRand():
             state(0x9e3779b97f4a7c15) {}
-};
-
-// PCG: Copyright 2014 Melissa O'Neill <oneill@pcg-random.org>, Apache License Version 2.0
-class SEAlgorithmPCG {
-    private:
-        uint64_t state;
-        uint64_t inc;
-
-    public:
-        void seed(uint64_t s) {
-            state = s;
-        }
-
-        uint64_t next_u64() {
-            uint64_t oldstate = state;
-            state = oldstate * 6364136223846793005ULL + inc;
-            uint32_t xorshifted = ((oldstate >> 18u) ^ oldstate) >> 27u;
-            uint32_t rot = oldstate >> 59u;
-            return (xorshifted >> rot) | (xorshifted << ((-rot) & 31));
-        }
-
-        SEAlgorithmPCG():
-            state(0x853c49e6748fea9bULL),
-            inc(0xda3e39cb94b95bdbULL) {}
 };
 
 template <SERandomAlgorithm T>

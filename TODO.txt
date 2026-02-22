@@ -1,6 +1,5 @@
 TODO:
 - add more test cases for invalid configurations.
-- add pcg: https://www.pcg-random.org/index.html, https://github.com/imneme/pcg-c-basic
 
 
 Done:

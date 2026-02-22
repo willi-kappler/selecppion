@@ -3,7 +3,7 @@
     Written by Willi Kappler, MIT License
     https://github.com/willi-kappler/selecppion
 
-    This file defines the class for on individual
+    This file defines the class for one individual
 */
 
 #ifndef FILE_SE_INDIVIDUAL_HPP_INCLUDED
@@ -22,12 +22,11 @@
 
 namespace secpion {
 class SEIndividual {
-    private:
+    public:
         std::float64_t fitness1;
         std::float64_t fitness2;
         std::unordered_map<uint8_t, uint32_t> mut_op_counter;
 
-    public:
         SEIndividual();
 
         void se_reset_counter();

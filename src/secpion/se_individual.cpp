@@ -3,7 +3,7 @@
     Written by Willi Kappler, MIT License
     https://github.com/willi-kappler/selecppion
 
-    This file defines the class for on individual
+    This file defines the class for one individual
 */
 
 // STD includes:

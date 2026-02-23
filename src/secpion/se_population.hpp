@@ -20,6 +20,7 @@
 // External includes:
 #include <tao/json.hpp>
 #include <spdlog/spdlog.h>
+#include <nodcru2/nc_logger.hpp>
 
 // Local includes:
 #include "se_config.hpp"
@@ -29,7 +30,7 @@
 namespace secpion {
 class SEPopulation {
     public:
-        SEConfiguration config_intern;
+        SEConfiguration se_config;
         std::shared_ptr<spdlog::logger> se_logger;
 
         std::vector<std::unique_ptr<SEIndividual>> population;
@@ -38,7 +39,6 @@ class SEPopulation {
         size_t mut_op_index;
         bool minimum_found;
         SERandomGenerator<SEAlgorithmLehmer64> rng;
-
 
         SEPopulation(SEConfiguration);
 

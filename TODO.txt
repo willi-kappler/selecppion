@@ -1,5 +1,66 @@
 TODO:
 - add more test cases for invalid configurations.
 
+Goal,                   Best Function,      Complexity
+Complete Ranking,       std::sort,          O(NlogN)
+Get Top n (Unordered),  std::nth_element,   O(N)
+Get Top n (Ordered),    std::partial_sort,  O(Nlogn)
+
+
+Ideas:
+
+#include <random>
+#include <vector>
+#include <algorithm>
+
+// Function to pick one winner using Tournament Selection
+SEIndividual* tournamentSelection(const std::vector<std::unique_ptr<SEIndividual>>& population, int k) {
+    static std::mt19937 gen(std::random_device{}());
+    std::uniform_int_distribution<> dis(0, population.size() - 1);
+
+    SEIndividual* best = nullptr;
+
+    for (int i = 0; i < k; ++i) {
+        // Pick a random index
+        int randomIndex = dis(gen);
+        SEIndividual* candidate = population[randomIndex].get();
+
+        // Check if this candidate is better (lower fitness is better)
+        if (best == nullptr || candidate->fitness1 < best->fitness1) {
+            best = candidate;
+        }
+    }
+
+    return best; // Returns a "view" of the winner
+}
+
+
+std::vector<std::unique_ptr<SEIndividual>> nextGeneration;
+int populationSize = population.size();
+
+while (nextGeneration.size() < populationSize) {
+    // 1. Select two parents
+    SEIndividual* parent1 = tournamentSelection(population, 3);
+    SEIndividual* parent2 = tournamentSelection(population, 3);
+
+    // 2. Crossover & Mutate (Create a NEW unique_ptr)
+    auto child = crossoverAndMutate(parent1, parent2);
+
+    // 3. Add to new generation
+    nextGeneration.push_back(std::move(child));
+}
+
+// 4. Replace old population
+population = std::move(nextGeneration);
+
+
+
+
+
+
+
+
+
+
 
 Done:

@@ -16,11 +16,14 @@
 #include <stdfloat>
 #include <unordered_map>
 #include <memory>
+#include <limits>
 
 // External includes:
 #include <tao/json.hpp>
 
 namespace secpion {
+const std::float64_t SE_FLOAT_MAX = std::numeric_limits<std::float64_t>::max();
+
 class SEIndividual {
     public:
         std::float64_t fitness1;
@@ -37,7 +40,7 @@ class SEIndividual {
         void se_calculate_fitness2();
         std::unique_ptr<SEIndividual> se_clone_internal();
         std::unique_ptr<SEIndividual> se_clone();
-        void se_from_server();
+        void se_from_server(std::unique_ptr<SEIndividual>);
         tao::json::value se_to_json();
         void se_from_json(const tao::json::value);
         std::float64_t se_actual_fitness();

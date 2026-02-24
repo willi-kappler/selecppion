@@ -6,15 +6,11 @@
     This file defines the class for one individual
 */
 
-// STD includes:
-#include <limits>
-
 // Local includes:
 #include "se_individual.hpp"
 #include "se_exceptions.hpp"
 
 namespace secpion {
-const std::float64_t SE_FLOAT_MAX = std::numeric_limits<std::float64_t>::max();
 
 SEIndividual::SEIndividual():
     fitness1(SE_FLOAT_MAX),
@@ -60,7 +56,7 @@ std::unique_ptr<SEIndividual> SEIndividual::se_clone() {
     throw SEIndividualException("() must be implemented!");
 }
 
-void SEIndividual::se_from_server() {
+void SEIndividual::se_from_server([[maybe_unused]] std::unique_ptr<SEIndividual> individual_from_server) {
     throw SEIndividualException("() must be implemented!");
 }
 

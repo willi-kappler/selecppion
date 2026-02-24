@@ -6,8 +6,14 @@
     This file defines the class for one population
 */
 
+// STD includes:
+#include <algorithm>
+#include <thread>
+#include <chrono>
+
 // External include:
 #include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/fmt/bundled/ranges.h>
 
 // Local includes:
 #include "se_population.hpp"
@@ -21,7 +27,8 @@ SEPopulation::SEPopulation(SEConfiguration config):
     worst_index(0),
     mut_op_index(0),
     minimum_found(false),
-    rng()
+    rng(),
+    randomize_iteration(0)
 {
     rng.seed();
 }
@@ -36,9 +43,7 @@ void SEPopulation::se_set_logger(std::shared_ptr<spdlog::logger> logger) {
     se_logger->debug("Randomize population: {}, randomize count: {}",
         se_config.randomize_population, se_config.randomize_count);
     se_logger->debug("Accept new best: {}", se_config.accept_new_best);
-
-    //se_logger->debug("Accept new best: {}, mutation operations: {}",
-    //    config.accept_new_best, config.mutation_operations);
+    se_logger->debug("Mutation operations: {}", se_config.mutation_operations);
 }
 
 void SEPopulation::se_set_loglevel(spdlog::level::level_enum level) {
@@ -51,4 +56,169 @@ void SEPopulation::se_set_file_logger(std::string_view prefix = "selecppion") {
     se_set_logger(file_logger);
 }
 
+void SEPopulation::se_find_worst_individual() {
+    worst_index = 0;
+    std::float64_t worst_fitness = population[0]->fitness1;
+    std::float64_t fitness = 0.0;
+
+    for (size_t i = 1; i < population.size(); i++) {
+        fitness = population[i]->fitness1;
+
+        if (fitness > worst_fitness) {
+            worst_index = i;
+            worst_fitness = fitness;
+        }
+    }
+}
+
+void SEPopulation::se_find_best_and_worst_individual() {
+    worst_index = 0;
+    best_index = 0;
+    std::float64_t worst_fitness = population[0]->fitness1;
+    std::float64_t best_fitness = population[0]->fitness1;
+    std::float64_t fitness = 0.0;
+
+    for (size_t i = 1; i < population.size(); i++) {
+        fitness = population[i]->fitness1;
+
+        if (fitness > worst_fitness) {
+            worst_index = i;
+            worst_fitness = fitness;
+        } else if (fitness < best_fitness) {
+            best_index = i;
+            best_fitness = fitness;
+        }
+    }
+}
+
+void SEPopulation::se_sort_population() {
+    std::sort(population.begin(), population.end(),
+    [] (const std::unique_ptr<SEIndividual>&ind1, const std::unique_ptr<SEIndividual>&ind2) {
+         return ind1->fitness1 < ind2->fitness1; });
+}
+
+void SEPopulation::se_random_population() {
+    for (auto &individual: population) {
+        individual->se_reset_counter();
+        individual->se_randomize();
+        individual->se_calculate_fitness1();
+    }
+}
+
+void SEPopulation::se_randomize_or_accept_best(std::unique_ptr<SEIndividual> best_from_server) {
+    if (se_config.randomize_population) {
+        randomize_iteration++;
+        if (randomize_iteration > se_config.randomize_count) {
+            randomize_iteration = 0;
+            se_random_population();
+        }
+    } else if (se_config.accept_new_best) {
+        population[0]->se_from_server(std::move(best_from_server));
+    }
+}
+
+void SEPopulation::se_shuffle_mutation_operations() {
+    rng.shuffle(se_config.mutation_operations);
+}
+
+void SEPopulation::se_randomize_worst() {
+    population[worst_index]->se_randomize();
+    population[worst_index]->se_calculate_fitness1();
+    // Now it may not be the worst anymore!
+}
+
+void SEPopulation::se_replace_best(std::unique_ptr<SEIndividual> individual) {
+    if (individual->fitness1 < population[best_index]->fitness1) {
+        population[best_index] = std::move(individual);
+    }
+}
+
+void SEPopulation::se_replace_worst(std::unique_ptr<SEIndividual> individual) {
+    population[worst_index] = std::move(individual);
+    // No it may no longer be the worst anymore!
+}
+
+void SEPopulation::se_clone_best_to_worst() {
+    population[worst_index] = std::move(population[best_index]->se_clone_internal());
+}
+
+const SEIndividual& SEPopulation::se_get_best() const {
+    return *population[best_index];
+}
+
+std::float64_t SEPopulation::se_get_best_fitness() {
+    return population[best_index]->fitness1;
+}
+
+std::float64_t SEPopulation::se_get_worst_fitness() {
+    return population[worst_index]->fitness1;
+}
+
+uint8_t SEPopulation::se_get_mut_op() {
+    mut_op_index++;
+
+    if (mut_op_index > se_config.mutation_operations.size()) {
+        mut_op_index = 0;
+    }
+
+    return se_config.mutation_operations[mut_op_index];
+}
+
+void SEPopulation::se_check_limit(std::unique_ptr<SEIndividual> individual, std::float64_t limit, size_t i) {
+    if ((individual->fitness1 < limit) || (individual->fitness1 < population[i]->fitness1)) {
+        population[i] = std::move(individual);
+    }
+}
+
+void SEPopulation::se_early_exit(uint64_t iteration) {
+    se_logger->info("Early exit at iteration: {}", iteration);
+    minimum_found = true;
+
+    if (iteration == 0) {
+        // Wait some seconds to avoid spamming the server
+        auto const sleep_time = std::chrono::seconds(5);
+        std::this_thread::sleep_for(sleep_time);
+    }
+}
+
+void SEPopulation::se_calculate_fitness2() {
+    std::float64_t best_fitness2 = SE_FLOAT_MAX;
+    std::float64_t fitness2 = 0.0;
+    size_t best_fitness2_index = 0;
+
+    for (size_t i = 0; i < population.size(); i++) {
+        if (population[i]->fitness1 < 0.01) {
+            population[i]->se_calculate_fitness2();
+            fitness2 = population[i]->fitness2;
+
+            if (fitness2 < best_fitness2) {
+                best_fitness2 = fitness2;
+                best_fitness2_index = i;
+            }
+        }
+    }
+
+    if (best_fitness2 < SE_FLOAT_MAX) {
+        if (best_fitness2_index != best_index) {
+            se_logger->debug("Best index: {}, new best index: {}",
+                best_index, best_fitness2_index);
+            se_logger->debug("Best fitness 1: {}, best fitness 2: {}",
+                population[best_index]->fitness1, population[best_index]->fitness2);
+            se_logger->debug("New best fitness 1: {}, new best fitness 2: {}",
+                population[best_fitness2_index]->fitness1, population[best_fitness2_index]->fitness2);
+            best_index = best_fitness2_index;
+        }
+    }
+}
+
+void SEPopulation::se_log_statistics() {
+    se_logger->debug("Best fitness 1: {}, best fitness 2: {}",
+        population[best_index]->fitness1, population[best_index]->fitness2);
+    se_logger->debug("Worst fitness 1: {}, worst fitness 2: {}",
+        population[worst_index]->fitness1, population[worst_index]->fitness2);
+    se_logger->debug("Actual best: {}, actual worst: {}",
+        population[best_index]->se_actual_fitness(), population[worst_index]->se_actual_fitness());
+    se_logger->debug("Best mutations: {}", population[best_index]->mut_op_counter);
+    se_logger->debug("Worst mutations: {}", population[worst_index]->mut_op_counter);
+}
 }

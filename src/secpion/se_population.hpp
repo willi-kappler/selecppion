@@ -39,6 +39,7 @@ class SEPopulation {
         size_t mut_op_index;
         bool minimum_found;
         SERandomGenerator<SEAlgorithmLehmer64> rng;
+        uint64_t randomize_iteration;
 
         SEPopulation(SEConfiguration);
 
@@ -56,7 +57,7 @@ class SEPopulation {
         void se_replace_best(std::unique_ptr<SEIndividual>);
         void se_replace_worst(std::unique_ptr<SEIndividual>);
         void se_clone_best_to_worst();
-        std::unique_ptr<SEIndividual> se_get_best();
+        const SEIndividual& se_get_best() const;
         std::float64_t se_get_best_fitness();
         std::float64_t se_get_worst_fitness();
         uint8_t se_get_mut_op();

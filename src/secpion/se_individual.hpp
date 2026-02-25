@@ -31,20 +31,25 @@ class SEIndividual {
         std::unordered_map<uint8_t, uint32_t> mut_op_counter;
 
         SEIndividual();
+        virtual ~SEIndividual() = default;
+        SEIndividual(SEIndividual &&) = delete;
+        SEIndividual(const SEIndividual &) = delete;
+        SEIndividual& operator=(const SEIndividual &) = delete;
+        SEIndividual& operator=(const SEIndividual &&) = delete;
 
         void se_reset_counter();
         void se_mutate_internal(uint8_t);
-        void se_mutate(uint8_t);
-        void se_randomize();
-        void se_calculate_fitness1();
-        void se_calculate_fitness2();
+        virtual void se_mutate(uint8_t);
+        virtual void se_randomize();
+        virtual void se_calculate_fitness1();
+        virtual void se_calculate_fitness2();
         std::unique_ptr<SEIndividual> se_clone_internal();
-        std::unique_ptr<SEIndividual> se_clone();
-        void se_from_server(std::unique_ptr<SEIndividual>);
-        tao::json::value se_to_json();
-        void se_from_json(const tao::json::value);
-        std::float64_t se_actual_fitness();
-        void se_new_best_individual();
+        virtual std::unique_ptr<SEIndividual> se_clone();
+        virtual void se_from_server(std::unique_ptr<SEIndividual>);
+        virtual tao::json::value se_to_json();
+        virtual void se_from_json(const tao::json::value);
+        virtual std::float64_t se_actual_fitness();
+        virtual void se_new_best_individual();
 };
 }
 

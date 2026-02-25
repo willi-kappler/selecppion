@@ -14,3 +14,4 @@
 #include "test_config.hpp"
 #include "test_random_generator.hpp"
 #include "test_individual.hpp"
+#include "test_population.hpp"

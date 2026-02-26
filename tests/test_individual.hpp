@@ -18,29 +18,29 @@
 
 using namespace secpion;
 
-class TestIndividual: public SEIndividual {
+class TestIndividual1: public SEIndividual {
     public:
         uint8_t mutate_called;
         uint8_t clone_called;
 
-        TestIndividual();
+        TestIndividual1();
         void se_mutate(uint8_t) override;
         std::unique_ptr<SEIndividual> se_clone() override;
 };
 
-TestIndividual::TestIndividual():
+TestIndividual1::TestIndividual1():
     SEIndividual(),
     mutate_called(0),
     clone_called(0)
 {}
 
-void TestIndividual::se_mutate([[maybe_unused]] uint8_t mut_op) {
+void TestIndividual1::se_mutate([[maybe_unused]] uint8_t mut_op) {
     mutate_called++;
 }
 
-std::unique_ptr<SEIndividual> TestIndividual::se_clone() {
+std::unique_ptr<SEIndividual> TestIndividual1::se_clone() {
     clone_called++;
-    return std::make_unique<TestIndividual>();
+    return std::make_unique<TestIndividual1>();
 }
 
 TEST_CASE("Test mutate internal with base class", "[individual]" ) {
@@ -106,7 +106,7 @@ TEST_CASE("Check required methods", "[individual]" ) {
 }
 
 TEST_CASE("Test clone with derived class", "[individual]" ) {
-    TestIndividual individual;
+    TestIndividual1 individual;
     individual.fitness1 = 12.5;
     individual.fitness2 = 156.0;
     individual.mut_op_counter[15] = 2;
@@ -118,7 +118,7 @@ TEST_CASE("Test clone with derived class", "[individual]" ) {
 
     // Test call to se_clone_internal():
     std::unique_ptr<SEIndividual> individual2 = individual.se_clone_internal();
-    std::unique_ptr<TestIndividual> individual3(static_cast<TestIndividual*>(individual2.release()));
+    std::unique_ptr<TestIndividual1> individual3(static_cast<TestIndividual1*>(individual2.release()));
 
     REQUIRE(individual.mut_op_counter.size() == 2);
     REQUIRE(individual.mutate_called == 0);
@@ -134,7 +134,7 @@ TEST_CASE("Test clone with derived class", "[individual]" ) {
 }
 
 TEST_CASE("Test mutate internal with derived class", "[individual]" ) {
-    TestIndividual individual;
+    TestIndividual1 individual;
     individual.fitness1 = 59.3;
     individual.fitness2 = 31.2;
 

@@ -43,36 +43,53 @@ std::unique_ptr<SEIndividual> TestIndividual::se_clone() {
     return std::make_unique<TestIndividual>();
 }
 
-TEST_CASE("Create empty individual", "[individual]" ) {
+TEST_CASE("Test mutate internal with base class", "[individual]" ) {
     SEIndividual individual;
-
-    REQUIRE(individual.fitness1 == SE_FLOAT_MAX);
-    REQUIRE(individual.fitness2 == SE_FLOAT_MAX);
+    individual.fitness1 = 1.1;
+    individual.fitness2 = 2.2;
     REQUIRE(individual.mut_op_counter.size() == 0);
 
     // Add some operations:
     REQUIRE_THROWS_AS(individual.se_mutate_internal(11), SEIndividualException);
+    REQUIRE(individual.fitness1 == 1.1);
+    REQUIRE(individual.fitness2 == 2.2);
     REQUIRE(individual.mut_op_counter.size() == 1);
     REQUIRE(individual.mut_op_counter[11] == 1);
 
+    individual.fitness1 = 2.1;
+    individual.fitness2 = 5.2;
     REQUIRE_THROWS_AS(individual.se_mutate_internal(17), SEIndividualException);
+    REQUIRE(individual.fitness1 == 2.1);
+    REQUIRE(individual.fitness2 == 5.2);
     REQUIRE(individual.mut_op_counter.size() == 2);
     REQUIRE(individual.mut_op_counter[11] == 1);
     REQUIRE(individual.mut_op_counter[17] == 1);
 
+    individual.fitness1 = 10.7;
+    individual.fitness2 = 52.8;
     REQUIRE_THROWS_AS(individual.se_mutate_internal(23), SEIndividualException);
+    REQUIRE(individual.fitness1 == 10.7);
+    REQUIRE(individual.fitness2 == 52.8);
     REQUIRE(individual.mut_op_counter.size() == 3);
     REQUIRE(individual.mut_op_counter[11] == 1);
     REQUIRE(individual.mut_op_counter[17] == 1);
     REQUIRE(individual.mut_op_counter[23] == 1);
 
+    individual.fitness1 = 9.2;
+    individual.fitness2 = 4.3;
     REQUIRE_THROWS_AS(individual.se_mutate_internal(11), SEIndividualException);
+    REQUIRE(individual.fitness1 == 9.2);
+    REQUIRE(individual.fitness2 == 4.3);
     REQUIRE(individual.mut_op_counter.size() == 3);
     REQUIRE(individual.mut_op_counter[11] == 2);
     REQUIRE(individual.mut_op_counter[17] == 1);
     REQUIRE(individual.mut_op_counter[23] == 1);
 
+    individual.fitness1 = 1.9;
+    individual.fitness2 = 0.5;
     individual.se_reset_counter();
+    REQUIRE(individual.fitness1 == 1.9);
+    REQUIRE(individual.fitness2 == 0.5);
     REQUIRE(individual.mut_op_counter.size() == 0);
 }
 
@@ -116,7 +133,7 @@ TEST_CASE("Test clone with derived class", "[individual]" ) {
     REQUIRE(individual3->clone_called == 0);
 }
 
-TEST_CASE("Test clone with derived class", "[individual]" ) {
+TEST_CASE("Test mutate internal with derived class", "[individual]" ) {
     TestIndividual individual;
     individual.fitness1 = 59.3;
     individual.fitness2 = 31.2;

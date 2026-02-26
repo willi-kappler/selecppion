@@ -231,6 +231,78 @@ TEST_CASE("Test random population", "[population]" ) {
     }
 }
 
+TEST_CASE("Test randomize or accept best", "[population]" ) {
+    NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
+    SEConfiguration config2 = SEConfiguration(config1);
+    SEPopulation population = SEPopulation(config2);
+
+    global_rng.seed();
+}
+
+TEST_CASE("Test shuffle mutation operations", "[population]" ) {
+    NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
+    SEConfiguration config2 = SEConfiguration(config1);
+    SEPopulation population = SEPopulation(config2);
+
+    global_rng.seed();
+}
+
+TEST_CASE("Test randomize worst", "[population]" ) {
+    NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
+    SEConfiguration config2 = SEConfiguration(config1);
+    SEPopulation population = SEPopulation(config2);
+
+    global_rng.seed();
+}
+
+TEST_CASE("Test replace best", "[population]" ) {
+    NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
+    SEConfiguration config2 = SEConfiguration(config1);
+    SEPopulation population = SEPopulation(config2);
+
+    global_rng.seed();
+}
+
+TEST_CASE("Test replace worst", "[population]" ) {
+    NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
+    SEConfiguration config2 = SEConfiguration(config1);
+    SEPopulation population = SEPopulation(config2);
+
+    global_rng.seed();
+}
+
+TEST_CASE("Test clone best to worst", "[population]" ) {
+    NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
+    SEConfiguration config2 = SEConfiguration(config1);
+    SEPopulation population = SEPopulation(config2);
+
+    global_rng.seed();
+}
+
+TEST_CASE("Test get best", "[population]" ) {
+    NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
+    SEConfiguration config2 = SEConfiguration(config1);
+    SEPopulation population = SEPopulation(config2);
+
+    global_rng.seed();
+}
+
+TEST_CASE("Test get best fitness", "[population]" ) {
+    NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
+    SEConfiguration config2 = SEConfiguration(config1);
+    SEPopulation population = SEPopulation(config2);
+
+    global_rng.seed();
+}
+
+TEST_CASE("Test get worst fitness", "[population]" ) {
+    NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
+    SEConfiguration config2 = SEConfiguration(config1);
+    SEPopulation population = SEPopulation(config2);
+
+    global_rng.seed();
+}
+
 /*
 void se_randomize_or_accept_best(std::unique_ptr<SEIndividual>);
 void se_shuffle_mutation_operations();

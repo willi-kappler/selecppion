@@ -97,8 +97,8 @@ void SEPopulation::se_find_best_and_worst_individual() {
 
 void SEPopulation::se_sort_population() {
     std::sort(population.begin(), population.end(),
-    [] (const std::unique_ptr<SEIndividual>&ind1, const std::unique_ptr<SEIndividual>&ind2) {
-         return ind1->fitness1 < ind2->fitness1; });
+        [] (const std::unique_ptr<SEIndividual>&ind1, const std::unique_ptr<SEIndividual>&ind2) {
+            return ind1->fitness1 < ind2->fitness1; });
 }
 
 void SEPopulation::se_random_population() {

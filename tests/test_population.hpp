@@ -211,14 +211,23 @@ TEST_CASE("Test random population", "[population]" ) {
 
     population.se_random_population();
 
-    // std::float_t val1;
-    // std::float_t val2;
+    std::float64_t val1;
+    std::float64_t val2;
+
+    TestIndividual2 *test_indi;
 
     for (auto &individual: population.population) {
         REQUIRE(individual->mut_op_counter.size() == 0);
         REQUIRE(individual->fitness1 >= 0.0);
         REQUIRE(individual->fitness1 <= 20.0);
-        // val1 = individual.val1
+
+        test_indi = static_cast<TestIndividual2*>(individual.get());
+        val1 = test_indi->val1;
+        val2 = test_indi->val2;
+
+        REQUIRE(val1 >= 0 && val1 <= 10.0);
+        REQUIRE(val2 >= 0 && val2 <= 10.0);
+        REQUIRE(test_indi->fitness1 = val1 + val2);
     }
 }
 

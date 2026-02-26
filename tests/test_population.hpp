@@ -23,20 +23,75 @@
 
 using namespace secpion;
 
-std::unique_ptr<SEIndividual> make_indi_f1(std::float64_t fitness1) {
-    std::unique_ptr<SEIndividual> individual = std::make_unique<SEIndividual>();
-    individual->fitness1 = fitness1;
-    return individual;
+SERandomGenerator<SEAlgorithmLehmer64> global_rng;
+
+class TestIndividual2: public SEIndividual {
+    public:
+        std::float64_t val1;
+        std::float64_t val2;
+
+        TestIndividual2();
+        void se_mutate(uint8_t) override;
+        void se_randomize() override;
+        void se_calculate_fitness1() override;
+
+
+/*
+virtual void se_calculate_fitness2();
+virtual std::unique_ptr<SEIndividual> se_clone();
+virtual void se_from_server(std::unique_ptr<SEIndividual>);
+virtual tao::json::value se_to_json();
+virtual void se_from_json(const tao::json::value);
+virtual std::float64_t se_actual_fitness();
+virtual void se_new_best_individual();
+*/
+};
+
+TestIndividual2::TestIndividual2():
+    val1(-1.0),
+    val2(-1.0)
+    {}
+
+void TestIndividual2::se_mutate([[maybe_unused]] uint8_t mut_op) {
+    std::float64_t delta = global_rng.get_float64();
+
+    if (delta <= 0.5) {
+        val1 += ((delta - 0.5) * 0.01);
+
+        if (val1 < 0.0) {
+            val1 = 0.0;
+        } else if (val1 > 10.0) {
+            val1 = 10.0;
+        }
+    } else {
+        val2 += ((delta - 0.5) * 0.01);
+
+        if (val2 < 0.0) {
+            val2 = 0.0;
+        } else if (val2 > 10.0) {
+            val2 = 10.0;
+        }
+    }
 }
 
-std::unique_ptr<SEIndividual> make_indi_f2(std::float64_t fitness2) {
-    std::unique_ptr<SEIndividual> individual = std::make_unique<SEIndividual>();
-    individual->fitness2 = fitness2;
-    return individual;
+void TestIndividual2::se_randomize() {
+    val1 = global_rng.get_float64() * 10.0;
+    val2 = global_rng.get_float64() * 10.0;
+}
+
+void TestIndividual2::se_calculate_fitness1() {
+    fitness1 = val1 + val2;
 }
 
 std::unique_ptr<SEIndividual> make_indi_f1_f2(std::float64_t fitness1, std::float64_t fitness2) {
     std::unique_ptr<SEIndividual> individual = std::make_unique<SEIndividual>();
+    individual->fitness1 = fitness1;
+    individual->fitness2 = fitness2;
+    return individual;
+}
+
+std::unique_ptr<TestIndividual2> make_test_indi_f1_f2(std::float64_t fitness1, std::float64_t fitness2) {
+    std::unique_ptr<TestIndividual2> individual = std::make_unique<TestIndividual2>();
     individual->fitness1 = fitness1;
     individual->fitness2 = fitness2;
     return individual;
@@ -115,12 +170,59 @@ TEST_CASE("Test find best and worst population", "[population]" ) {
     check_population_fitness(population, {23.5, 3.8, 17.2, 58.1, 0.1}, {4.4, 5.5, 6.6, 7.7, 8.8});
 }
 
+TEST_CASE("Test sort population", "[population]" ) {
+    NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
+    SEConfiguration config2 = SEConfiguration(config1);
+    SEPopulation population = SEPopulation(config2);
 
+    population.population.push_back(make_indi_f1_f2(23.5, 4.4));
+    population.population.push_back(make_indi_f1_f2(3.8, 5.5));
+    population.population.push_back(make_indi_f1_f2(17.2, 6.6));
+    population.population.push_back(make_indi_f1_f2(58.1, 7.7));
+    population.population.push_back(make_indi_f1_f2(0.1, 8.8));
 
+    population.se_find_best_and_worst_individual();
+    REQUIRE(population.best_index == 4);
+    REQUIRE(population.worst_index == 3);
+
+    population.se_sort_population();
+    population.se_find_best_and_worst_individual();
+    REQUIRE(population.best_index == 0);
+    REQUIRE(population.worst_index == 4);
+    check_population_fitness(population, {0.1, 3.8, 17.2, 23.5, 58.1}, {8.8, 5.5, 6.6, 4.4, 7.7});
+}
+
+TEST_CASE("Test random population", "[population]" ) {
+    NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
+    SEConfiguration config2 = SEConfiguration(config1);
+    SEPopulation population = SEPopulation(config2);
+
+    global_rng.seed();
+
+    population.population.push_back(make_test_indi_f1_f2(1023.5, 4.4));
+    population.population.push_back(make_test_indi_f1_f2(103.8, 5.5));
+    population.population.push_back(make_test_indi_f1_f2(1017.2, 6.6));
+    population.population.push_back(make_test_indi_f1_f2(1058.1, 7.7));
+    population.population.push_back(make_test_indi_f1_f2(100.1, 8.8));
+
+    for (uint8_t i = 0; i < population.population.size(); i++) {
+        population.population[i]->mut_op_counter[i] = i;
+    }
+
+    population.se_random_population();
+
+    // std::float_t val1;
+    // std::float_t val2;
+
+    for (auto &individual: population.population) {
+        REQUIRE(individual->mut_op_counter.size() == 0);
+        REQUIRE(individual->fitness1 >= 0.0);
+        REQUIRE(individual->fitness1 <= 20.0);
+        // val1 = individual.val1
+    }
+}
 
 /*
-void se_sort_population();
-void se_random_population();
 void se_randomize_or_accept_best(std::unique_ptr<SEIndividual>);
 void se_shuffle_mutation_operations();
 void se_randomize_worst();

@@ -25,7 +25,7 @@ TEST_CASE("Test find worst population", "[population]" ) {
     SEConfiguration config2 = SEConfiguration(config1);
     SEPopulation population = SEPopulation(config2);
 
-    std::unique_ptr<SEIndividual> individual;
+    std::unique_ptr<SEIndividual> individual = std::make_unique<SEIndividual>();
     individual->fitness1 = 23.5;
     population.population.push_back(std::move(individual));
 

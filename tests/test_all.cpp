@@ -7,7 +7,7 @@
 
     Run with:
     normal: xmake run -w ./ se_test
-    debug:  xmake run -d -w ./ se_test
+    debug:  xmake run -v -d -w ./ se_test
     List all tests: xmake run -w ./ se_test -l
 */
 

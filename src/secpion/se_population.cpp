@@ -13,6 +13,7 @@
 
 // External include:
 #include <spdlog/sinks/basic_file_sink.h>
+#include "spdlog/sinks/stdout_sinks.h"
 #include <spdlog/fmt/bundled/ranges.h>
 
 // Local includes:
@@ -31,6 +32,8 @@ SEPopulation::SEPopulation(SEConfiguration config):
     randomize_iteration(0)
 {
     rng.seed();
+    spdlog::drop("se_logger");
+    se_logger = spdlog::stdout_logger_mt("se_logger");
 }
 
 void SEPopulation::se_set_logger(std::shared_ptr<spdlog::logger> logger) {
@@ -52,6 +55,7 @@ void SEPopulation::se_set_loglevel(spdlog::level::level_enum level) {
 
 void SEPopulation::se_set_file_logger(std::string_view prefix = "selecppion") {
     std::string file_name = nodcru2::nc_gen_log_file_name(prefix);
+    spdlog::drop("se_logger");
     std::shared_ptr<spdlog::logger> file_logger = spdlog::basic_logger_mt("se_logger", file_name);
     se_set_logger(file_logger);
 }

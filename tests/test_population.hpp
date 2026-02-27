@@ -113,6 +113,25 @@ void check_population_fitness(SEPopulation &population,
     }
 }
 
+SEPopulation make_population(SEConfiguration config, uint8_t size) {
+    REQUIRE(size >= 1);
+
+    SEPopulation population = SEPopulation(config);
+
+    for (uint8_t i = 0; i < size; i++) {
+        population.population.push_back(std::make_unique<TestIndividual2>());
+    }
+
+    return population;
+}
+
+SEPopulation make_population(uint8_t size) {
+    NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
+    SEConfiguration config2 = SEConfiguration(config1);
+
+    return make_population(config2, size);
+}
+
 TEST_CASE("Test find worst population", "[population]" ) {
     NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
     SEConfiguration config2 = SEConfiguration(config1);
@@ -234,9 +253,13 @@ TEST_CASE("Test random population", "[population]" ) {
 TEST_CASE("Test randomize or accept best", "[population]" ) {
     NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
     SEConfiguration config2 = SEConfiguration(config1);
-    SEPopulation population = SEPopulation(config2);
+    config2.randomize_population = false;
+    config2.accept_new_best = false;
+    SEPopulation population = make_population(config2, 10);
 
     global_rng.seed();
+
+
 }
 
 TEST_CASE("Test shuffle mutation operations", "[population]" ) {
@@ -303,6 +326,38 @@ TEST_CASE("Test get worst fitness", "[population]" ) {
     global_rng.seed();
 }
 
+TEST_CASE("Test get mutation operation", "[population]" ) {
+    NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
+    SEConfiguration config2 = SEConfiguration(config1);
+    SEPopulation population = SEPopulation(config2);
+
+    global_rng.seed();
+}
+
+TEST_CASE("Test check limit", "[population]" ) {
+    NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
+    SEConfiguration config2 = SEConfiguration(config1);
+    SEPopulation population = SEPopulation(config2);
+
+    global_rng.seed();
+}
+
+TEST_CASE("Test early exit", "[population]" ) {
+    NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
+    SEConfiguration config2 = SEConfiguration(config1);
+    SEPopulation population = SEPopulation(config2);
+
+    global_rng.seed();
+}
+
+TEST_CASE("Test calculate fitness2", "[population]" ) {
+    NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
+    SEConfiguration config2 = SEConfiguration(config1);
+    SEPopulation population = SEPopulation(config2);
+
+    global_rng.seed();
+}
+
 /*
 void se_randomize_or_accept_best(std::unique_ptr<SEIndividual>);
 void se_shuffle_mutation_operations();
@@ -318,5 +373,4 @@ void se_check_limit(std::unique_ptr<SEIndividual>, std::float64_t, size_t);
 void se_early_exit(uint64_t);
 void se_calculate_fitness2();
 void se_log_statistics();
-
 */

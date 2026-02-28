@@ -34,17 +34,13 @@ class TestIndividual2: public SEIndividual {
         void se_mutate(uint8_t) override;
         void se_randomize() override;
         void se_calculate_fitness1() override;
-
-
-/*
-virtual void se_calculate_fitness2();
-virtual std::unique_ptr<SEIndividual> se_clone();
-virtual void se_from_server(std::unique_ptr<SEIndividual>);
-virtual tao::json::value se_to_json();
-virtual void se_from_json(const tao::json::value);
-virtual std::float64_t se_actual_fitness();
-virtual void se_new_best_individual();
-*/
+        // void se_calculate_fitness2() override;
+        // std::unique_ptr<SEIndividual> se_clone() override;
+        void se_from_server(std::unique_ptr<SEIndividual>) override;
+        // tao::json::value se_to_json() override;
+        // void se_from_json(const tao::json::value) override;
+        // std::float64_t se_actual_fitness() override;
+        // void se_new_best_individual() override;
 };
 
 TestIndividual2::TestIndividual2():
@@ -82,6 +78,16 @@ void TestIndividual2::se_randomize() {
 void TestIndividual2::se_calculate_fitness1() {
     fitness1 = val1 + val2;
 }
+
+void TestIndividual2::se_from_server(std::unique_ptr<SEIndividual> individual) {
+    TestIndividual2 *test_indi = static_cast<TestIndividual2*>(individual.get());
+
+    fitness1 = test_indi->fitness1;
+    fitness2 = test_indi->fitness2;
+    val1 = test_indi->val1;
+    val2 = test_indi->val2;
+}
+
 
 std::unique_ptr<SEIndividual> make_indi_f1_f2(std::float64_t fitness1, std::float64_t fitness2) {
     std::unique_ptr<SEIndividual> individual = std::make_unique<SEIndividual>();
@@ -130,6 +136,23 @@ SEPopulation make_population(uint8_t size) {
     SEConfiguration config2 = SEConfiguration(config1);
 
     return make_population(config2, size);
+}
+
+void fill_fitness(SEPopulation &population, std::float64_t fitness1, std::float64_t fitness2) {
+    for (auto &indi: population.population) {
+        indi->fitness1 = fitness1;
+        indi->fitness2 = fitness2;
+    }
+}
+
+void fill_values(SEPopulation &population, std::float64_t val1, std::float64_t val2) {
+    TestIndividual2 *test_indi;
+
+    for (auto &indi: population.population) {
+        test_indi = static_cast<TestIndividual2*>(indi.get());
+        test_indi->val1 = val1;
+        test_indi->val2 = val2;
+    }
 }
 
 TEST_CASE("Test find worst population", "[population]" ) {
@@ -250,24 +273,179 @@ TEST_CASE("Test random population", "[population]" ) {
     }
 }
 
-TEST_CASE("Test randomize or accept best", "[population]" ) {
+TEST_CASE("Test randomize or accept best 1", "[population]" ) {
     NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
     SEConfiguration config2 = SEConfiguration(config1);
     config2.randomize_population = false;
     config2.accept_new_best = false;
     SEPopulation population = make_population(config2, 10);
+    fill_fitness(population, 1.6, 9.2);
+
+    std::unique_ptr<TestIndividual2> best_individual = std::make_unique<TestIndividual2>();
+    population.se_randomize_or_accept_best(std::move(best_individual));
+
+    // No change expected:
+    TestIndividual2 *test_indi;
+
+    for (auto &indi: population.population) {
+        REQUIRE(indi->fitness1 == 1.6);
+        REQUIRE(indi->fitness2 == 9.2);
+
+        test_indi = static_cast<TestIndividual2*>(indi.get());
+        REQUIRE(test_indi->val1 == -1.0);
+        REQUIRE(test_indi->val2 == -1.0);
+    }
+}
+
+TEST_CASE("Test randomize or accept best 2", "[population]" ) {
+    NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
+    SEConfiguration config2 = SEConfiguration(config1);
+    config2.randomize_population = true;
+    config2.accept_new_best = false;
+    config2.randomize_count = 1;
+    SEPopulation population = make_population(config2, 10);
+    fill_fitness(population, 3.3, 6.2);
 
     global_rng.seed();
 
+    std::unique_ptr<TestIndividual2> best_individual = std::make_unique<TestIndividual2>();
+    population.se_randomize_or_accept_best(std::move(best_individual));
 
+    // No change expected:
+    TestIndividual2 *test_indi;
+
+    for (auto &indi: population.population) {
+        REQUIRE(indi->fitness1 == 3.3);
+        REQUIRE(indi->fitness2 == 6.2);
+
+        test_indi = static_cast<TestIndividual2*>(indi.get());
+        REQUIRE(test_indi->val1 == -1.0);
+        REQUIRE(test_indi->val2 == -1.0);
+    }
+
+    best_individual = std::make_unique<TestIndividual2>();
+    population.se_randomize_or_accept_best(std::move(best_individual));
+
+    // Change expected:
+    std::float64_t val1;
+    std::float64_t val2;
+
+    for (auto &indi: population.population) {
+        test_indi = static_cast<TestIndividual2*>(indi.get());
+        val1 = test_indi->val1;
+        val2 = test_indi->val2;
+
+        REQUIRE(val1 >= 0.0 && val1 <= 10.0);
+        REQUIRE(val2 >= 0.0 && val2 <= 10.0);
+
+        REQUIRE(indi->fitness1 == val1 + val2);
+        REQUIRE(indi->fitness2 == 6.2);
+    }
+}
+
+TEST_CASE("Test randomize or accept best 3", "[population]" ) {
+    NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
+    SEConfiguration config2 = SEConfiguration(config1);
+    config2.randomize_population = false;
+    config2.accept_new_best = true;
+    SEPopulation population = make_population(config2, 10);
+    fill_fitness(population, 8.7, 4.5);
+    population.population[0]->fitness1 = 1.2;
+    population.population[0]->fitness2 = 5.7;
+
+    std::unique_ptr<TestIndividual2> best_individual = std::make_unique<TestIndividual2>();
+    best_individual->fitness1 = 0.3;
+    best_individual->fitness2 = 2.1;
+    best_individual->val1 = 6.3;
+    best_individual->val2 = 4.9;
+    population.se_randomize_or_accept_best(std::move(best_individual));
+
+    // Only individual at index 0 should be changed:
+    TestIndividual2 *test_indi;
+
+    for (size_t i = 0; i < population.population.size(); i++) {
+        test_indi = static_cast<TestIndividual2*>(population.population[i].get());
+
+        if (i == 0) {
+            REQUIRE(test_indi->fitness1 == 0.3);
+            REQUIRE(test_indi->fitness2 == 2.1);
+            REQUIRE(test_indi->val1 == 6.3);
+            REQUIRE(test_indi->val2 == 4.9);
+        } else {
+            REQUIRE(test_indi->fitness1 == 8.7);
+            REQUIRE(test_indi->fitness2 == 4.5);
+            REQUIRE(test_indi->val1 == -1.0);
+            REQUIRE(test_indi->val2 == -1.0);
+        }
+    }
+}
+
+TEST_CASE("Test randomize or accept best 4", "[population]" ) {
+    NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
+    SEConfiguration config2 = SEConfiguration(config1);
+    config2.randomize_population = true;
+    config2.accept_new_best = true;
+    config2.randomize_count = 1;
+    SEPopulation population = make_population(config2, 10);
+    fill_fitness(population, 9.9, 8.8);
+
+    global_rng.seed();
+
+    std::unique_ptr<TestIndividual2> best_individual = std::make_unique<TestIndividual2>();
+    best_individual->fitness1 = 0.3;
+    best_individual->fitness2 = 2.1;
+    best_individual->val1 = 6.3;
+    best_individual->val2 = 4.9;
+    population.se_randomize_or_accept_best(std::move(best_individual));
+
+    // No change expected:
+    TestIndividual2 *test_indi;
+
+    for (auto &indi: population.population) {
+        REQUIRE(indi->fitness1 == 9.9);
+        REQUIRE(indi->fitness2 == 8.8);
+
+        test_indi = static_cast<TestIndividual2*>(indi.get());
+        REQUIRE(test_indi->val1 == -1.0);
+        REQUIRE(test_indi->val2 == -1.0);
+    }
+
+    best_individual = std::make_unique<TestIndividual2>();
+    best_individual->fitness1 = 0.3;
+    best_individual->fitness2 = 2.1;
+    best_individual->val1 = 6.3;
+    best_individual->val2 = 4.9;
+    population.se_randomize_or_accept_best(std::move(best_individual));
+
+    // Change expected:
+    std::float64_t val1;
+    std::float64_t val2;
+
+    for (auto &indi: population.population) {
+        test_indi = static_cast<TestIndividual2*>(indi.get());
+        val1 = test_indi->val1;
+        val2 = test_indi->val2;
+
+        REQUIRE(val1 >= 0.0 && val1 <= 10.0);
+        REQUIRE(val2 >= 0.0 && val2 <= 10.0);
+
+        REQUIRE(indi->fitness1 == val1 + val2);
+        REQUIRE(indi->fitness2 == 8.8);
+    }
 }
 
 TEST_CASE("Test shuffle mutation operations", "[population]" ) {
     NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
     SEConfiguration config2 = SEConfiguration(config1);
+    config2.mutation_operations = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     SEPopulation population = SEPopulation(config2);
 
     global_rng.seed();
+
+    population.se_shuffle_mutation_operations();
+
+    std::vector<uint8_t> initial_ops = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    REQUIRE(population.se_config.mutation_operations != initial_ops);
 }
 
 TEST_CASE("Test randomize worst", "[population]" ) {

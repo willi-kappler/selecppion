@@ -161,7 +161,7 @@ std::float64_t SEPopulation::se_get_worst_fitness() {
 uint8_t SEPopulation::se_get_mut_op() {
     mut_op_index++;
 
-    if (mut_op_index > se_config.mutation_operations.size()) {
+    if (mut_op_index >= se_config.mutation_operations.size()) {
         mut_op_index = 0;
     }
 

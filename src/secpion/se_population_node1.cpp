@@ -28,10 +28,16 @@ SEPopulationNode1::SEPopulationNode1(SEConfiguration se_config,
     population.best_index = 0;
     population.worst_index = population.se_config.node_population_size - 1;
 
+    std::unique_ptr<SEIndividual> cloned_indi;
+
     for (size_t i = 0; i < population.se_config.num_of_iterations; i++) {
-        // Create a copy of each individual before mutating it:
         for (size_t j = 0; j < offset; j++) {
-            // TODO: implement
+            // Create a copy of each individual before mutating it (lower half):
+            cloned_indi = population.population[j]->se_clone();
+            cloned_indi->se_randomize();
+            cloned_indi->se_calculate_fitness1();
+            // Overwrite upper half (the bad ones):
+            population.population[j + offset] = std::move(cloned_indi);
         }
 
         population.se_sort_population();

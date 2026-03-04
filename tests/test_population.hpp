@@ -34,7 +34,7 @@ class TestIndividual2: public SEIndividual {
         void se_mutate(uint8_t) override;
         void se_randomize() override;
         void se_calculate_fitness1() override;
-        // void se_calculate_fitness2() override;
+        void se_calculate_fitness2() override;
         std::unique_ptr<SEIndividual> se_clone() override;
         void se_from_server(std::unique_ptr<SEIndividual>) override;
         // tao::json::value se_to_json() override;
@@ -77,6 +77,10 @@ void TestIndividual2::se_randomize() {
 
 void TestIndividual2::se_calculate_fitness1() {
     fitness1 = val1 + val2;
+}
+
+void TestIndividual2::se_calculate_fitness2() {
+    fitness2 = val1 * val2;
 }
 
 std::unique_ptr<SEIndividual> TestIndividual2::se_clone() {
@@ -159,8 +163,29 @@ SEPopulation make_population(uint8_t size) {
 }
 
 void set_fitness1(SEPopulation &population, std::vector<std::float64_t> fitness1) {
+    size_t len1 = population.population.size();
+    size_t len2 = fitness1.size();
+
+    REQUIRE(len1 == len2);
+
     for (size_t i = 0; i < population.population.size(); i++) {
         population.population[i]->fitness1 = fitness1[i];
+    }
+}
+
+void set_fitness(SEPopulation &population, std::vector<std::float64_t> fitness1,
+    std::vector<std::float64_t> fitness2) {
+
+    size_t len1 = population.population.size();
+    size_t len2 = fitness1.size();
+    size_t len3 = fitness2.size();
+
+    REQUIRE(len1 == len2);
+    REQUIRE(len1 == len3);
+
+    for (size_t i = 0; i < population.population.size(); i++) {
+        population.population[i]->fitness1 = fitness1[i];
+        population.population[i]->fitness2 = fitness2[i];
     }
 }
 
@@ -168,6 +193,25 @@ void fill_fitness(SEPopulation &population, std::float64_t fitness1, std::float6
     for (auto &indi: population.population) {
         indi->fitness1 = fitness1;
         indi->fitness2 = fitness2;
+    }
+}
+
+void set_values(SEPopulation &population, std::vector<std::float64_t> val1,
+    std::vector<std::float64_t> val2) {
+    size_t len1 = population.population.size();
+    size_t len2 = val1.size();
+    size_t len3 = val2.size();
+
+    REQUIRE(len1 == len2);
+    REQUIRE(len1 == len3);
+
+    TestIndividual2 *test_indi;
+
+    for (size_t i = 0; i < population.population.size(); i++) {
+        test_indi = static_cast<TestIndividual2*>(population.population[i].get());
+
+        test_indi->val1 = val1[i];
+        test_indi->val2 = val2[i];
     }
 }
 
@@ -595,10 +639,50 @@ TEST_CASE("Test check limit", "[population]" ) {
     check_population_fitness1(population, {4.62, 1.74, 3.6, 9.41, 7.42, 6.99, 6.02, 5.58, 7.94, 7.58});
 }
 
-TEST_CASE("Test calculate fitness2", "[population]" ) {
-    NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
-    SEConfiguration config2 = SEConfiguration(config1);
-    SEPopulation population = SEPopulation(config2);
+TEST_CASE("Test calculate fitness2 1", "[population]" ) {
+    SEPopulation population = make_population(10);
+    set_fitness(population, {4.62, 1.74, 4.19, 9.41, 7.42, 6.99, 6.02, 5.58, 7.94, 7.58},
+                            {1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0});
 
-    global_rng.seed();
+    population.se_find_best_and_worst_individual();
+    population.se_calculate_fitness2();
+    check_population_fitness(population, {4.62, 1.74, 4.19, 9.41, 7.42, 6.99, 6.02, 5.58, 7.94, 7.58},
+                                         {1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0});
+    
+    REQUIRE(population.best_index == 1);
+    REQUIRE(population.worst_index == 3);
+}
+
+TEST_CASE("Test calculate fitness2 2", "[population]" ) {
+    SEPopulation population = make_population(10);
+    set_fitness(population, {4.62, 0.001, 4.19, 9.41, 7.42, 0.002, 6.02, 5.58, 7.94, 7.58},
+                            {1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0});
+
+    set_values(population, {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0},
+                           {2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5, 10.5, 11.5});
+
+    population.se_find_best_and_worst_individual();
+    population.se_calculate_fitness2();
+    check_population_fitness(population, {4.62, 0.001, 4.19, 9.41, 7.42, 0.002, 6.02, 5.58, 7.94, 7.58},
+                                         {1.1, 7.0, 1.3, 1.4, 1.5, 45.0, 1.7, 1.8, 1.9, 2.0});
+
+    REQUIRE(population.best_index == 1);
+    REQUIRE(population.worst_index == 3);
+}
+
+TEST_CASE("Test calculate fitness2 3", "[population]" ) {
+    SEPopulation population = make_population(10);
+    set_fitness(population, {4.62, 0.001, 4.19, 9.41, 7.42, 0.002, 6.02, 5.58, 7.94, 7.58},
+                            {1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0});
+
+    set_values(population, {1.0, 6.0, 3.0, 4.0, 5.0, 2.0, 7.0, 8.0, 9.0, 10.0},
+                           {2.5, 7.5, 4.5, 5.5, 6.5, 3.5, 8.5, 9.5, 10.5, 11.5});
+
+    population.se_find_best_and_worst_individual();
+    population.se_calculate_fitness2();
+    check_population_fitness(population, {4.62, 0.001, 4.19, 9.41, 7.42, 0.002, 6.02, 5.58, 7.94, 7.58},
+                                         {1.1, 45.0, 1.3, 1.4, 1.5, 7.0, 1.7, 1.8, 1.9, 2.0});
+
+    REQUIRE(population.best_index == 5);
+    REQUIRE(population.worst_index == 3);
 }

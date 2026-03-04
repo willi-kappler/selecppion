@@ -47,6 +47,7 @@ class SEPopulation {
         void se_set_loglevel(spdlog::level::level_enum);
         void se_set_file_logger(std::string_view);
 
+        void se_fill_population(std::unique_ptr<SEIndividual>);
         void se_find_worst_individual();
         void se_find_best_and_worst_individual();
         void se_sort_population();

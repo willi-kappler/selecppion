@@ -147,6 +147,7 @@ void check_population_fitness(SEPopulation &population,
 
 SEPopulation make_population(SEConfiguration config, uint8_t size) {
     SEPopulation population = SEPopulation(config);
+    population.population.reserve(size);
 
     for (uint8_t i = 0; i < size; i++) {
         population.population.push_back(std::make_unique<TestIndividual2>());
@@ -222,6 +223,30 @@ void fill_values(SEPopulation &population, std::float64_t val1, std::float64_t v
         test_indi = static_cast<TestIndividual2*>(indi.get());
         test_indi->val1 = val1;
         test_indi->val2 = val2;
+    }
+}
+
+TEST_CASE("Test fill population", "[population]" ) {
+    SEPopulation population = make_population(0);
+    population.se_config.node_population_size = 10;
+    std::unique_ptr<TestIndividual2> individual = std::make_unique<TestIndividual2>();
+    population.se_fill_population(std::move(individual));
+
+    REQUIRE(population.se_config.node_population_size == 10);
+    REQUIRE(population.population.size() == population.se_config.node_population_size);
+
+    std::float64_t val1;
+    std::float64_t val2;
+    TestIndividual2 *test_indi;
+
+    for (auto &indi: population.population) {
+        test_indi = static_cast<TestIndividual2*>(indi.get());
+        val1 = test_indi->val1;
+        val2 = test_indi->val2;
+
+        REQUIRE(val1 >= 0.0 && val1 <= 10.0);
+        REQUIRE(val2 >= 0.0 && val2 <= 10.0);
+        REQUIRE(indi->fitness1 == val1 + val2);
     }
 }
 
@@ -317,7 +342,6 @@ TEST_CASE("Test random population", "[population]" ) {
 
     std::float64_t val1;
     std::float64_t val2;
-
     TestIndividual2 *test_indi;
 
     for (auto &individual: population.population) {

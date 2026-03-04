@@ -60,6 +60,19 @@ void SEPopulation::se_set_file_logger(std::string_view prefix = "selecppion") {
     se_set_logger(file_logger);
 }
 
+void SEPopulation::se_fill_population(std::unique_ptr<SEIndividual> individual) {
+    size_t size = se_config.node_population_size;
+    population.reserve(size);
+    std::unique_ptr<SEIndividual> new_indi;
+
+    for (size_t i = 0; i < size; i++) {
+        new_indi = individual->se_clone();
+        new_indi->se_randomize();
+        new_indi->se_calculate_fitness1();
+        population.push_back(std::move(new_indi));
+    }
+}
+
 void SEPopulation::se_find_worst_individual() {
     worst_index = 0;
     std::float64_t worst_fitness = population[0]->fitness1;

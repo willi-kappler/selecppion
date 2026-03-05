@@ -1,6 +1,7 @@
 TODO:
-- add more test cases for invalid configurations.
-
+    - add more test cases for invalid configurations.
+    - add rng from std::random.
+    - add global rng for each type.
 
 
 

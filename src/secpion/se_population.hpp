@@ -52,7 +52,7 @@ class SEPopulation {
         void se_find_best_and_worst_individual();
         void se_sort_population();
         void se_random_population();
-        void se_randomize_or_accept_best(std::unique_ptr<SEIndividual>);
+        void se_randomize_or_accept_best(std::span<const uint8_t>);
         void se_shuffle_mutation_operations();
         void se_randomize_worst();
         void se_replace_best(std::unique_ptr<SEIndividual>);

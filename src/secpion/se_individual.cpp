@@ -56,16 +56,12 @@ std::unique_ptr<SEIndividual> SEIndividual::se_clone() {
     throw SEIndividualException("se_clone() must be implemented!");
 }
 
-void SEIndividual::se_from_server([[maybe_unused]] std::unique_ptr<SEIndividual> individual_from_server) {
-    throw SEIndividualException("se_from_server() must be implemented!");
+std::vector<uint8_t> SEIndividual::se_to_vec_u8() {
+    throw SEIndividualException("se_to_vec_u8() must be implemented!");
 }
 
-tao::json::value SEIndividual::se_to_json() {
-    throw SEIndividualException("se_to_json() must be implemented!");
-}
-
-void SEIndividual::se_from_json(const tao::json::value) {
-    throw SEIndividualException("se_from_json() must be implemented!");
+void SEIndividual::se_from_span_u8(std::span<const uint8_t>) {
+    throw SEIndividualException("se_from_span_u8() must be implemented!");
 }
 
 std::float64_t SEIndividual::se_actual_fitness() {

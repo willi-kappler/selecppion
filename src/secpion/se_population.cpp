@@ -122,7 +122,7 @@ void SEPopulation::se_random_population() {
     }
 }
 
-void SEPopulation::se_randomize_or_accept_best(std::unique_ptr<SEIndividual> best_from_server) {
+void SEPopulation::se_randomize_or_accept_best(std::span<const uint8_t> data) {
     if (se_config.randomize_population) {
         randomize_iteration++;
         if (randomize_iteration > se_config.randomize_count) {
@@ -130,7 +130,7 @@ void SEPopulation::se_randomize_or_accept_best(std::unique_ptr<SEIndividual> bes
             se_random_population();
         }
     } else if (se_config.accept_new_best) {
-        population[0]->se_from_server(std::move(best_from_server));
+        population[0]->se_from_span_u8(data);
     }
 }
 

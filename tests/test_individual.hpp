@@ -100,9 +100,8 @@ TEST_CASE("Check required methods", "[individual]" ) {
     REQUIRE_THROWS_AS(individual.se_randomize(), SEIndividualException);
     REQUIRE_THROWS_AS(individual.se_calculate_fitness1(), SEIndividualException);
     REQUIRE_THROWS_AS(individual.se_clone(), SEIndividualException);
-    REQUIRE_THROWS_AS(individual.se_from_server(std::make_unique<SEIndividual>()), SEIndividualException);
-    REQUIRE_THROWS_AS(individual.se_to_json(), SEIndividualException);
-    REQUIRE_THROWS_AS(individual.se_from_json({}), SEIndividualException);
+    REQUIRE_THROWS_AS(individual.se_to_vec_u8(), SEIndividualException);
+    REQUIRE_THROWS_AS(individual.se_from_span_u8({}), SEIndividualException);
 }
 
 TEST_CASE("Test clone with derived class", "[individual]" ) {

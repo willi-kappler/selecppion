@@ -10,7 +10,7 @@
 */
 
 // STD includes:
-#include <span>
+#include <cstring>
 
 // External includes:
 #include <snitch/snitch.hpp>
@@ -25,6 +25,9 @@ using namespace secpion;
 
 SERandomGenerator<SEAlgorithmLehmer64> global_rng;
 
+const size_t FLOAT_64_SIZE = sizeof(std::float64_t);
+const size_t TOTAL_DATA_SIZE = FLOAT_64_SIZE * 4;
+
 class TestIndividual2: public SEIndividual {
     public:
         std::float64_t val1;
@@ -36,9 +39,8 @@ class TestIndividual2: public SEIndividual {
         void se_calculate_fitness1() override;
         void se_calculate_fitness2() override;
         std::unique_ptr<SEIndividual> se_clone() override;
-        void se_from_server(std::unique_ptr<SEIndividual>) override;
-        // tao::json::value se_to_json() override;
-        // void se_from_json(const tao::json::value) override;
+        std::vector<uint8_t> se_to_vec_u8() override;
+        void se_from_span_u8(std::span<const uint8_t>) override;
         // std::float64_t se_actual_fitness() override;
         // void se_new_best_individual() override;
 };
@@ -93,15 +95,37 @@ std::unique_ptr<SEIndividual> TestIndividual2::se_clone() {
     return result;
 }
 
-void TestIndividual2::se_from_server(std::unique_ptr<SEIndividual> individual) {
-    TestIndividual2 *test_indi = static_cast<TestIndividual2*>(individual.get());
+std::vector<uint8_t> TestIndividual2::se_to_vec_u8() {
+    std::vector<uint8_t> result(TOTAL_DATA_SIZE);
 
-    fitness1 = test_indi->fitness1;
-    fitness2 = test_indi->fitness2;
-    val1 = test_indi->val1;
-    val2 = test_indi->val2;
+    auto data_it = result.begin();
+
+    std::memcpy(&*data_it, &fitness1, FLOAT_64_SIZE);
+    data_it += FLOAT_64_SIZE;
+    std::memcpy(&*data_it, &fitness2, FLOAT_64_SIZE);
+    data_it += FLOAT_64_SIZE;
+    std::memcpy(&*data_it, &val1, FLOAT_64_SIZE);
+    data_it += FLOAT_64_SIZE;
+    std::memcpy(&*data_it, &val2, FLOAT_64_SIZE);
+
+    return result;
 }
 
+void TestIndividual2::se_from_span_u8(std::span<const uint8_t> data) {
+    if (data.size() < TOTAL_DATA_SIZE) {
+        return;
+    }
+
+    auto data_it = data.begin();
+
+    std::memcpy(&fitness1, &*data_it, FLOAT_64_SIZE);
+    data_it += FLOAT_64_SIZE;
+    std::memcpy(&fitness2, &*data_it, FLOAT_64_SIZE);
+    data_it += FLOAT_64_SIZE;
+    std::memcpy(&val1, &*data_it, FLOAT_64_SIZE);
+    data_it += FLOAT_64_SIZE;
+    std::memcpy(&val2, &*data_it, FLOAT_64_SIZE);
+}
 
 std::unique_ptr<SEIndividual> make_indi_f1_f2(std::float64_t fitness1, std::float64_t fitness2) {
     std::unique_ptr<SEIndividual> individual = std::make_unique<SEIndividual>();
@@ -365,8 +389,7 @@ TEST_CASE("Test randomize or accept best 1", "[population]" ) {
     population.se_config.accept_new_best = false;
     fill_fitness(population, 1.6, 9.2);
 
-    std::unique_ptr<TestIndividual2> best_individual = std::make_unique<TestIndividual2>();
-    population.se_randomize_or_accept_best(std::move(best_individual));
+    population.se_randomize_or_accept_best({});
 
     // No change expected:
     TestIndividual2 *test_indi;
@@ -390,8 +413,7 @@ TEST_CASE("Test randomize or accept best 2", "[population]" ) {
 
     global_rng.seed();
 
-    std::unique_ptr<TestIndividual2> best_individual = std::make_unique<TestIndividual2>();
-    population.se_randomize_or_accept_best(std::move(best_individual));
+    population.se_randomize_or_accept_best({});
 
     // No change expected:
     TestIndividual2 *test_indi;
@@ -405,8 +427,7 @@ TEST_CASE("Test randomize or accept best 2", "[population]" ) {
         REQUIRE(test_indi->val2 == -1.0);
     }
 
-    best_individual = std::make_unique<TestIndividual2>();
-    population.se_randomize_or_accept_best(std::move(best_individual));
+    population.se_randomize_or_accept_best({});
 
     // Change expected:
     std::float64_t val1;
@@ -433,12 +454,12 @@ TEST_CASE("Test randomize or accept best 3", "[population]" ) {
     population.population[0]->fitness1 = 1.2;
     population.population[0]->fitness2 = 5.7;
 
-    std::unique_ptr<TestIndividual2> best_individual = std::make_unique<TestIndividual2>();
-    best_individual->fitness1 = 0.3;
-    best_individual->fitness2 = 2.1;
-    best_individual->val1 = 6.3;
-    best_individual->val2 = 4.9;
-    population.se_randomize_or_accept_best(std::move(best_individual));
+    TestIndividual2 best_individual;
+    best_individual.fitness1 = 0.3;
+    best_individual.fitness2 = 2.1;
+    best_individual.val1 = 6.3;
+    best_individual.val2 = 4.9;
+    population.se_randomize_or_accept_best(best_individual.se_to_vec_u8());
 
     // Only individual at index 0 should be changed:
     TestIndividual2 *test_indi;
@@ -469,12 +490,12 @@ TEST_CASE("Test randomize or accept best 4", "[population]" ) {
 
     global_rng.seed();
 
-    std::unique_ptr<TestIndividual2> best_individual = std::make_unique<TestIndividual2>();
-    best_individual->fitness1 = 0.3;
-    best_individual->fitness2 = 2.1;
-    best_individual->val1 = 6.3;
-    best_individual->val2 = 4.9;
-    population.se_randomize_or_accept_best(std::move(best_individual));
+    TestIndividual2 best_individual;
+    best_individual.fitness1 = 0.3;
+    best_individual.fitness2 = 2.1;
+    best_individual.val1 = 6.3;
+    best_individual.val2 = 4.9;
+    population.se_randomize_or_accept_best(best_individual.se_to_vec_u8());
 
     // No change expected:
     TestIndividual2 *test_indi;
@@ -488,12 +509,11 @@ TEST_CASE("Test randomize or accept best 4", "[population]" ) {
         REQUIRE(test_indi->val2 == -1.0);
     }
 
-    best_individual = std::make_unique<TestIndividual2>();
-    best_individual->fitness1 = 0.3;
-    best_individual->fitness2 = 2.1;
-    best_individual->val1 = 6.3;
-    best_individual->val2 = 4.9;
-    population.se_randomize_or_accept_best(std::move(best_individual));
+    best_individual.fitness1 = 0.3;
+    best_individual.fitness2 = 2.1;
+    best_individual.val1 = 6.3;
+    best_individual.val2 = 4.9;
+    population.se_randomize_or_accept_best(best_individual.se_to_vec_u8());
 
     // Change expected:
     std::float64_t val1;

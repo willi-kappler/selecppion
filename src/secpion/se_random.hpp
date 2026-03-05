@@ -140,6 +140,10 @@ class SERandomGenerator {
             return v * (1.0 / 9007199254740992.0);
         }
 
+        std::float64_t get_float64(std::float64_t start, std::float64_t end) {
+            return (get_float64() * (end - start)) + start;
+        }
+
         template <typename U>
         void shuffle(std::vector<U>& v) {
             if (v.size() < 2) return;

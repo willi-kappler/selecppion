@@ -63,6 +63,20 @@ void gen_random_numbers() {
         REQUIRE(v <= 1.0);
     }
 
+    // Test for float64 values
+    for (uint16_t i = 0; i < 1000; i++) {
+        std::float64_t v = gen.get_float64(55.5, 77.7);
+        REQUIRE(v >= 55.5);
+        REQUIRE(v <= 77.7);
+    }
+
+    // Test for float64 values
+    for (uint16_t i = 0; i < 1000; i++) {
+        std::float64_t v = gen.get_float64(-22.22, 34.56);
+        REQUIRE(v >= -22.22);
+        REQUIRE(v <= 34.56);
+    }
+
     // Check if all values are different:
     std::unordered_map<uint8_t, uint32_t> num_counter;
     for (uint16_t i = 0; i < 10000; i++) {

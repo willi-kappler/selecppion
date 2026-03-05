@@ -9,6 +9,9 @@
     xmake run -w ./ se_test [population_type1]
 */
 
+// STD includes:
+#include <iostream>
+
 // External includes:
 #include <snitch/snitch.hpp>
 #include <nodcru2/nc_config.hpp>
@@ -19,9 +22,19 @@
 #include "secpion/se_config.hpp"
 #include "secpion/se_population_node1.hpp"
 
-using namespace secpion;
+namespace secpion {
+class SEPopulationTestAccessor {
+    public:
+        static SEIndividual* get_individual(
+            const SEPopulationNode1 &population, size_t i) {
+            return population.population.population[i].get();
+        }
+};
+}
 
 SERandomGenerator<SEAlgorithmLehmer64> global_rng2;
+
+using namespace secpion;
 
 class TestIndividual3: public SEIndividual {
     public:
@@ -138,4 +151,12 @@ TEST_CASE("Test population type 1", "[population_type1]" ) {
     REQUIRE(individual2.fitness1 == 0.0);
     std::vector<uint8_t> expected = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     REQUIRE(individual2.numbers == expected);
+
+    SEIndividual* individual3 = SEPopulationTestAccessor::get_individual(population, 99);
+    REQUIRE(individual3->fitness1 > 0.0);
+
+    for (size_t i = 0; i < 100; i++) {
+        individual3 = SEPopulationTestAccessor::get_individual(population, i);
+        std::cout << "fitness1: " << individual3->fitness1 << std::endl;
+    }
 }

@@ -36,9 +36,12 @@ class SEPopulationNode1: public NCNodeDataProcessor {
         SEPopulation population;
         uint32_t offset;
 
+        friend class SEPopulationTestAccessor;
+
     public:
         SEPopulationNode1(SEConfiguration, std::unique_ptr<SEIndividual>);
         [[nodiscard]] std::vector<uint8_t> nc_process_data(std::vector<uint8_t> data) override;
+
 };
 }
 

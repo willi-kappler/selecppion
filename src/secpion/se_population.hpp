@@ -28,6 +28,8 @@
 #include "se_random.hpp"
 
 namespace secpion {
+class SEPopulationTestAccessor;
+
 class SEPopulation {
     public:
         SEConfiguration se_config;

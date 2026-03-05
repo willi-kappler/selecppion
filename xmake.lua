@@ -64,6 +64,8 @@ package("node_crunch2")
     add_urls("https://github.com/willi-kappler/node_crunch2.git")
     add_versions("latest", "main")
 
+    add_deps("asio")
+
     on_install(function (package)
         import("package.tools.xmake").install(package)
     end)
@@ -74,7 +76,6 @@ add_requires("taocpp-json 2025.03.11")
 add_requires("snitch")
 add_requires("spdlog", {configs = {header_only = false}})
 add_requires("argparse")
-add_requires("asio")
 add_requires("node_crunch2")
 
 target("selecppion")
@@ -83,9 +84,8 @@ target("selecppion")
         add_rules("utils.symbols.export_all", {export_classes = true})
     end
     add_files("src/secpion/*.cpp")
-    add_packages("node_crunch2")
+    add_packages("node_crunch2", {public = true})
     add_packages("taocpp-json")
-    add_packages("asio")
     add_packages("spdlog")
     -- For spdlog, so that every object file sees the global logger:
     add_defines("SPDLOG_COMPILED_LIB", {public = true})

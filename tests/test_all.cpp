@@ -15,3 +15,4 @@
 #include "test_random_generator.hpp"
 #include "test_individual.hpp"
 #include "test_population.hpp"
+#include "test_population_node1.hpp"

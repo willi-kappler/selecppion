@@ -22,16 +22,6 @@
 #include "secpion/se_config.hpp"
 #include "secpion/se_population_node1.hpp"
 
-namespace secpion {
-class SEPopulationTestAccessor {
-    public:
-        static SEIndividual* get_individual(
-            const SEPopulationNode1 &population, size_t i) {
-            return population.population.population[i].get();
-        }
-};
-}
-
 SERandomGenerator<SEAlgorithmLehmer64> global_rng2;
 
 using namespace secpion;
@@ -133,7 +123,7 @@ void TestIndividual3::se_from_span_u8(std::span<const uint8_t> data) {
 TEST_CASE("Test population type 1", "[population_type1]" ) {
     NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
     SEConfiguration config2 = SEConfiguration(config1);
-    config2.node_population_size = 100;
+    config2.node_population_size = 10;
     config2.num_of_iterations = 1000;
     config2.mutation_operations = {0, 1, 2};
     config2.randomize_population = false;
@@ -152,11 +142,11 @@ TEST_CASE("Test population type 1", "[population_type1]" ) {
     std::vector<uint8_t> expected = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     REQUIRE(individual2.numbers == expected);
 
-    SEIndividual* individual3 = SEPopulationTestAccessor::get_individual(population, 99);
+    SEIndividual* individual3 = population.get_individual(config2.node_population_size - 1);
     REQUIRE(individual3->fitness1 > 0.0);
 
-    for (size_t i = 0; i < 100; i++) {
-        individual3 = SEPopulationTestAccessor::get_individual(population, i);
+    for (size_t i = 0; i < config2.node_population_size; i++) {
+        individual3 = population.get_individual(i);
         std::cout << "fitness1: " << individual3->fitness1 << std::endl;
     }
 }

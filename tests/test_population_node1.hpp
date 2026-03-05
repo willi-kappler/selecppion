@@ -29,6 +29,7 @@ using namespace secpion;
 class TestIndividual3: public SEIndividual {
     public:
         std::vector<uint8_t> numbers;
+        bool zero_is_optimal;
 
         TestIndividual3();
         void se_mutate(uint8_t) override;
@@ -40,7 +41,8 @@ class TestIndividual3: public SEIndividual {
 };
 
 TestIndividual3::TestIndividual3():
-    numbers(std::vector<uint8_t>(10)) {
+    numbers(std::vector<uint8_t>(10)),
+    zero_is_optimal(true) {
     se_randomize();
 }
 
@@ -54,7 +56,7 @@ void TestIndividual3::se_mutate(uint8_t op) {
             }
             break;
         case 1:
-            if (numbers[i] < 9) {
+            if (numbers[i] < 10) {
                 numbers[i]++;
             }
             break;
@@ -78,18 +80,23 @@ void TestIndividual3::se_calculate_fitness1() {
     for (uint8_t n: numbers) {
         fitness1 += n;
     }
+
+    if (!zero_is_optimal) {
+        fitness1 = 100.0 - fitness1;
+    }
 }
 
 std::unique_ptr<SEIndividual> TestIndividual3::se_clone() {
     std::unique_ptr<TestIndividual3> result = std::make_unique<TestIndividual3>();
     result->numbers = numbers;
+    result->zero_is_optimal = zero_is_optimal;
 
     return result;
 }
 
 std::vector<uint8_t> TestIndividual3::se_to_vec_u8() {
     tao::json::value json_numbers = tao::json::empty_array;
-    
+
     for (uint8_t n: numbers) {
         json_numbers.get_array().push_back(n);
     }
@@ -97,7 +104,8 @@ std::vector<uint8_t> TestIndividual3::se_to_vec_u8() {
     const tao::json::value json_data = {
         {"fitness1", double(fitness1)},
         {"fitness2", double(fitness2)},
-        {"numbers", json_numbers}
+        {"numbers", json_numbers},
+        {"zero_is_optimal", zero_is_optimal}
     };
 
     std::string serialized = tao::json::to_string(json_data);
@@ -118,9 +126,11 @@ void TestIndividual3::se_from_span_u8(std::span<const uint8_t> data) {
     for (size_t i = 0; i < numbers.size(); i++) {
         numbers[i] = arr[i].as<uint8_t>();
     }
+
+    zero_is_optimal = restored_json["zero_is_optimal"].as<bool>();
 }
 
-TEST_CASE("Test population type 1", "[population_type1]" ) {
+TEST_CASE("Test population type 1, run 1", "[population_type1]" ) {
     NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
     SEConfiguration config2 = SEConfiguration(config1);
     config2.node_population_size = 10;
@@ -145,8 +155,38 @@ TEST_CASE("Test population type 1", "[population_type1]" ) {
     SEIndividual* individual3 = population.get_individual(config2.node_population_size - 1);
     REQUIRE(individual3->fitness1 > 0.0);
 
+    /*
     for (size_t i = 0; i < config2.node_population_size; i++) {
         individual3 = population.get_individual(i);
         std::cout << "fitness1: " << individual3->fitness1 << std::endl;
     }
+    */
+}
+
+TEST_CASE("Test population type 1, run 2", "[population_type1]" ) {
+    NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
+    SEConfiguration config2 = SEConfiguration(config1);
+    config2.node_population_size = 10;
+    config2.num_of_iterations = 1000;
+    config2.mutation_operations = {0, 1, 2};
+    config2.randomize_population = false;
+    config2.accept_new_best = false;
+    std::unique_ptr<TestIndividual3> individual1 = std::make_unique<TestIndividual3>();
+    individual1->zero_is_optimal = false;
+    SEPopulationNode1 population(config2, std::move(individual1));
+
+    TestIndividual3 individual2;
+    individual2.zero_is_optimal = false;
+    individual2.numbers = {9, 9, 9, 9, 9, 9, 9, 9, 9, 9};
+    individual2.se_calculate_fitness1();
+    REQUIRE(individual2.fitness1 == 10.0);
+    std::vector<uint8_t> result = population.nc_process_data(individual2.se_to_vec_u8());
+    individual2.se_from_span_u8(result);
+
+    REQUIRE(individual2.fitness1 == 0.0);
+    std::vector<uint8_t> expected = {10, 10, 10, 10, 10, 10, 10, 10, 10, 10};
+    REQUIRE(individual2.numbers == expected);
+
+    SEIndividual* individual3 = population.get_individual(config2.node_population_size - 1);
+    REQUIRE(individual3->fitness1 > 0.0);
 }

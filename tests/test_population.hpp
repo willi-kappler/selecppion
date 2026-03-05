@@ -97,16 +97,12 @@ std::unique_ptr<SEIndividual> TestIndividual2::se_clone() {
 
 std::vector<uint8_t> TestIndividual2::se_to_vec_u8() {
     std::vector<uint8_t> result(TOTAL_DATA_SIZE);
+    std::float64_t *float_64_ptr = reinterpret_cast<std::float64_t*>(result.data());
 
-    auto data_it = result.begin();
-
-    std::memcpy(&*data_it, &fitness1, FLOAT_64_SIZE);
-    data_it += FLOAT_64_SIZE;
-    std::memcpy(&*data_it, &fitness2, FLOAT_64_SIZE);
-    data_it += FLOAT_64_SIZE;
-    std::memcpy(&*data_it, &val1, FLOAT_64_SIZE);
-    data_it += FLOAT_64_SIZE;
-    std::memcpy(&*data_it, &val2, FLOAT_64_SIZE);
+    float_64_ptr[0] = fitness1;
+    float_64_ptr[1] = fitness2;
+    float_64_ptr[2] = val1;
+    float_64_ptr[3] = val2;
 
     return result;
 }
@@ -116,15 +112,12 @@ void TestIndividual2::se_from_span_u8(std::span<const uint8_t> data) {
         return;
     }
 
-    auto data_it = data.begin();
+    const std::float64_t *float_64_ptr = reinterpret_cast<const std::float64_t*>(data.data());
 
-    std::memcpy(&fitness1, &*data_it, FLOAT_64_SIZE);
-    data_it += FLOAT_64_SIZE;
-    std::memcpy(&fitness2, &*data_it, FLOAT_64_SIZE);
-    data_it += FLOAT_64_SIZE;
-    std::memcpy(&val1, &*data_it, FLOAT_64_SIZE);
-    data_it += FLOAT_64_SIZE;
-    std::memcpy(&val2, &*data_it, FLOAT_64_SIZE);
+    fitness1 = float_64_ptr[0];
+    fitness2 = float_64_ptr[1];
+    val1 = float_64_ptr[2];
+    val2 = float_64_ptr[3];
 }
 
 std::unique_ptr<SEIndividual> make_indi_f1_f2(std::float64_t fitness1, std::float64_t fitness2) {

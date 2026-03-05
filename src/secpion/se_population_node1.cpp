@@ -20,9 +20,10 @@ SEPopulationNode1::SEPopulationNode1(SEConfiguration se_config,
     population.se_sort_population();
 }
 
-[[nodiscard]] std::vector<uint8_t> SEPopulationNode1::nc_process_data([[maybe_unused]]std::vector<uint8_t> data) {
+[[nodiscard]] std::vector<uint8_t> SEPopulationNode1::nc_process_data(std::vector<uint8_t> data) {
     std::vector<uint8_t> result;
 
+    population.rng.seed();
     population.se_randomize_or_accept_best(data);
     population.se_shuffle_mutation_operations();
     population.best_index = 0;
@@ -34,7 +35,7 @@ SEPopulationNode1::SEPopulationNode1(SEConfiguration se_config,
         for (size_t j = 0; j < offset; j++) {
             // Create a copy of each individual before mutating it (lower half):
             cloned_indi = population.population[j]->se_clone_internal();
-            cloned_indi->se_randomize();
+            cloned_indi->se_mutate_internal(population.se_get_mut_op());
             cloned_indi->se_calculate_fitness1();
             // Overwrite upper half (the bad ones):
             population.population[j + offset] = std::move(cloned_indi);
@@ -51,6 +52,6 @@ SEPopulationNode1::SEPopulationNode1(SEConfiguration se_config,
     population.se_calculate_fitness2();
     population.se_log_statistics();
 
-    return result;
+    return population.population[0]->se_to_vec_u8();
 }
 }

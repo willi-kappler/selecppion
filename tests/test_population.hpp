@@ -9,9 +9,6 @@
     xmake run -w ./ se_test [population]
 */
 
-// STD includes:
-#include <cstring>
-
 // External includes:
 #include <snitch/snitch.hpp>
 #include <nodcru2/nc_config.hpp>
@@ -23,7 +20,7 @@
 
 using namespace secpion;
 
-SERandomGenerator<SEAlgorithmLehmer64> global_rng;
+SERandomGenerator<SEAlgorithmLehmer64> global_rng1;
 
 const size_t FLOAT_64_SIZE = sizeof(std::float64_t);
 const size_t TOTAL_DATA_SIZE = FLOAT_64_SIZE * 4;
@@ -51,7 +48,7 @@ TestIndividual2::TestIndividual2():
     {}
 
 void TestIndividual2::se_mutate([[maybe_unused]] uint8_t mut_op) {
-    std::float64_t delta = global_rng.get_float64();
+    std::float64_t delta = global_rng1.get_float64();
 
     if (delta <= 0.5) {
         val1 += ((delta - 0.5) * 0.01);
@@ -73,8 +70,8 @@ void TestIndividual2::se_mutate([[maybe_unused]] uint8_t mut_op) {
 }
 
 void TestIndividual2::se_randomize() {
-    val1 = global_rng.get_float64() * 10.0;
-    val2 = global_rng.get_float64() * 10.0;
+    val1 = global_rng1.get_float64() * 10.0;
+    val2 = global_rng1.get_float64() * 10.0;
 }
 
 void TestIndividual2::se_calculate_fitness1() {
@@ -343,7 +340,7 @@ TEST_CASE("Test sort population", "[population]" ) {
 TEST_CASE("Test random population", "[population]" ) {
     SEPopulation population = make_population(0);
 
-    global_rng.seed();
+    global_rng1.seed();
 
     population.population.push_back(make_test_indi_f1_f2(1023.5, 4.4));
     population.population.push_back(make_test_indi_f1_f2(103.8, 5.5));
@@ -404,7 +401,7 @@ TEST_CASE("Test randomize or accept best 2", "[population]" ) {
     population.se_config.randomize_count = 1;
     fill_fitness(population, 3.3, 6.2);
 
-    global_rng.seed();
+    global_rng1.seed();
 
     population.se_randomize_or_accept_best({});
 
@@ -481,7 +478,7 @@ TEST_CASE("Test randomize or accept best 4", "[population]" ) {
     population.se_config.randomize_count = 1;
     fill_fitness(population, 9.9, 8.8);
 
-    global_rng.seed();
+    global_rng1.seed();
 
     TestIndividual2 best_individual;
     best_individual.fitness1 = 0.3;
@@ -529,7 +526,7 @@ TEST_CASE("Test shuffle mutation operations", "[population]" ) {
     SEPopulation population = make_population(0);
     population.se_config.mutation_operations = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 
-    global_rng.seed();
+    global_rng1.seed();
 
     population.se_shuffle_mutation_operations();
 
@@ -543,7 +540,7 @@ TEST_CASE("Test randomize worst", "[population]" ) {
     population.se_find_worst_individual();
     REQUIRE(population.worst_index == 3);
 
-    global_rng.seed();
+    global_rng1.seed();
 
     population.se_randomize_worst();
 

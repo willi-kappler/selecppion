@@ -61,9 +61,28 @@ population = std::move(nextGeneration);
 
 
 
+Some keywords:
+
+Lamarckian approach
+Memetic Algorithm
+Lin-Kernighan heuristic
+Weight Agnostic Neural Networks (WANNs)
+Hebbian Learning
+Neuroevolution
+Algorithmic Neuron
+Indirect Encoding (HyperNEAT)
+Compositional Pattern Producing Network (CPPN)
 
 
+Quantum mechanic:
 
+Quantum Annealing
+Variational Quantum Eigensolvers (VQE)
+Simulated Cooling, Quantum Tunneling
+Hamiltonian
+Ising Models
+QUBO (Quadratic Unconstrained Binary Optimization)
+Quantum Approximate Optimization Algorithm (QAOA)
 
 
 

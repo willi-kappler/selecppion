@@ -75,6 +75,48 @@ class SEAlgorithmWyRand {
             state(0x9e3779b97f4a7c15) {}
 };
 
+// STD Linear Congruential
+class SEAlgorithmSTD_LCG {
+    std::independent_bits_engine<std::minstd_rand0, 64, uint64_t> engine;
+
+    public:
+        void seed(uint64_t s) {
+            engine.seed(s);
+        }
+
+        uint64_t next_u64() {
+            return engine();
+        }
+};
+
+// STD Mersenne Twister
+class SEAlgorithmSTD_Mersenne {
+    std::mt19937_64 engine;
+
+    public:
+        void seed(uint64_t s) {
+            engine.seed(s);
+        }
+
+        uint64_t next_u64() {
+            return engine();
+        }
+};
+
+// STD Subtract With Carry
+class SEAlgorithmSTD_SWC {
+    std::independent_bits_engine<std::ranlux48_base, 64, uint64_t> engine;
+
+    public:
+        void seed(uint64_t s) {
+            engine.seed(s);
+        }
+
+        uint64_t next_u64() {
+            return engine();
+        }
+};
+
 template <SERandomAlgorithm T>
 class SERandomGenerator {
     private:

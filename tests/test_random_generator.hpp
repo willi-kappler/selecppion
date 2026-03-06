@@ -173,16 +173,25 @@ void gen_shuffle_choice() {
 TEST_CASE("Create some random numbers", "[random]" ) {
     gen_random_numbers<SERandomGenerator<SEAlgorithmLehmer64>>();
     gen_random_numbers<SERandomGenerator<SEAlgorithmWyRand>>();
+    gen_random_numbers<SERandomGenerator<SEAlgorithmSTD_LCG>>();
+    gen_random_numbers<SERandomGenerator<SEAlgorithmSTD_Mersenne>>();
+    gen_random_numbers<SERandomGenerator<SEAlgorithmSTD_SWC>>();
 }
 
 TEST_CASE("Test seed", "[random]" ) {
     gen_seeds<SERandomGenerator<SEAlgorithmLehmer64>>();
     gen_seeds<SERandomGenerator<SEAlgorithmWyRand>>();
+    gen_seeds<SERandomGenerator<SEAlgorithmSTD_LCG>>();
+    gen_seeds<SERandomGenerator<SEAlgorithmSTD_Mersenne>>();
+    gen_seeds<SERandomGenerator<SEAlgorithmSTD_SWC>>();
 }
 
 TEST_CASE("Test shuffle and choice", "[random]" ) {
     gen_shuffle_choice<SERandomGenerator<SEAlgorithmLehmer64>>();
     gen_shuffle_choice<SERandomGenerator<SEAlgorithmWyRand>>();
+    gen_shuffle_choice<SERandomGenerator<SEAlgorithmSTD_LCG>>();
+    gen_shuffle_choice<SERandomGenerator<SEAlgorithmSTD_Mersenne>>();
+    gen_shuffle_choice<SERandomGenerator<SEAlgorithmSTD_SWC>>();
 }
 
 /*

@@ -25,6 +25,15 @@
 
 using namespace secpion;
 
+void print_stats(SEPopulationNode1 &population, uint32_t size) {
+    SEIndividual* individual3;
+
+    for (size_t i = 0; i < size; i++) {
+        individual3 = population.get_individual(i);
+        std::print("fitness: {}, mut ops: {}\n", individual3->fitness1, individual3->mut_op_counter);
+    }
+}
+
 TEST_CASE("Test population type 1, run 1", "[population_type1]" ) {
     NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
     SEConfiguration config2 = SEConfiguration(config1);
@@ -50,10 +59,7 @@ TEST_CASE("Test population type 1, run 1", "[population_type1]" ) {
     SEIndividual* individual3 = population.get_individual(config2.node_population_size - 1);
     REQUIRE(individual3->fitness1 > 0.0);
 
-    for (size_t i = 0; i < config2.node_population_size; i++) {
-        individual3 = population.get_individual(i);
-        std::print("fitness: {}, mut ops: {}\n", individual3->fitness1, individual3->mut_op_counter);
-    }
+    print_stats(population, config2.node_population_size);
 }
 
 TEST_CASE("Test population type 1, run 2", "[population_type1]" ) {
@@ -83,8 +89,5 @@ TEST_CASE("Test population type 1, run 2", "[population_type1]" ) {
     SEIndividual* individual3 = population.get_individual(config2.node_population_size - 1);
     REQUIRE(individual3->fitness1 > 0.0);
 
-    for (size_t i = 0; i < config2.node_population_size; i++) {
-        individual3 = population.get_individual(i);
-        std::print("fitness: {}, mut ops: {}\n", individual3->fitness1, individual3->mut_op_counter);
-    }
+    print_stats(population, config2.node_population_size);
 }

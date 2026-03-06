@@ -37,8 +37,11 @@ SEPopulationNode1::SEPopulationNode1(SEConfiguration se_config,
         for (size_t j = 0; j < offset; j++) {
             // Create a copy of each individual before mutating it (lower half):
             cloned_indi = population.population[j]->se_clone_internal();
-            // TODO: use number of mutations:
-            cloned_indi->se_mutate_internal(population.se_get_mut_op());
+
+            for (uint32_t i = 0; i < population.se_config.num_of_mutations; i++) {
+                cloned_indi->se_mutate_internal(population.se_get_mut_op());
+            }
+
             cloned_indi->se_calculate_fitness1();
             // Overwrite upper half (the bad ones):
             population.population[j + offset] = std::move(cloned_indi);

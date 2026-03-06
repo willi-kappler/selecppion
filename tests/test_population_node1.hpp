@@ -10,7 +10,7 @@
 */
 
 // STD includes:
-#include <iostream>
+#include <print>
 
 // External includes:
 #include <snitch/snitch.hpp>
@@ -29,8 +29,8 @@ TEST_CASE("Test population type 1, run 1", "[population_type1]" ) {
     NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
     SEConfiguration config2 = SEConfiguration(config1);
     config2.node_population_size = 10;
-    config2.num_of_iterations = 1000;
-    config2.mutation_operations = {0, 1, 2};
+    config2.num_of_iterations = 100;
+    config2.mutation_operations = {0, 1, 2, 3};
     config2.randomize_population = false;
     config2.accept_new_best = false;
     std::unique_ptr<TestIndividual3> individual1 = std::make_unique<TestIndividual3>();
@@ -50,20 +50,18 @@ TEST_CASE("Test population type 1, run 1", "[population_type1]" ) {
     SEIndividual* individual3 = population.get_individual(config2.node_population_size - 1);
     REQUIRE(individual3->fitness1 > 0.0);
 
-    /*
     for (size_t i = 0; i < config2.node_population_size; i++) {
         individual3 = population.get_individual(i);
-        std::cout << "fitness1: " << individual3->fitness1 << std::endl;
+        std::print("fitness: {}, mut ops: {}\n", individual3->fitness1, individual3->mut_op_counter);
     }
-    */
 }
 
 TEST_CASE("Test population type 1, run 2", "[population_type1]" ) {
     NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
     SEConfiguration config2 = SEConfiguration(config1);
     config2.node_population_size = 10;
-    config2.num_of_iterations = 1000;
-    config2.mutation_operations = {0, 1, 2};
+    config2.num_of_iterations = 100;
+    config2.mutation_operations = {0, 1, 2, 3};
     config2.randomize_population = false;
     config2.accept_new_best = false;
     std::unique_ptr<TestIndividual3> individual1 = std::make_unique<TestIndividual3>();
@@ -84,4 +82,9 @@ TEST_CASE("Test population type 1, run 2", "[population_type1]" ) {
 
     SEIndividual* individual3 = population.get_individual(config2.node_population_size - 1);
     REQUIRE(individual3->fitness1 > 0.0);
+
+    for (size_t i = 0; i < config2.node_population_size; i++) {
+        individual3 = population.get_individual(i);
+        std::print("fitness: {}, mut ops: {}\n", individual3->fitness1, individual3->mut_op_counter);
+    }
 }

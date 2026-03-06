@@ -42,21 +42,33 @@ TestIndividual3::TestIndividual3():
 
 void TestIndividual3::se_mutate(uint8_t op) {
     size_t i = global_rng2.get_size_t(numbers.size());
+    uint8_t val;
 
     switch (op) {
         case 0:
             if (numbers[i] > 0) {
                 numbers[i]--;
             }
+
             break;
         case 1:
             if (numbers[i] < 10) {
                 numbers[i]++;
             }
+
+            break;
+        case 2:
+            val = global_rng2.get_uint8(10);
+            numbers[i] = val;
+
             break;
         default:
-            uint8_t val = global_rng2.get_uint8(10);
-            numbers[i] = val;
+            val = global_rng2.get_uint8(10);
+
+            for (uint8_t &number: numbers) {
+                number = val;
+            }
+
             break;
     }
 

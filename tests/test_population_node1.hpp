@@ -35,59 +35,16 @@ void print_stats(SEPopulationNode1 &population, uint32_t size) {
 }
 
 TEST_CASE("Test population type 1, run 1", "[population_type1]" ) {
-    NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
-    SEConfiguration config2 = SEConfiguration(config1);
-    config2.node_population_size = 10;
-    config2.num_of_iterations = 100;
-    config2.mutation_operations = {0, 1, 2, 3};
-    config2.randomize_population = false;
-    config2.accept_new_best = false;
-    std::unique_ptr<TestIndividual3> individual1 = std::make_unique<TestIndividual3>();
-    SEPopulationNode1 population(config2, std::move(individual1));
-
-    TestIndividual3 individual2;
-    individual2.numbers = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-    individual2.se_calculate_fitness1();
-    REQUIRE(individual2.fitness1 == 10.0);
-    std::vector<uint8_t> result = population.nc_process_data(individual2.se_to_vec_u8());
-    individual2.se_from_span_u8(result);
-
-    REQUIRE(individual2.fitness1 == 0.0);
-    std::vector<uint8_t> expected = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    REQUIRE(individual2.numbers == expected);
-
-    SEIndividual* individual3 = population.get_individual(config2.node_population_size - 1);
-    REQUIRE(individual3->fitness1 > 0.0);
-
-    print_stats(population, config2.node_population_size);
+    TestNP<SEPopulationNode1> test_population;
+    SEPopulationNode1 population = test_population.run();
 }
 
 TEST_CASE("Test population type 1, run 2", "[population_type1]" ) {
-    NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
-    SEConfiguration config2 = SEConfiguration(config1);
-    config2.node_population_size = 10;
-    config2.num_of_iterations = 100;
-    config2.mutation_operations = {0, 1, 2, 3};
-    config2.randomize_population = false;
-    config2.accept_new_best = false;
-    std::unique_ptr<TestIndividual3> individual1 = std::make_unique<TestIndividual3>();
-    individual1->zero_is_optimal = false;
-    SEPopulationNode1 population(config2, std::move(individual1));
-
-    TestIndividual3 individual2;
-    individual2.zero_is_optimal = false;
-    individual2.numbers = {9, 9, 9, 9, 9, 9, 9, 9, 9, 9};
-    individual2.se_calculate_fitness1();
-    REQUIRE(individual2.fitness1 == 10.0);
-    std::vector<uint8_t> result = population.nc_process_data(individual2.se_to_vec_u8());
-    individual2.se_from_span_u8(result);
-
-    REQUIRE(individual2.fitness1 == 0.0);
-    std::vector<uint8_t> expected = {10, 10, 10, 10, 10, 10, 10, 10, 10, 10};
-    REQUIRE(individual2.numbers == expected);
-
-    SEIndividual* individual3 = population.get_individual(config2.node_population_size - 1);
-    REQUIRE(individual3->fitness1 > 0.0);
-
-    print_stats(population, config2.node_population_size);
+    TestNP<SEPopulationNode1> test_population;
+    test_population.individual1->zero_is_optimal = false;
+    test_population.individual2.zero_is_optimal = false;
+    test_population.individual2.numbers = {9, 9, 9, 9, 9, 9, 9, 9, 9, 9};
+    test_population.individual2.se_calculate_fitness1();
+    test_population.expected = {10, 10, 10, 10, 10, 10, 10, 10, 10, 10};
+    SEPopulationNode1 population = test_population.run();
 }

@@ -31,7 +31,8 @@ class SEPopulationNode1: public NCNodeDataProcessor {
         SEPopulationNode1(SEConfiguration, std::unique_ptr<SEIndividual>);
         [[nodiscard]] std::vector<uint8_t> nc_process_data(std::vector<uint8_t> data) override;
 
-        SEIndividual* get_individual(size_t);
+        [[nodiscard]] SEIndividual* get_individual(size_t);
+        [[nodiscard]] SEIndividual* get_worst();
 
         void se_set_logger(std::shared_ptr<spdlog::logger>);
         void se_set_loglevel(spdlog::level::level_enum);

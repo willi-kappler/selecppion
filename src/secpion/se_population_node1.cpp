@@ -58,9 +58,14 @@ SEPopulationNode1::SEPopulationNode1(SEConfiguration se_config,
     return population.population[0]->se_to_vec_u8();
 }
 
-SEIndividual* SEPopulationNode1::get_individual(size_t i) {
+[[nodiscard]] SEIndividual* SEPopulationNode1::get_individual(size_t i) {
     return population.population[i].get();
 }
+
+[[nodiscard]] SEIndividual* SEPopulationNode1::get_worst() {
+    return population.population[population.se_config.node_population_size - 1].get();
+}
+
 
 void SEPopulationNode1::se_set_logger(std::shared_ptr<spdlog::logger> logger) {
     population.se_set_logger(logger);

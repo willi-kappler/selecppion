@@ -45,7 +45,7 @@ SEPopulationNode1::SEPopulationNode1(SEConfiguration se_config,
 
         population.se_sort_population();
 
-        if (population.population[0]->fitness1 < population.se_config.target_fitness1) {
+        if (population.population[0]->fitness1 <= population.se_config.target_fitness1) {
             population.se_early_exit(i);
             break;
         }

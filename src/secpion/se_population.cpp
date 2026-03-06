@@ -163,19 +163,19 @@ void SEPopulation::se_clone_best_to_worst() {
     population[worst_index] = std::move(population[best_index]->se_clone_internal());
 }
 
-const SEIndividual& SEPopulation::se_get_best() const {
+[[nodiscard]] const SEIndividual& SEPopulation::se_get_best() const {
     return *population[best_index];
 }
 
-std::float64_t SEPopulation::se_get_best_fitness() {
+[[nodiscard]] std::float64_t SEPopulation::se_get_best_fitness() {
     return population[best_index]->fitness1;
 }
 
-std::float64_t SEPopulation::se_get_worst_fitness() {
+[[nodiscard]] std::float64_t SEPopulation::se_get_worst_fitness() {
     return population[worst_index]->fitness1;
 }
 
-uint8_t SEPopulation::se_get_mut_op() {
+[[nodiscard]] uint8_t SEPopulation::se_get_mut_op() {
     mut_op_index++;
 
     if (mut_op_index >= se_config.mutation_operations.size()) {

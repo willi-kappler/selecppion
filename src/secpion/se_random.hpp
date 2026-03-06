@@ -42,7 +42,7 @@ class SEAlgorithmLehmer64 {
             state = s;
         }
 
-        uint64_t next_u64() {
+        [[nodiscard]] uint64_t next_u64() {
             state *= 0xda942042e4dd58b5;
             return state >> 64;
         }
@@ -61,7 +61,7 @@ class SEAlgorithmWyRand {
             state = s;
         }
 
-        uint64_t next_u64() {
+        [[nodiscard]] uint64_t next_u64() {
             state += 0x60bee2bee120fc15;
             __uint128_t tmp;
             tmp = (__uint128_t) state * 0xa3b195354a39b70d;
@@ -84,7 +84,7 @@ class SEAlgorithmSTD_LCG {
             engine.seed(s);
         }
 
-        uint64_t next_u64() {
+        [[nodiscard]] uint64_t next_u64() {
             return engine();
         }
 };
@@ -98,7 +98,7 @@ class SEAlgorithmSTD_Mersenne {
             engine.seed(s);
         }
 
-        uint64_t next_u64() {
+        [[nodiscard]] uint64_t next_u64() {
             return engine();
         }
 };
@@ -112,7 +112,7 @@ class SEAlgorithmSTD_SWC {
             engine.seed(s);
         }
 
-        uint64_t next_u64() {
+        [[nodiscard]] uint64_t next_u64() {
             return engine();
         }
 };
@@ -140,7 +140,7 @@ class SERandomGenerator {
             random_algorithm.seed(s);
         }
 
-        uint64_t get_uint64(uint64_t n) {
+        [[nodiscard]] uint64_t get_uint64(uint64_t n) {
             // We want a value in [0, n)
             if (n == 0) return 0;
 
@@ -161,28 +161,28 @@ class SERandomGenerator {
             return static_cast<uint64_t>(product >> 64);
         }
 
-        uint32_t get_uint32(uint32_t n) {
+        [[nodiscard]] uint32_t get_uint32(uint32_t n) {
             return get_uint64(n);
         }
 
-        uint16_t get_uint16(uint16_t n) {
+        [[nodiscard]] uint16_t get_uint16(uint16_t n) {
             return get_uint64(n);
         }
 
-        uint8_t get_uint8(uint8_t n) {
+        [[nodiscard]] uint8_t get_uint8(uint8_t n) {
             return get_uint64(n);
         }
 
-        size_t get_size_t(size_t n) {
+        [[nodiscard]] size_t get_size_t(size_t n) {
             return get_uint64(n);
         }
 
-        std::float64_t get_float64() {
+        [[nodiscard]] std::float64_t get_float64() {
             const uint64_t v = (random_algorithm.next_u64() >> 11);
             return v * (1.0 / 9007199254740992.0);
         }
 
-        std::float64_t get_float64(std::float64_t start, std::float64_t end) {
+        [[nodiscard]] std::float64_t get_float64(std::float64_t start, std::float64_t end) {
             return (get_float64() * (end - start)) + start;
         }
 
@@ -202,7 +202,7 @@ class SERandomGenerator {
         }
 
         template <typename U>
-        U choice(std::vector<U>& v) {
+        [[nodiscard]] U choice(std::vector<U>& v) {
             size_t len = v.size();
 
             if (len == 0) {

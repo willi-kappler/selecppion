@@ -43,7 +43,7 @@ void SEIndividual::se_calculate_fitness2() {
     // Can be implemented but is not needed.
 }
 
-std::unique_ptr<SEIndividual> SEIndividual::se_clone_internal() {
+[[nodiscard]] std::unique_ptr<SEIndividual> SEIndividual::se_clone_internal() {
     std::unique_ptr<SEIndividual> clone = se_clone();
     clone->mut_op_counter = mut_op_counter;
     clone->fitness1 = fitness1;
@@ -52,11 +52,11 @@ std::unique_ptr<SEIndividual> SEIndividual::se_clone_internal() {
     return clone;
 }
 
-std::unique_ptr<SEIndividual> SEIndividual::se_clone() {
+[[nodiscard]] std::unique_ptr<SEIndividual> SEIndividual::se_clone() {
     throw SEIndividualException("se_clone() must be implemented!");
 }
 
-std::vector<uint8_t> SEIndividual::se_to_vec_u8() {
+[[nodiscard]] std::vector<uint8_t> SEIndividual::se_to_vec_u8() {
     throw SEIndividualException("se_to_vec_u8() must be implemented!");
 }
 
@@ -64,7 +64,7 @@ void SEIndividual::se_from_span_u8(std::span<const uint8_t>) {
     throw SEIndividualException("se_from_span_u8() must be implemented!");
 }
 
-std::float64_t SEIndividual::se_actual_fitness() {
+[[nodiscard]] std::float64_t SEIndividual::se_actual_fitness() {
     // Can be changed if the fitness needs to be adjusted.
     return fitness1;
 }

@@ -40,11 +40,11 @@ class SEIndividual {
         virtual void se_randomize();
         virtual void se_calculate_fitness1();
         virtual void se_calculate_fitness2();
-        std::unique_ptr<SEIndividual> se_clone_internal();
-        virtual std::unique_ptr<SEIndividual> se_clone();
-        virtual std::vector<uint8_t> se_to_vec_u8();
+        [[nodiscard]] std::unique_ptr<SEIndividual> se_clone_internal();
+        [[nodiscard]] virtual std::unique_ptr<SEIndividual> se_clone();
+        [[nodiscard]] virtual std::vector<uint8_t> se_to_vec_u8();
         virtual void se_from_span_u8(std::span<const uint8_t>);
-        virtual std::float64_t se_actual_fitness();
+        [[nodiscard]] virtual std::float64_t se_actual_fitness();
         virtual void se_new_best_individual();
 };
 }

@@ -80,7 +80,7 @@ void TestIndividual3::se_calculate_fitness1() {
     }
 }
 
-std::unique_ptr<SEIndividual> TestIndividual3::se_clone() {
+[[nodiscard]] std::unique_ptr<SEIndividual> TestIndividual3::se_clone() {
     std::unique_ptr<TestIndividual3> result = std::make_unique<TestIndividual3>();
     result->numbers = numbers;
     result->zero_is_optimal = zero_is_optimal;
@@ -88,7 +88,7 @@ std::unique_ptr<SEIndividual> TestIndividual3::se_clone() {
     return result;
 }
 
-std::vector<uint8_t> TestIndividual3::se_to_vec_u8() {
+[[nodiscard]] std::vector<uint8_t> TestIndividual3::se_to_vec_u8() {
     tao::json::value json_numbers = tao::json::empty_array;
 
     for (uint8_t n: numbers) {

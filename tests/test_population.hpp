@@ -82,7 +82,7 @@ void TestIndividual2::se_calculate_fitness2() {
     fitness2 = val1 * val2;
 }
 
-std::unique_ptr<SEIndividual> TestIndividual2::se_clone() {
+[[nodiscard]] std::unique_ptr<SEIndividual> TestIndividual2::se_clone() {
     std::unique_ptr<TestIndividual2> result = std::make_unique<TestIndividual2>();
     result->fitness1 = fitness1;
     result->fitness2 = fitness2;
@@ -92,7 +92,7 @@ std::unique_ptr<SEIndividual> TestIndividual2::se_clone() {
     return result;
 }
 
-std::vector<uint8_t> TestIndividual2::se_to_vec_u8() {
+[[nodiscard]] std::vector<uint8_t> TestIndividual2::se_to_vec_u8() {
     std::vector<uint8_t> result(TOTAL_DATA_SIZE);
     std::float64_t *float_64_ptr = reinterpret_cast<std::float64_t*>(result.data());
 
@@ -117,14 +117,14 @@ void TestIndividual2::se_from_span_u8(std::span<const uint8_t> data) {
     val2 = float_64_ptr[3];
 }
 
-std::unique_ptr<SEIndividual> make_indi_f1_f2(std::float64_t fitness1, std::float64_t fitness2) {
+[[nodiscard]] std::unique_ptr<SEIndividual> make_indi_f1_f2(std::float64_t fitness1, std::float64_t fitness2) {
     std::unique_ptr<SEIndividual> individual = std::make_unique<SEIndividual>();
     individual->fitness1 = fitness1;
     individual->fitness2 = fitness2;
     return individual;
 }
 
-std::unique_ptr<TestIndividual2> make_test_indi_f1_f2(std::float64_t fitness1, std::float64_t fitness2) {
+[[nodiscard]] std::unique_ptr<TestIndividual2> make_test_indi_f1_f2(std::float64_t fitness1, std::float64_t fitness2) {
     std::unique_ptr<TestIndividual2> individual = std::make_unique<TestIndividual2>();
     individual->fitness1 = fitness1;
     individual->fitness2 = fitness2;
@@ -159,7 +159,7 @@ void check_population_fitness(SEPopulation &population,
     }
 }
 
-SEPopulation make_population(SEConfiguration config, uint8_t size) {
+[[nodiscard]] SEPopulation make_population(SEConfiguration config, uint8_t size) {
     SEPopulation population = SEPopulation(config);
     population.population.reserve(size);
 
@@ -170,7 +170,7 @@ SEPopulation make_population(SEConfiguration config, uint8_t size) {
     return population;
 }
 
-SEPopulation make_population(uint8_t size) {
+[[nodiscard]] SEPopulation make_population(uint8_t size) {
     NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
     SEConfiguration config2 = SEConfiguration(config1);
 

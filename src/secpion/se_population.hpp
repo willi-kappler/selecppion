@@ -55,10 +55,10 @@ class SEPopulation {
         void se_replace_best(std::unique_ptr<SEIndividual>);
         void se_replace_worst(std::unique_ptr<SEIndividual>);
         void se_clone_best_to_worst();
-        const SEIndividual& se_get_best() const;
-        std::float64_t se_get_best_fitness();
-        std::float64_t se_get_worst_fitness();
-        uint8_t se_get_mut_op();
+        [[nodiscard]] const SEIndividual& se_get_best() const;
+        [[nodiscard]] std::float64_t se_get_best_fitness();
+        [[nodiscard]] std::float64_t se_get_worst_fitness();
+        [[nodiscard]] uint8_t se_get_mut_op();
         void se_check_limit(std::unique_ptr<SEIndividual>, std::float64_t, size_t);
         void se_early_exit(uint64_t);
         void se_calculate_fitness2();

@@ -25,7 +25,7 @@ class TestIndividual1: public SEIndividual {
 
         TestIndividual1();
         void se_mutate(uint8_t) override;
-        std::unique_ptr<SEIndividual> se_clone() override;
+        [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() override;
 };
 
 TestIndividual1::TestIndividual1():
@@ -38,7 +38,7 @@ void TestIndividual1::se_mutate([[maybe_unused]] uint8_t mut_op) {
     mutate_called++;
 }
 
-std::unique_ptr<SEIndividual> TestIndividual1::se_clone() {
+[[nodiscard]] std::unique_ptr<SEIndividual> TestIndividual1::se_clone() {
     clone_called++;
     return std::make_unique<TestIndividual1>();
 }

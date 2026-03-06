@@ -10,9 +10,7 @@
 #define FILE_SE_INDIVIDUAL_HPP_INCLUDED
 
 // STD includes:
-#include <string>
 #include <cstdint>
-#include <string_view>
 #include <stdfloat>
 #include <unordered_map>
 #include <memory>

@@ -10,9 +10,6 @@
 #include <fstream>
 #include <iostream>
 
-// External includes:
-//#include <tao/json/contrib/vector_traits.hpp>
-
 // Local includes:
 #include "se_config.hpp"
 #include "se_exceptions.hpp"

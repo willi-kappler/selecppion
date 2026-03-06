@@ -5,7 +5,7 @@
 
     This file contains the tests for the individual class.
 
-    Run only configuration tests:
+    Run only individual tests:
     xmake run -w ./ se_test [individual]
 */
 

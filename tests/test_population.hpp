@@ -5,7 +5,7 @@
 
     This file contains the tests for the population class.
 
-    Run only configuration tests:
+    Run only population tests:
     xmake run -w ./ se_test [population]
 */
 
@@ -379,7 +379,9 @@ TEST_CASE("Test randomize or accept best 1", "[population]" ) {
     population.se_config.accept_new_best = false;
     fill_fitness(population, 1.6, 9.2);
 
+    REQUIRE(population.randomize_iteration == 0);
     population.se_randomize_or_accept_best({});
+    REQUIRE(population.randomize_iteration == 0);
 
     // No change expected:
     TestIndividual2 *test_indi;
@@ -403,7 +405,9 @@ TEST_CASE("Test randomize or accept best 2", "[population]" ) {
 
     global_rng1.seed();
 
+    REQUIRE(population.randomize_iteration == 0);
     population.se_randomize_or_accept_best({});
+    REQUIRE(population.randomize_iteration == 1);
 
     // No change expected:
     TestIndividual2 *test_indi;
@@ -417,7 +421,9 @@ TEST_CASE("Test randomize or accept best 2", "[population]" ) {
         REQUIRE(test_indi->val2 == -1.0);
     }
 
+    REQUIRE(population.randomize_iteration == 1);
     population.se_randomize_or_accept_best({});
+    REQUIRE(population.randomize_iteration == 0);
 
     // Change expected:
     std::float64_t val1;
@@ -449,7 +455,9 @@ TEST_CASE("Test randomize or accept best 3", "[population]" ) {
     best_individual.fitness2 = 2.1;
     best_individual.val1 = 6.3;
     best_individual.val2 = 4.9;
+    REQUIRE(population.randomize_iteration == 0);
     population.se_randomize_or_accept_best(best_individual.se_to_vec_u8());
+    REQUIRE(population.randomize_iteration == 0);
 
     // Only individual at index 0 should be changed:
     TestIndividual2 *test_indi;
@@ -485,7 +493,9 @@ TEST_CASE("Test randomize or accept best 4", "[population]" ) {
     best_individual.fitness2 = 2.1;
     best_individual.val1 = 6.3;
     best_individual.val2 = 4.9;
+    REQUIRE(population.randomize_iteration == 0);
     population.se_randomize_or_accept_best(best_individual.se_to_vec_u8());
+    REQUIRE(population.randomize_iteration == 1);
 
     // No change expected:
     TestIndividual2 *test_indi;
@@ -503,7 +513,9 @@ TEST_CASE("Test randomize or accept best 4", "[population]" ) {
     best_individual.fitness2 = 2.1;
     best_individual.val1 = 6.3;
     best_individual.val2 = 4.9;
+    REQUIRE(population.randomize_iteration == 1);
     population.se_randomize_or_accept_best(best_individual.se_to_vec_u8());
+    REQUIRE(population.randomize_iteration == 0);
 
     // Change expected:
     std::float64_t val1;

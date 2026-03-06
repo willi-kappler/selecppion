@@ -53,7 +53,7 @@ void SEPopulation::se_set_loglevel(spdlog::level::level_enum level) {
     se_logger->set_level(level);
 }
 
-void SEPopulation::se_set_file_logger(std::string_view prefix = "selecppion") {
+void SEPopulation::se_set_file_logger(std::string_view prefix) {
     std::string file_name = nodcru2::nc_gen_log_file_name(prefix);
     spdlog::drop("se_logger");
     std::shared_ptr<spdlog::logger> file_logger = spdlog::basic_logger_mt("se_logger", file_name);
@@ -127,14 +127,18 @@ void SEPopulation::se_randomize_or_accept_best(std::span<const uint8_t> data) {
         randomize_iteration++;
         if (randomize_iteration > se_config.randomize_count) {
             randomize_iteration = 0;
+            se_logger->debug("Randomize population.");
             se_random_population();
         }
     } else if (se_config.accept_new_best) {
+        se_logger->debug("Accept new best from server.");
         population[0]->se_from_span_u8(data);
+        se_logger->debug("Fitness from server: {}", population[0]->fitness1);
     }
 }
 
 void SEPopulation::se_shuffle_mutation_operations() {
+    se_logger->debug("Shuffle mutation operations.");
     rng.shuffle(se_config.mutation_operations);
 }
 
@@ -199,6 +203,7 @@ void SEPopulation::se_early_exit(uint64_t iteration) {
 }
 
 void SEPopulation::se_calculate_fitness2() {
+    se_logger->debug("Calculate fitness 2.");
     std::float64_t best_fitness2 = SE_FLOAT_MAX;
     std::float64_t fitness2 = 0.0;
     size_t best_fitness2_index = 0;

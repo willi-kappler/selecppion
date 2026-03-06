@@ -21,6 +21,8 @@ SEPopulationNode1::SEPopulationNode1(SEConfiguration se_config,
 }
 
 [[nodiscard]] std::vector<uint8_t> SEPopulationNode1::nc_process_data(std::vector<uint8_t> data) {
+    population.se_logger->info("PN1: Process data.");
+
     std::vector<uint8_t> result;
 
     population.rng.seed();
@@ -57,5 +59,20 @@ SEPopulationNode1::SEPopulationNode1(SEConfiguration se_config,
 
 SEIndividual* SEPopulationNode1::get_individual(size_t i) {
     return population.population[i].get();
+}
+
+void SEPopulationNode1::se_set_logger(std::shared_ptr<spdlog::logger> logger) {
+    population.se_set_logger(logger);
+    population.se_logger->info("Population type 1.");
+    population.se_logger->info("Clone population and mutate individuals in place. Then sort population by fitness.");
+    population.se_logger->info("The worst individuals are overwritten.");
+}
+
+void SEPopulationNode1::se_set_loglevel(spdlog::level::level_enum level) {
+    population.se_set_loglevel(level);
+}
+
+void SEPopulationNode1::se_set_file_logger(std::string_view prefix = "selecppion") {
+    population.se_set_file_logger(prefix);
 }
 }

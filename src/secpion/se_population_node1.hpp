@@ -13,22 +13,13 @@
 #include <cstdint>
 #include <vector>
 #include <memory>
-//#include <string>
-//#include <unordered_map>
-//#include <string_view>
-//#include <stdfloat>
 
 // External includes:
 #include <nodcru2/nc_node.hpp>
-//#include <tao/json.hpp>
-//#include <spdlog/spdlog.h>
-//#include <nodcru2/nc_logger.hpp>
 
 // Local includes:
 #include "se_config.hpp"
 #include "se_population.hpp"
-//#include "se_individual.hpp"
-//#include "se_random.hpp"
 
 namespace secpion {
 class SEPopulationNode1: public NCNodeDataProcessor {
@@ -41,6 +32,10 @@ class SEPopulationNode1: public NCNodeDataProcessor {
         [[nodiscard]] std::vector<uint8_t> nc_process_data(std::vector<uint8_t> data) override;
 
         SEIndividual* get_individual(size_t);
+
+        void se_set_logger(std::shared_ptr<spdlog::logger>);
+        void se_set_loglevel(spdlog::level::level_enum);
+        void se_set_file_logger(std::string_view);
 };
 }
 

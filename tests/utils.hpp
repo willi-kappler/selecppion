@@ -166,6 +166,7 @@ class TestNP {
 
         [[nodiscard]] T run() {
             T population(config2, individual1->se_clone());
+            population.se_set_loglevel(spdlog::level::level_enum::debug);
             std::vector<uint8_t> result = population.nc_process_data(individual2.se_to_vec_u8());
             individual2.se_from_span_u8(result);
             REQUIRE(individual2.fitness1 == 0.0);
@@ -182,7 +183,19 @@ class TestNP {
                 }
             }
 
+            std::print("\n");
+
             return population;
+        }
+
+        [[nodiscard]] T run_inverted() {
+            individual1->zero_is_optimal = false;
+            individual2.zero_is_optimal = false;
+            individual2.numbers = {9, 9, 9, 9, 9, 9, 9, 9, 9, 9};
+            individual2.se_calculate_fitness1();
+            expected = {10, 10, 10, 10, 10, 10, 10, 10, 10, 10};
+
+            return run();
         }
 };
 

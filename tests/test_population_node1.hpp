@@ -41,10 +41,30 @@ TEST_CASE("Test population type 1, run 1", "[population_type1]" ) {
 
 TEST_CASE("Test population type 1, run 2", "[population_type1]" ) {
     TestNP<SEPopulationNode1> test_population;
-    test_population.individual1->zero_is_optimal = false;
-    test_population.individual2.zero_is_optimal = false;
-    test_population.individual2.numbers = {9, 9, 9, 9, 9, 9, 9, 9, 9, 9};
-    test_population.individual2.se_calculate_fitness1();
-    test_population.expected = {10, 10, 10, 10, 10, 10, 10, 10, 10, 10};
+    SEPopulationNode1 population = test_population.run_inverted();
+}
+
+TEST_CASE("Test population type 1, run 3", "[population_type1]" ) {
+    TestNP<SEPopulationNode1> test_population;
+    test_population.config2.num_of_mutations = 5;
+    SEPopulationNode1 population = test_population.run();
+}
+
+TEST_CASE("Test population type 1, run 4", "[population_type1]" ) {
+    TestNP<SEPopulationNode1> test_population;
+    test_population.config2.accept_new_best = true;
+    SEPopulationNode1 population = test_population.run();
+}
+
+TEST_CASE("Test population type 1, run 5", "[population_type1]" ) {
+    TestNP<SEPopulationNode1> test_population;
+    test_population.config2.randomize_population = true;
+    SEPopulationNode1 population = test_population.run();
+}
+
+TEST_CASE("Test population type 1, run 6", "[population_type1]" ) {
+    TestNP<SEPopulationNode1> test_population;
+    test_population.config2.accept_new_best = true;
+    test_population.config2.randomize_population = true;
     SEPopulationNode1 population = test_population.run();
 }

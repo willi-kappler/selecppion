@@ -18,7 +18,8 @@
 // External includes:
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
-#include "spdlog/sinks/stdout_sinks.h"
+#include <spdlog/sinks/stdout_sinks.h>
+#include <spdlog/fmt/bundled/ranges.h>
 #include <nodcru2/nc_logger.hpp>
 
 // Local includes:
@@ -262,8 +263,8 @@ class SEPopulation {
                 population[worst_index]->fitness1, population[worst_index]->fitness2);
             se_logger->debug("Actual best: {}, actual worst: {}",
                 population[best_index]->se_actual_fitness(), population[worst_index]->se_actual_fitness());
-            // se_logger->debug("Best mutations: {}", population[best_index]->mut_op_counter);
-            // se_logger->debug("Worst mutations: {}", population[worst_index]->mut_op_counter);
+            se_logger->debug("Best mutations: {}", population[best_index]->mut_op_counter);
+            se_logger->debug("Worst mutations: {}", population[worst_index]->mut_op_counter);
         }
 };
 }

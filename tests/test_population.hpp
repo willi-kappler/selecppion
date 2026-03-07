@@ -46,7 +46,7 @@ TestIndividual2::TestIndividual2():
     val2(-1.0)
     {}
 
-void TestIndividual2::se_mutate(uint8_t mut_op) {
+void TestIndividual2::se_mutate([[maybe_unused]] uint8_t mut_op) {
     std::float64_t delta = global_rng.get_float64();
 
     if (delta <= 0.5) {

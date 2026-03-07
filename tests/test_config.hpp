@@ -42,6 +42,7 @@ TEST_CASE("Create valid default configuration", "[configuration]" ) {
     REQUIRE(config2.randomize_count == 10);
     REQUIRE(config2.population_kind == 1);
     REQUIRE(config2.mutation_operations == std::vector<uint8_t>{});
+    REQUIRE(config2.early_exit_sleep == 10);
     REQUIRE(config2.min_num_of_individuals == 2);
     REQUIRE(config2.sine_base == 100.0);
     REQUIRE(config2.sine_amplitude == 50.0);
@@ -68,6 +69,7 @@ TEST_CASE("Test valid JSON configuration", "[configuration]" ) {
         {"randomize_count", 15},
         {"population_kind", 2},
         {"mutation_operations", tao::json::value::array({2, 4, 5})},
+        {"early_exit_sleep", 57},
         {"min_num_of_individuals", 8},
         {"sine_base", 77.77},
         {"sine_amplitude", 44.44},
@@ -96,6 +98,7 @@ TEST_CASE("Test valid JSON configuration", "[configuration]" ) {
     REQUIRE(config1.randomize_count == 15);
     REQUIRE(config1.population_kind == 2);
     REQUIRE(config1.mutation_operations == std::vector<uint8_t>{2, 4, 5});
+    REQUIRE(config1.early_exit_sleep == 57);
     REQUIRE(config1.min_num_of_individuals == 8);
     REQUIRE(config1.sine_base == 77.77);
     REQUIRE(config1.sine_amplitude == 44.44);

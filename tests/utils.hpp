@@ -165,6 +165,7 @@ class TestNP {
             config2.num_of_mutations = 1;
             config2.randomize_population = false;
             config2.accept_new_best = false;
+            config2.early_exit_sleep = 0;
             individual2.numbers = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
             individual2.se_calculate_fitness1();
         }

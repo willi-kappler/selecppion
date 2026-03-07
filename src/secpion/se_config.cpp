@@ -35,6 +35,7 @@ SEConfiguration::SEConfiguration(NCConfiguration nc_config):
     randomize_count(10),
     population_kind(1),
     mutation_operations(),
+    early_exit_sleep(10),
 
     min_num_of_individuals(2),
     sine_base(100.0),
@@ -137,6 +138,10 @@ SEConfiguration::SEConfiguration(NCConfiguration nc_config):
         for (auto data: v->get_array()) {
             se_config.mutation_operations.push_back(data.as<uint8_t>());
         }
+    }
+
+    if (auto v = json_config.find("early_exit_sleep"); v != nullptr) {
+        se_config.early_exit_sleep = v->as<uint8_t>();
     }
 
     if (auto v = json_config.find("min_num_of_individuals"); v != nullptr) {

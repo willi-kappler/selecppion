@@ -46,6 +46,7 @@ class SEConfiguration {
         uint32_t randomize_count;
         uint8_t population_kind;
         std::vector<uint8_t> mutation_operations;
+        uint8_t early_exit_sleep;
 
         // Population specific configuration:
         uint8_t min_num_of_individuals;

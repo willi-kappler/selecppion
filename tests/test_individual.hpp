@@ -15,33 +15,9 @@
 // Local includes:
 #include "secpion/se_individual.hpp"
 #include "secpion/se_exceptions.hpp"
+#include "utils.hpp"
 
 using namespace secpion;
-
-class TestIndividual1: public SEIndividual {
-    public:
-        uint8_t mutate_called;
-        uint8_t clone_called;
-
-        TestIndividual1();
-        void se_mutate(uint8_t) override;
-        [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() override;
-};
-
-TestIndividual1::TestIndividual1():
-    SEIndividual(),
-    mutate_called(0),
-    clone_called(0)
-{}
-
-void TestIndividual1::se_mutate([[maybe_unused]] uint8_t mut_op) {
-    mutate_called++;
-}
-
-[[nodiscard]] std::unique_ptr<SEIndividual> TestIndividual1::se_clone() {
-    clone_called++;
-    return std::make_unique<TestIndividual1>();
-}
 
 TEST_CASE("Test mutate internal with base class", "[individual]" ) {
     SEIndividual individual;

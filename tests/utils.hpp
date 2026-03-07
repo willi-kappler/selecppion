@@ -9,6 +9,9 @@
 #ifndef FILE_SE_TEST_UTILS_HPP_INCLUDED
 #define FILE_SE_TEST_UTILS_HPP_INCLUDED
 
+// STD include:
+#include <print>
+
 // External includes:
 #include <tao/json.hpp>
 
@@ -16,7 +19,8 @@
 #include "secpion/se_random.hpp"
 #include "secpion/se_individual.hpp"
 
-SERandomGenerator<SEAlgorithmLehmer64> global_rng2;
+typedef SERandomGenerator<SEAlgorithmLehmer64> TestRNG;
+TestRNG global_rng;
 
 using namespace secpion;
 
@@ -41,7 +45,7 @@ TestIndividual3::TestIndividual3():
 }
 
 void TestIndividual3::se_mutate(uint8_t op) {
-    size_t i = global_rng2.get_size_t(numbers.size());
+    size_t i = global_rng.get_size_t(numbers.size());
     uint8_t val;
 
     switch (op) {
@@ -58,12 +62,12 @@ void TestIndividual3::se_mutate(uint8_t op) {
 
             break;
         case 2:
-            val = global_rng2.get_uint8(10);
+            val = global_rng.get_uint8(10);
             numbers[i] = val;
 
             break;
         default:
-            val = global_rng2.get_uint8(10);
+            val = global_rng.get_uint8(10);
 
             for (uint8_t &number: numbers) {
                 number = val;
@@ -76,7 +80,7 @@ void TestIndividual3::se_mutate(uint8_t op) {
 
 void TestIndividual3::se_randomize() {
     for (size_t i = 0; i < numbers.size(); i++) {
-        numbers[i] = global_rng2.get_uint8(10);
+        numbers[i] = global_rng.get_uint8(10);
     }
 }
 
@@ -180,6 +184,7 @@ class TestNP {
                 for (size_t i = 0; i < config2.node_population_size; i++) {
                     individual3 = population.get_individual(i);
                     std::print("fitness: {}, mut ops: {}\n", individual3->fitness1, individual3->mut_op_counter);
+                    std::print("fitness: {}\n", individual3->fitness1);
                 }
             }
 

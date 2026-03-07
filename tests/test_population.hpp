@@ -17,10 +17,9 @@
 #include "secpion/se_config.hpp"
 #include "secpion/se_population.hpp"
 #include "secpion/se_exceptions.hpp"
+#include "utils.hpp"
 
 using namespace secpion;
-
-SERandomGenerator<SEAlgorithmLehmer64> global_rng1;
 
 const size_t FLOAT_64_SIZE = sizeof(std::float64_t);
 const size_t TOTAL_DATA_SIZE = FLOAT_64_SIZE * 4;
@@ -47,8 +46,8 @@ TestIndividual2::TestIndividual2():
     val2(-1.0)
     {}
 
-void TestIndividual2::se_mutate([[maybe_unused]] uint8_t mut_op) {
-    std::float64_t delta = global_rng1.get_float64();
+void TestIndividual2::se_mutate(uint8_t mut_op) {
+    std::float64_t delta = global_rng.get_float64();
 
     if (delta <= 0.5) {
         val1 += ((delta - 0.5) * 0.01);
@@ -70,8 +69,8 @@ void TestIndividual2::se_mutate([[maybe_unused]] uint8_t mut_op) {
 }
 
 void TestIndividual2::se_randomize() {
-    val1 = global_rng1.get_float64() * 10.0;
-    val2 = global_rng1.get_float64() * 10.0;
+    val1 = global_rng.get_float64() * 10.0;
+    val2 = global_rng.get_float64() * 10.0;
 }
 
 void TestIndividual2::se_calculate_fitness1() {
@@ -131,7 +130,8 @@ void TestIndividual2::se_from_span_u8(std::span<const uint8_t> data) {
     return individual;
 }
 
-void check_population_fitness1(SEPopulation &population,
+template<typename T>
+void check_population_fitness1(SEPopulation<T> &population,
     std::vector<std::float64_t> fitness1) {
     size_t len1 = population.population.size();
     size_t len2 = fitness1.size();
@@ -143,7 +143,8 @@ void check_population_fitness1(SEPopulation &population,
     }
 }
 
-void check_population_fitness(SEPopulation &population,
+template<typename T>
+void check_population_fitness(SEPopulation<T> &population,
     std::vector<std::float64_t> fitness1,
     std::vector<std::float64_t> fitness2) {
     size_t len1 = population.population.size();
@@ -159,8 +160,9 @@ void check_population_fitness(SEPopulation &population,
     }
 }
 
-[[nodiscard]] SEPopulation make_population(SEConfiguration config, uint8_t size) {
-    SEPopulation population = SEPopulation(config);
+template<typename T>
+[[nodiscard]] SEPopulation<T> make_population(SEConfiguration config, uint8_t size) {
+    SEPopulation population = SEPopulation<T>(config);
     population.population.reserve(size);
 
     for (uint8_t i = 0; i < size; i++) {
@@ -170,14 +172,16 @@ void check_population_fitness(SEPopulation &population,
     return population;
 }
 
-[[nodiscard]] SEPopulation make_population(uint8_t size) {
+template<typename T>
+[[nodiscard]] SEPopulation<T> make_population(uint8_t size) {
     NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
     SEConfiguration config2 = SEConfiguration(config1);
 
-    return make_population(config2, size);
+    return make_population<T>(config2, size);
 }
 
-void set_fitness1(SEPopulation &population, std::vector<std::float64_t> fitness1) {
+template<typename T>
+void set_fitness1(SEPopulation<T> &population, std::vector<std::float64_t> fitness1) {
     size_t len1 = population.population.size();
     size_t len2 = fitness1.size();
 
@@ -188,7 +192,8 @@ void set_fitness1(SEPopulation &population, std::vector<std::float64_t> fitness1
     }
 }
 
-void set_fitness(SEPopulation &population, std::vector<std::float64_t> fitness1,
+template<typename T>
+void set_fitness(SEPopulation<T> &population, std::vector<std::float64_t> fitness1,
     std::vector<std::float64_t> fitness2) {
 
     size_t len1 = population.population.size();
@@ -204,14 +209,16 @@ void set_fitness(SEPopulation &population, std::vector<std::float64_t> fitness1,
     }
 }
 
-void fill_fitness(SEPopulation &population, std::float64_t fitness1, std::float64_t fitness2) {
+template<typename T>
+void fill_fitness(SEPopulation<T> &population, std::float64_t fitness1, std::float64_t fitness2) {
     for (auto &indi: population.population) {
         indi->fitness1 = fitness1;
         indi->fitness2 = fitness2;
     }
 }
 
-void set_values(SEPopulation &population, std::vector<std::float64_t> val1,
+template<typename T>
+void set_values(SEPopulation<T> &population, std::vector<std::float64_t> val1,
     std::vector<std::float64_t> val2) {
     size_t len1 = population.population.size();
     size_t len2 = val1.size();
@@ -230,7 +237,8 @@ void set_values(SEPopulation &population, std::vector<std::float64_t> val1,
     }
 }
 
-void fill_values(SEPopulation &population, std::float64_t val1, std::float64_t val2) {
+template<typename T>
+void fill_values(SEPopulation<T> &population, std::float64_t val1, std::float64_t val2) {
     TestIndividual2 *test_indi;
 
     for (auto &indi: population.population) {
@@ -241,7 +249,7 @@ void fill_values(SEPopulation &population, std::float64_t val1, std::float64_t v
 }
 
 TEST_CASE("Test fill population", "[population]" ) {
-    SEPopulation population = make_population(0);
+    SEPopulation<TestRNG> population = make_population<TestRNG>(0);
     population.se_config.node_population_size = 10;
     std::unique_ptr<TestIndividual2> individual = std::make_unique<TestIndividual2>();
     population.se_fill_population(std::move(individual));
@@ -265,7 +273,7 @@ TEST_CASE("Test fill population", "[population]" ) {
 }
 
 TEST_CASE("Test find worst population", "[population]" ) {
-    SEPopulation population = make_population(0);
+    SEPopulation<TestRNG> population = make_population<TestRNG>(0);
 
     population.population.push_back(make_indi_f1_f2(23.5, 0.1));
     population.se_find_worst_individual();
@@ -284,7 +292,7 @@ TEST_CASE("Test find worst population", "[population]" ) {
 }
 
 TEST_CASE("Test find best and worst population", "[population]" ) {
-    SEPopulation population = make_population(0);
+    SEPopulation<TestRNG> population = make_population<TestRNG>(0);
 
     population.population.push_back(make_indi_f1_f2(23.5, 4.4));
     population.se_find_best_and_worst_individual();
@@ -318,7 +326,7 @@ TEST_CASE("Test find best and worst population", "[population]" ) {
 }
 
 TEST_CASE("Test sort population", "[population]" ) {
-    SEPopulation population = make_population(0);
+    SEPopulation<TestRNG> population = make_population<TestRNG>(0);
 
     population.population.push_back(make_indi_f1_f2(23.5, 4.4));
     population.population.push_back(make_indi_f1_f2(3.8, 5.5));
@@ -338,9 +346,9 @@ TEST_CASE("Test sort population", "[population]" ) {
 }
 
 TEST_CASE("Test random population", "[population]" ) {
-    SEPopulation population = make_population(0);
+    SEPopulation<TestRNG> population = make_population<TestRNG>(0);
 
-    global_rng1.seed();
+    global_rng.seed();
 
     population.population.push_back(make_test_indi_f1_f2(1023.5, 4.4));
     population.population.push_back(make_test_indi_f1_f2(103.8, 5.5));
@@ -374,7 +382,7 @@ TEST_CASE("Test random population", "[population]" ) {
 }
 
 TEST_CASE("Test randomize or accept best 1", "[population]" ) {
-    SEPopulation population = make_population(10);
+    SEPopulation<TestRNG> population = make_population<TestRNG>(10);
     population.se_config.randomize_population = false;
     population.se_config.accept_new_best = false;
     fill_fitness(population, 1.6, 9.2);
@@ -397,13 +405,13 @@ TEST_CASE("Test randomize or accept best 1", "[population]" ) {
 }
 
 TEST_CASE("Test randomize or accept best 2", "[population]" ) {
-    SEPopulation population = make_population(10);
+    SEPopulation<TestRNG> population = make_population<TestRNG>(10);
     population.se_config.randomize_population = true;
     population.se_config.accept_new_best = false;
     population.se_config.randomize_count = 1;
     fill_fitness(population, 3.3, 6.2);
 
-    global_rng1.seed();
+    global_rng.seed();
 
     REQUIRE(population.randomize_iteration == 0);
     population.se_randomize_or_accept_best({});
@@ -443,7 +451,7 @@ TEST_CASE("Test randomize or accept best 2", "[population]" ) {
 }
 
 TEST_CASE("Test randomize or accept best 3", "[population]" ) {
-    SEPopulation population = make_population(10);
+    SEPopulation<TestRNG> population = make_population<TestRNG>(10);
     population.se_config.randomize_population = false;
     population.se_config.accept_new_best = true;
     fill_fitness(population, 8.7, 4.5);
@@ -480,13 +488,13 @@ TEST_CASE("Test randomize or accept best 3", "[population]" ) {
 }
 
 TEST_CASE("Test randomize or accept best 4", "[population]" ) {
-    SEPopulation population = make_population(10);
+    SEPopulation<TestRNG> population = make_population<TestRNG>(10);
     population.se_config.randomize_population = true;
     population.se_config.accept_new_best = true;
     population.se_config.randomize_count = 1;
     fill_fitness(population, 9.9, 8.8);
 
-    global_rng1.seed();
+    global_rng.seed();
 
     TestIndividual2 best_individual;
     best_individual.fitness1 = 0.3;
@@ -535,10 +543,10 @@ TEST_CASE("Test randomize or accept best 4", "[population]" ) {
 }
 
 TEST_CASE("Test shuffle mutation operations", "[population]" ) {
-    SEPopulation population = make_population(0);
+    SEPopulation<TestRNG> population = make_population<TestRNG>(0);
     population.se_config.mutation_operations = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 
-    global_rng1.seed();
+    global_rng.seed();
 
     population.se_shuffle_mutation_operations();
 
@@ -547,12 +555,12 @@ TEST_CASE("Test shuffle mutation operations", "[population]" ) {
 }
 
 TEST_CASE("Test randomize worst", "[population]" ) {
-    SEPopulation population = make_population(10);
+    SEPopulation<TestRNG> population = make_population<TestRNG>(10);
     set_fitness1(population, {4.62, 1.74, 4.19, 9.41, 7.42, 6.99, 6.02, 5.58, 7.94, 7.58});
     population.se_find_worst_individual();
     REQUIRE(population.worst_index == 3);
 
-    global_rng1.seed();
+    global_rng.seed();
 
     population.se_randomize_worst();
 
@@ -571,7 +579,7 @@ TEST_CASE("Test randomize worst", "[population]" ) {
 }
 
 TEST_CASE("Test replace best 1", "[population]" ) {
-    SEPopulation population = make_population(10);
+    SEPopulation<TestRNG> population = make_population<TestRNG>(10);
     set_fitness1(population, {4.62, 1.74, 4.19, 9.41, 7.42, 6.99, 6.02, 5.58, 7.94, 7.58});
     population.se_find_best_and_worst_individual();
     REQUIRE(population.best_index == 1);
@@ -582,7 +590,7 @@ TEST_CASE("Test replace best 1", "[population]" ) {
 }
 
 TEST_CASE("Test replace best 2", "[population]" ) {
-    SEPopulation population = make_population(10);
+    SEPopulation<TestRNG> population = make_population<TestRNG>(10);
     set_fitness1(population, {4.62, 1.74, 4.19, 9.41, 7.42, 6.99, 6.02, 5.58, 7.94, 7.58});
     population.se_find_best_and_worst_individual();
     REQUIRE(population.best_index == 1);
@@ -593,7 +601,7 @@ TEST_CASE("Test replace best 2", "[population]" ) {
 }
 
 TEST_CASE("Test replace worst", "[population]" ) {
-    SEPopulation population = make_population(10);
+    SEPopulation<TestRNG> population = make_population<TestRNG>(10);
     set_fitness1(population, {4.62, 1.74, 4.19, 9.41, 7.42, 6.99, 6.02, 5.58, 7.94, 7.58});
     population.se_find_best_and_worst_individual();
     REQUIRE(population.best_index == 1);
@@ -622,7 +630,7 @@ TEST_CASE("Test replace worst", "[population]" ) {
 }
 
 TEST_CASE("Test clone best to worst", "[population]" ) {
-    SEPopulation population = make_population(10);
+    SEPopulation<TestRNG> population = make_population<TestRNG>(10);
     set_fitness1(population, {4.62, 1.74, 4.19, 9.41, 7.42, 6.99, 6.02, 5.58, 7.94, 7.58});
     population.se_find_best_and_worst_individual();
 
@@ -631,7 +639,7 @@ TEST_CASE("Test clone best to worst", "[population]" ) {
 }
 
 TEST_CASE("Test get best", "[population]" ) {
-    SEPopulation population = make_population(10);
+    SEPopulation<TestRNG> population = make_population<TestRNG>(10);
     set_fitness1(population, {4.62, 1.74, 4.19, 9.41, 7.42, 6.99, 6.02, 5.58, 7.94, 7.58});
     population.se_find_best_and_worst_individual();
 
@@ -641,7 +649,7 @@ TEST_CASE("Test get best", "[population]" ) {
 }
 
 TEST_CASE("Test get best fitness", "[population]" ) {
-    SEPopulation population = make_population(10);
+    SEPopulation<TestRNG> population = make_population<TestRNG>(10);
     set_fitness1(population, {4.62, 1.74, 4.19, 9.41, 7.42, 6.99, 6.02, 5.58, 7.94, 7.58});
     population.se_find_best_and_worst_individual();
 
@@ -649,7 +657,7 @@ TEST_CASE("Test get best fitness", "[population]" ) {
 }
 
 TEST_CASE("Test get worst fitness", "[population]" ) {
-    SEPopulation population = make_population(10);
+    SEPopulation<TestRNG> population = make_population<TestRNG>(10);
     set_fitness1(population, {4.62, 1.74, 4.19, 9.41, 7.42, 6.99, 6.02, 5.58, 7.94, 7.58});
     population.se_find_best_and_worst_individual();
 
@@ -657,7 +665,7 @@ TEST_CASE("Test get worst fitness", "[population]" ) {
 }
 
 TEST_CASE("Test get mutation operation", "[population]" ) {
-    SEPopulation population = make_population(0);
+    SEPopulation<TestRNG> population = make_population<TestRNG>(0);
     population.se_config.mutation_operations = {5, 8, 2, 11};
     population.mut_op_index = 0;
 
@@ -672,7 +680,7 @@ TEST_CASE("Test get mutation operation", "[population]" ) {
 }
 
 TEST_CASE("Test check limit", "[population]" ) {
-    SEPopulation population = make_population(10);
+    SEPopulation<TestRNG> population = make_population<TestRNG>(10);
     set_fitness1(population, {4.62, 1.74, 4.19, 9.41, 7.42, 6.99, 6.02, 5.58, 7.94, 7.58});
 
     population.se_check_limit(make_indi_f1_f2(3.9, 3.3), 4.2, 2);
@@ -686,7 +694,7 @@ TEST_CASE("Test check limit", "[population]" ) {
 }
 
 TEST_CASE("Test calculate fitness2 1", "[population]" ) {
-    SEPopulation population = make_population(10);
+    SEPopulation<TestRNG> population = make_population<TestRNG>(10);
     set_fitness(population, {4.62, 1.74, 4.19, 9.41, 7.42, 6.99, 6.02, 5.58, 7.94, 7.58},
                             {1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0});
 
@@ -694,13 +702,13 @@ TEST_CASE("Test calculate fitness2 1", "[population]" ) {
     population.se_calculate_fitness2();
     check_population_fitness(population, {4.62, 1.74, 4.19, 9.41, 7.42, 6.99, 6.02, 5.58, 7.94, 7.58},
                                          {1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0});
-    
+
     REQUIRE(population.best_index == 1);
     REQUIRE(population.worst_index == 3);
 }
 
 TEST_CASE("Test calculate fitness2 2", "[population]" ) {
-    SEPopulation population = make_population(10);
+    SEPopulation<TestRNG> population = make_population<TestRNG>(10);
     set_fitness(population, {4.62, 0.001, 4.19, 9.41, 7.42, 0.002, 6.02, 5.58, 7.94, 7.58},
                             {1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0});
 
@@ -717,7 +725,7 @@ TEST_CASE("Test calculate fitness2 2", "[population]" ) {
 }
 
 TEST_CASE("Test calculate fitness2 3", "[population]" ) {
-    SEPopulation population = make_population(10);
+    SEPopulation<TestRNG> population = make_population<TestRNG>(10);
     set_fitness(population, {4.62, 0.001, 4.19, 9.41, 7.42, 0.002, 6.02, 5.58, 7.94, 7.58},
                             {1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0});
 

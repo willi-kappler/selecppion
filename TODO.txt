@@ -1,7 +1,7 @@
 TODO:
     - add more test cases for invalid configurations.
-    - add rng from std::random.
     - add global rng for each type.
+    - maybe merge TestIndividual1 and TestIndividual2
 
 
 
@@ -89,3 +89,4 @@ Quantum Approximate Optimization Algorithm (QAOA)
 
 
 Done:
+    - add rng from std::random.

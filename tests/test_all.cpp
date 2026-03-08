@@ -16,3 +16,5 @@
 #include "test_individual.hpp"
 #include "test_population.hpp"
 #include "test_population_node1.hpp"
+#include "test_population_node2.hpp"
+#include "test_population_node3.hpp"

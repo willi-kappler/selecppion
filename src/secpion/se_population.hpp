@@ -171,9 +171,7 @@ class SEPopulation {
         }
 
         void se_replace_best(std::unique_ptr<SEIndividual> individual) {
-            if (individual->fitness1 < population[best_index]->fitness1) {
-                population[best_index] = std::move(individual);
-            }
+            population[best_index] = std::move(individual);
         }
 
         void se_replace_worst(std::unique_ptr<SEIndividual> individual) {
@@ -185,8 +183,8 @@ class SEPopulation {
             population[worst_index] = std::move(population[best_index]->se_clone_internal());
         }
 
-        [[nodiscard]] const SEIndividual& se_get_best() const {
-            return *population[best_index];
+        [[nodiscard]] SEIndividual* se_get_best() {
+            return population[best_index].get();
         }
 
         [[nodiscard]] std::float64_t se_get_best_fitness() {

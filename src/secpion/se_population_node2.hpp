@@ -3,11 +3,11 @@
     Written by Willi Kappler, MIT License
     https://github.com/willi-kappler/selecppion
 
-    This file defines the class for the population type 1.
+    This file defines the class for the population type 2.
 */
 
-#ifndef FILE_SE_POPULATION_NODE1_HPP_INCLUDED
-#define FILE_SE_POPULATION_NODE1_HPP_INCLUDED
+#ifndef FILE_SE_POPULATION_NODE2_HPP_INCLUDED
+#define FILE_SE_POPULATION_NODE2_HPP_INCLUDED
 
 // STD includes:
 #include <cstdint>
@@ -23,33 +23,28 @@
 
 namespace secpion {
 template<typename T>
-class SEPopulationNode1: public NCNodeDataProcessor {
+class SEPopulationNode2: public NCNodeDataProcessor {
     private:
         SEPopulation<T> population;
-        uint32_t offset;
 
     public:
-        SEPopulationNode1(SEConfiguration se_config, std::unique_ptr<SEIndividual> individual):
+        SEPopulationNode2(SEConfiguration se_config, std::unique_ptr<SEIndividual> individual):
             NCNodeDataProcessor(),
-            population(se_config),
-            offset(se_config.node_population_size / 2) {
+            population(se_config) {
             population.se_fill_population(std::move(individual));
             population.se_sort_population();
         }
 
         [[nodiscard]] std::vector<uint8_t> nc_process_data(std::vector<uint8_t> data) override {
-            population.se_logger->info("PN1: Process data.");
+            population.se_logger->info("PN2: Process data.");
             population.rng.seed();
             population.se_randomize_or_accept_best(data);
             population.se_shuffle_mutation_operations();
-            population.best_index = 0;
-            population.worst_index = population.se_config.node_population_size - 1;
 
             std::unique_ptr<SEIndividual> cloned_indi;
 
             for (size_t i = 0; i < population.se_config.num_of_iterations; i++) {
-                for (size_t j = 0; j < offset; j++) {
-                    // Create a copy of each individual before mutating it (lower half):
+                for (size_t j = 0; j < population.se_config.node_population_size; j++) {
                     cloned_indi = population.population[j]->se_clone_internal();
 
                     for (uint32_t i = 0; i < population.se_config.num_of_mutations; i++) {
@@ -57,22 +52,28 @@ class SEPopulationNode1: public NCNodeDataProcessor {
                     }
 
                     cloned_indi->se_calculate_fitness1();
-                    // Overwrite upper half (the bad ones):
-                    population.population[j + offset] = std::move(cloned_indi);
+
+                    // Only replace with clone if better then original:
+                    if (cloned_indi->fitness1 < population.population[j]->fitness1) {
+                        population.population[j] = std::move(cloned_indi);
+                    }
+
+                    if (population.population[j]->fitness1 <= population.se_config.target_fitness1) {
+                        population.se_early_exit(i);
+                        break;
+                    }
                 }
 
-                population.se_sort_population();
-
-                if (population.population[0]->fitness1 <= population.se_config.target_fitness1) {
-                    population.se_early_exit(i);
+                if (population.minimum_found) {
                     break;
                 }
             }
 
+            population.se_find_best_and_worst_individual();
             population.se_calculate_fitness2();
             population.se_log_statistics();
 
-            return population.population[0]->se_to_vec_u8();
+            return population.se_get_best()->se_to_vec_u8();
         }
 
         // These two methods are used for the test cases:
@@ -81,14 +82,13 @@ class SEPopulationNode1: public NCNodeDataProcessor {
         }
 
         [[nodiscard]] SEIndividual* se_get_worst() {
-            return population.population[population.se_config.node_population_size - 1].get();
+            return population.population[population.worst_index].get();
         }
 
         void se_set_logger(std::shared_ptr<spdlog::logger> logger) {
             population.se_set_logger(logger);
-            population.se_logger->info("Population type 1.");
-            population.se_logger->info("Clone population and mutate individuals in place. Then sort population by fitness.");
-            population.se_logger->info("The worst individuals are overwritten.");
+            population.se_logger->info("Population type 2.");
+            population.se_logger->info("Mutate a clone and if it's better than the previous version keep it.");
         }
 
         void se_set_loglevel(spdlog::level::level_enum level) {
@@ -101,4 +101,4 @@ class SEPopulationNode1: public NCNodeDataProcessor {
 };
 }
 
-#endif // FILE_SE_POPULATION_NODE1_HPP_INCLUDED
+#endif // FILE_SE_POPULATION_NODE2_HPP_INCLUDED

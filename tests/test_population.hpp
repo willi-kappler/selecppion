@@ -589,17 +589,6 @@ TEST_CASE("Test replace best 1", "[population]" ) {
     check_population_fitness1(population, {4.62, 1.5, 4.19, 9.41, 7.42, 6.99, 6.02, 5.58, 7.94, 7.58});
 }
 
-TEST_CASE("Test replace best 2", "[population]" ) {
-    SEPopulation<TestRNG> population = make_population<TestRNG>(10);
-    set_fitness1(population, {4.62, 1.74, 4.19, 9.41, 7.42, 6.99, 6.02, 5.58, 7.94, 7.58});
-    population.se_find_best_and_worst_individual();
-    REQUIRE(population.best_index == 1);
-    REQUIRE(population.worst_index == 3);
-
-    population.se_replace_best(make_indi_f1_f2(1.8, 2.3));
-    check_population_fitness1(population, {4.62, 1.74, 4.19, 9.41, 7.42, 6.99, 6.02, 5.58, 7.94, 7.58});
-}
-
 TEST_CASE("Test replace worst", "[population]" ) {
     SEPopulation<TestRNG> population = make_population<TestRNG>(10);
     set_fitness1(population, {4.62, 1.74, 4.19, 9.41, 7.42, 6.99, 6.02, 5.58, 7.94, 7.58});
@@ -643,9 +632,9 @@ TEST_CASE("Test get best", "[population]" ) {
     set_fitness1(population, {4.62, 1.74, 4.19, 9.41, 7.42, 6.99, 6.02, 5.58, 7.94, 7.58});
     population.se_find_best_and_worst_individual();
 
-    const SEIndividual &result = population.se_get_best();
+    SEIndividual* result = population.se_get_best();
 
-    REQUIRE(result.fitness1 == 1.74);
+    REQUIRE(result->fitness1 == 1.74);
 }
 
 TEST_CASE("Test get best fitness", "[population]" ) {

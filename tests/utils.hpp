@@ -168,10 +168,10 @@ class TestNP {
             individual1(std::make_unique<TestIndividual1>()),
             individual2(),
             expected({0, 0, 0, 0, 0, 0, 0, 0, 0, 0}),
-            print_stats(true)
+            print_stats(false)
         {
             config2.node_population_size = 10;
-            config2.num_of_iterations = 100;
+            config2.num_of_iterations = 200;
             config2.mutation_operations = {0, 1, 2, 3};
             config2.num_of_mutations = 1;
             config2.randomize_population = false;

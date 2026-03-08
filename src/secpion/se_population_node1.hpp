@@ -79,11 +79,11 @@ class SEPopulationNode1: public NCNodeDataProcessor {
         }
 
         // These two methods are used for the test cases:
-        [[nodiscard]] SEIndividual* get_individual(size_t i) {
+        [[nodiscard]] SEIndividual* se_get_individual(size_t i) {
             return population.population[i].get();
         }
 
-        [[nodiscard]] SEIndividual* get_worst() {
+        [[nodiscard]] SEIndividual* se_get_worst() {
             return population.population[population.se_config.node_population_size - 1].get();
         }
 

@@ -32,8 +32,8 @@ using namespace secpion;
 
 class TestIndividual1: public SEIndividual {
     public:
-        uint8_t mutate_called;
-        uint8_t clone_called;
+        uint32_t mutate_called;
+        uint32_t clone_called;
 
         std::vector<uint8_t> numbers;
         bool zero_is_optimal;
@@ -103,6 +103,8 @@ class TestIndividual1: public SEIndividual {
             clone_called++;
 
             std::unique_ptr<TestIndividual1> result = std::make_unique<TestIndividual1>();
+            //result->mutate_called = mutate_called;
+            //result->clone_called = clone_called;
             result->numbers = numbers;
             result->zero_is_optimal = zero_is_optimal;
 
@@ -117,6 +119,8 @@ class TestIndividual1: public SEIndividual {
             }
 
             const tao::json::value json_data = {
+                {"mutate_called", mutate_called},
+                {"clone_called", clone_called},
                 {"fitness1", double(fitness1)},
                 {"fitness2", double(fitness2)},
                 {"numbers", json_numbers},
@@ -133,6 +137,8 @@ class TestIndividual1: public SEIndividual {
             const char* data_ptr = reinterpret_cast<const char*>(data.data());
             tao::json::value restored_json = tao::json::from_string(data_ptr, data.size());
 
+            mutate_called = restored_json["mutate_called"].as<uint32_t>();
+            clone_called = restored_json["clone_called"].as<uint32_t>();
             fitness1 = restored_json["fitness1"].as<double>();
             fitness2 = restored_json["fitness2"].as<double>();
 
@@ -182,15 +188,17 @@ class TestNP {
             individual2.se_from_span_u8(result);
             REQUIRE(individual2.fitness1 == 0.0);
             REQUIRE(individual2.numbers == expected);
-            SEIndividual* individual3 = population.get_worst();
+            SEIndividual* individual3 = population.se_get_worst();
             REQUIRE(individual3->fitness1 > 0.0);
 
             if (print_stats) {
-                SEIndividual* individual3;
+                TestIndividual1* individual4;
 
                 for (size_t i = 0; i < config2.node_population_size; i++) {
-                    individual3 = population.get_individual(i);
-                    std::print("fitness: {}, mut ops: {}\n", individual3->fitness1, individual3->mut_op_counter);
+                    individual4 = static_cast<TestIndividual1*>(population.se_get_individual(i));
+                    std::print("fitness: {}, mutate_called: {}, clone_called: {}, mut ops: {}\n",
+                        individual4->fitness1, individual4->mutate_called,
+                        individual4->clone_called, individual4->mut_op_counter);
                 }
             }
 

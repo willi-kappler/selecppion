@@ -263,6 +263,16 @@ class SEPopulation {
             se_logger->debug("Best mutations: {}", population[best_index]->mut_op_counter);
             se_logger->debug("Worst mutations: {}", population[worst_index]->mut_op_counter);
         }
+
+        [[nodiscard]] std::float64_t se_get_average_fitness1() {
+            std::float64_t sum = 0.0;
+
+            for (auto &indi: population) {
+                sum += indi->fitness1;
+            }
+
+            return sum / static_cast<std::float64_t>(se_config.node_population_size);
+        }
 };
 }
 

@@ -26,40 +26,34 @@ using namespace secpion;
 
 TEST_CASE("Test population type 4, run 1", "[population_type4]" ) {
     TestNP<SEPopulationNode4<TestRNG>> test_population;
-    test_population.print_stats = true;
     SEPopulationNode4<TestRNG> population = test_population.run();
 }
 
 TEST_CASE("Test population type 4, run 2", "[population_type4]" ) {
     TestNP<SEPopulationNode4<TestRNG>> test_population;
-    test_population.print_stats = true;
     SEPopulationNode4<TestRNG> population = test_population.run_inverted();
 }
 
 TEST_CASE("Test population type 4, run 3", "[population_type4]" ) {
     TestNP<SEPopulationNode4<TestRNG>> test_population;
-    test_population.print_stats = true;
     test_population.config2.num_of_mutations = 5;
     SEPopulationNode4<TestRNG> population = test_population.run();
 }
 
 TEST_CASE("Test population type 4, run 4", "[population_type4]" ) {
     TestNP<SEPopulationNode4<TestRNG>> test_population;
-    test_population.print_stats = true;
     test_population.config2.accept_new_best = true;
     SEPopulationNode4<TestRNG> population = test_population.run();
 }
 
 TEST_CASE("Test population type 4, run 5", "[population_type4]" ) {
     TestNP<SEPopulationNode4<TestRNG>> test_population;
-    test_population.print_stats = true;
     test_population.config2.randomize_population = true;
     SEPopulationNode4<TestRNG> population = test_population.run();
 }
 
 TEST_CASE("Test population type 4, run 6", "[population_type4]" ) {
     TestNP<SEPopulationNode4<TestRNG>> test_population;
-    test_population.print_stats = true;
     test_population.config2.accept_new_best = true;
     test_population.config2.randomize_population = true;
     SEPopulationNode4<TestRNG> population = test_population.run();

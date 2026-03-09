@@ -729,3 +729,12 @@ TEST_CASE("Test calculate fitness2 3", "[population]" ) {
     REQUIRE(population.best_index == 5);
     REQUIRE(population.worst_index == 3);
 }
+
+TEST_CASE("Test calculate average fitness1", "[population]") {
+    SEPopulation<TestRNG> population = make_population<TestRNG>(10);
+    set_fitness(population, {4.62, 0.001, 4.19, 9.41, 7.42, 0.002, 6.02, 5.58, 7.94, 7.58},
+                            {1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0});
+
+    std::float64_t avg_fitness1 = population.se_get_average_fitness1();
+    REQUIRE(avg_fitness1 == 5.276299999999999);
+}

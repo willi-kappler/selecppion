@@ -18,3 +18,4 @@
 #include "test_population_node1.hpp"
 #include "test_population_node2.hpp"
 #include "test_population_node3.hpp"
+#include "test_population_node4.hpp"

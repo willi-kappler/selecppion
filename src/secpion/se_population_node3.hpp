@@ -3,7 +3,7 @@
     Written by Willi Kappler, MIT License
     https://github.com/willi-kappler/selecppion
 
-    This file defines the class for the population type 1.
+    This file defines the class for the population type 3.
 */
 
 #ifndef FILE_SE_POPULATION_NODE3_HPP_INCLUDED

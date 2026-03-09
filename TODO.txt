@@ -6,11 +6,18 @@ TODO:
 
 
 
+[[assume(x > 0)]]; // Compiler may assume x is positive
+
+
 
 Goal,                   Best Function,      Complexity
 Complete Ranking,       std::sort,          O(NlogN)
 Get Top n (Unordered),  std::nth_element,   O(N)
 Get Top n (Ordered),    std::partial_sort,  O(Nlogn)
+
+
+
+
 
 
 Ideas:

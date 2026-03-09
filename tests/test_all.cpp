@@ -20,3 +20,4 @@
 #include "test_population_node3.hpp"
 #include "test_population_node4.hpp"
 #include "test_population_node5.hpp"
+#include "test_population_node6.hpp"

@@ -33,6 +33,8 @@ class SEPopulationNode7: public NCNodeDataProcessor {
             NCNodeDataProcessor(),
             population(se_config) {
             population.se_fill_population(std::move(individual));
+            population.best_index = 0;
+            population.worst_index = population.se_config.node_population_size - 1;
         }
 
         [[nodiscard]] std::vector<uint8_t> nc_process_data(std::vector<uint8_t> data) override {
@@ -40,8 +42,6 @@ class SEPopulationNode7: public NCNodeDataProcessor {
             population.rng.seed();
             population.se_randomize_or_accept_best(data);
             population.se_shuffle_mutation_operations();
-            population.best_index = 0;
-            population.worst_index = population.se_config.node_population_size - 1;
             std::float64_t current_best_fitness = population.population[0]->fitness1;
             std::float64_t fitness_limit = 0.0;
             std::unique_ptr<SEIndividual> cloned_indi;
@@ -93,10 +93,8 @@ class SEPopulationNode7: public NCNodeDataProcessor {
         void se_set_logger(std::shared_ptr<spdlog::logger> logger) {
             population.se_set_logger(logger);
             population.se_logger->info("Population type 7.");
-            population.se_logger->info("");
-            population.se_logger->info("");
-            population.se_logger->info("");
-            population.se_logger->info("");
+            population.se_logger->info("Best individual at index 0. Increase factor with index.");
+            population.se_logger->info("Set limit based on factor and best fitness.");
         }
 
         void se_set_loglevel(spdlog::level::level_enum level) {

@@ -35,6 +35,8 @@ class SEPopulationNode1: public NCNodeDataProcessor {
             offset(se_config.node_population_size / 2) {
             population.se_fill_population(std::move(individual));
             population.se_sort_population();
+            population.best_index = 0;
+            population.worst_index = population.se_config.node_population_size - 1;
         }
 
         [[nodiscard]] std::vector<uint8_t> nc_process_data(std::vector<uint8_t> data) override {
@@ -42,8 +44,6 @@ class SEPopulationNode1: public NCNodeDataProcessor {
             population.rng.seed();
             population.se_randomize_or_accept_best(data);
             population.se_shuffle_mutation_operations();
-            population.best_index = 0;
-            population.worst_index = population.se_config.node_population_size - 1;
 
             std::unique_ptr<SEIndividual> cloned_indi;
 

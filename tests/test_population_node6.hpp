@@ -26,28 +26,24 @@ using namespace secpion;
 
 TEST_CASE("Test population type 6, run 1", "[population_type6]" ) {
     TestNP<SEPopulationNode6<TestRNG>> test_population;
-    test_population.print_stats = true;
     test_population.config2.num_of_mutations = 5;
     SEPopulationNode6<TestRNG> population = test_population.run();
 }
 
 TEST_CASE("Test population type 6, run 2", "[population_type6]" ) {
     TestNP<SEPopulationNode6<TestRNG>> test_population;
-    test_population.print_stats = true;
     test_population.config2.num_of_mutations = 5;
     SEPopulationNode6<TestRNG> population = test_population.run_inverted();
 }
 
 TEST_CASE("Test population type 6, run 3", "[population_type6]" ) {
     TestNP<SEPopulationNode6<TestRNG>> test_population;
-    test_population.print_stats = true;
     test_population.config2.num_of_mutations = 20;
     SEPopulationNode6<TestRNG> population = test_population.run();
 }
 
 TEST_CASE("Test population type 6, run 4", "[population_type6]" ) {
     TestNP<SEPopulationNode6<TestRNG>> test_population;
-    test_population.print_stats = true;
     test_population.config2.num_of_mutations = 5;
     test_population.config2.accept_new_best = true;
     SEPopulationNode6<TestRNG> population = test_population.run();
@@ -55,7 +51,6 @@ TEST_CASE("Test population type 6, run 4", "[population_type6]" ) {
 
 TEST_CASE("Test population type 6, run 5", "[population_type6]" ) {
     TestNP<SEPopulationNode6<TestRNG>> test_population;
-    test_population.print_stats = true;
     test_population.config2.num_of_mutations = 5;
     test_population.config2.randomize_population = true;
     SEPopulationNode6<TestRNG> population = test_population.run();
@@ -63,7 +58,6 @@ TEST_CASE("Test population type 6, run 5", "[population_type6]" ) {
 
 TEST_CASE("Test population type 6, run 6", "[population_type6]" ) {
     TestNP<SEPopulationNode6<TestRNG>> test_population;
-    test_population.print_stats = true;
     test_population.config2.num_of_mutations = 5;
     test_population.config2.accept_new_best = true;
     test_population.config2.randomize_population = true;

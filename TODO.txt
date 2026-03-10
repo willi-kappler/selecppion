@@ -2,7 +2,7 @@ TODO:
     - add more test cases for invalid configurations.
     - add global rng for each type.
     - maybe merge TestIndividual1 and TestIndividual2
-
+    - add philox4x64 rng
 
 
 

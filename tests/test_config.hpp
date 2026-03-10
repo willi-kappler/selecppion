@@ -39,15 +39,15 @@ TEST_CASE("Create valid default configuration", "[configuration]" ) {
     REQUIRE(config2.num_of_mutations == 10);
     REQUIRE(config2.accept_new_best == true);
     REQUIRE(config2.randomize_population == false);
-    REQUIRE(config2.randomize_count == 10);
+    REQUIRE(config2.randomize_count == 5);
     REQUIRE(config2.population_kind == 1);
     REQUIRE(config2.mutation_operations == std::vector<uint8_t>{});
     REQUIRE(config2.early_exit_sleep == 10);
     REQUIRE(config2.min_num_of_individuals == 2);
     REQUIRE(config2.sine_base == 100.0);
     REQUIRE(config2.sine_amplitude == 50.0);
-    REQUIRE(config2.sine_frequency == 10.0);
-    REQUIRE(config2.limit_range == 10.0);
+    REQUIRE(config2.sine_frequency == 0.01);
+    REQUIRE(config2.limit_factor == 2.0);
     // REQUIRE(config2. == );
 }
 
@@ -74,7 +74,7 @@ TEST_CASE("Test valid JSON configuration", "[configuration]" ) {
         {"sine_base", 77.77},
         {"sine_amplitude", 44.44},
         {"sine_frequency", 22.22},
-        {"limit_range", 33.33}
+        {"limit_factor", 33.33}
         // { "",  }
     };
 
@@ -103,7 +103,7 @@ TEST_CASE("Test valid JSON configuration", "[configuration]" ) {
     REQUIRE(config1.sine_base == 77.77);
     REQUIRE(config1.sine_amplitude == 44.44);
     REQUIRE(config1.sine_frequency == 22.22);
-    REQUIRE(config1.limit_range == 33.33);
+    REQUIRE(config1.limit_factor == 33.33);
 }
 
 /*

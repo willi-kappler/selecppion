@@ -171,7 +171,7 @@ class TestNP {
             print_stats(false)
         {
             config2.node_population_size = 10;
-            config2.num_of_iterations = 200;
+            config2.num_of_iterations = 300;
             config2.mutation_operations = {0, 1, 2, 3};
             config2.num_of_mutations = 1;
             config2.randomize_population = false;

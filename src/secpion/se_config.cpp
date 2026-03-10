@@ -32,7 +32,7 @@ SEConfiguration::SEConfiguration(NCConfiguration nc_config):
     num_of_mutations(10),
     accept_new_best(true),
     randomize_population(false),
-    randomize_count(10),
+    randomize_count(5),
     population_kind(1),
     mutation_operations(),
     early_exit_sleep(10),
@@ -40,8 +40,8 @@ SEConfiguration::SEConfiguration(NCConfiguration nc_config):
     min_num_of_individuals(2),
     sine_base(100.0),
     sine_amplitude(50.0),
-    sine_frequency(10.0),
-    limit_range(10.0)
+    sine_frequency(0.01),
+    limit_factor(2.0)
 {}
 
 [[nodiscard]] SEConfiguration se_config_from_json(const tao::json::value json_config) {
@@ -168,8 +168,8 @@ SEConfiguration::SEConfiguration(NCConfiguration nc_config):
         }
     }
 
-    if (auto v = json_config.find("limit_range"); v != nullptr) {
-        se_config.limit_range = v->as<double>();
+    if (auto v = json_config.find("limit_factor"); v != nullptr) {
+        se_config.limit_factor = v->as<double>();
     }
 
     return se_config;

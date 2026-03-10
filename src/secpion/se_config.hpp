@@ -53,7 +53,7 @@ class SEConfiguration {
         std::float64_t sine_base;
         std::float64_t sine_amplitude;
         std::float64_t sine_frequency;
-        std::float64_t limit_range;
+        std::float64_t limit_factor;
 
         // Constructor:
         SEConfiguration(NCConfiguration);

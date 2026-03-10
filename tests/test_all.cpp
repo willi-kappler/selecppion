@@ -22,3 +22,4 @@
 #include "test_population_node5.hpp"
 #include "test_population_node6.hpp"
 #include "test_population_node7.hpp"
+#include "test_population_node8.hpp"

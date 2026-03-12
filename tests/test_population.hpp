@@ -161,8 +161,8 @@ void check_population_fitness(SEPopulation<T> &population,
 }
 
 template<typename T>
-[[nodiscard]] SEPopulation<T> make_population(SEConfiguration config, uint8_t size) {
-    SEPopulation population = SEPopulation<T>(config);
+[[nodiscard]] SEPopulation<T> make_population(SEConfiguration se_config, uint8_t size) {
+    SEPopulation population = SEPopulation<T>(se_config);
     population.population.reserve(size);
 
     for (uint8_t i = 0; i < size; i++) {
@@ -174,10 +174,9 @@ template<typename T>
 
 template<typename T>
 [[nodiscard]] SEPopulation<T> make_population(uint8_t size) {
-    NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
-    SEConfiguration config2 = SEConfiguration(config1);
+    SEConfiguration se_config = make_config();
 
-    return make_population<T>(config2, size);
+    return make_population<T>(se_config, size);
 }
 
 template<typename T>

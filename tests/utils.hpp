@@ -30,6 +30,11 @@ TestRNG global_rng;
 
 using namespace secpion;
 
+SEConfiguration make_config() {
+    NCConfiguration nc_config("12345678901234567890123456789012");
+    return SEConfiguration(nc_config);
+}
+
 class TestIndividual1: public SEIndividual {
     public:
         uint32_t mutate_called;
@@ -155,34 +160,32 @@ class TestIndividual1: public SEIndividual {
 template<typename T>
 class TestNP {
     public:
-        NCConfiguration config1;
-        SEConfiguration config2;
+        SEConfiguration se_config;
         std::unique_ptr<TestIndividual1> individual1;
         TestIndividual1 individual2;
         std::vector<uint8_t> expected;
         bool print_stats;
 
         TestNP():
-            config1(NCConfiguration("12345678901234567890123456789012")),
-            config2(SEConfiguration(config1)),
+            se_config(make_config()),
             individual1(std::make_unique<TestIndividual1>()),
             individual2(),
             expected({0, 0, 0, 0, 0, 0, 0, 0, 0, 0}),
             print_stats(false)
         {
-            config2.node_population_size = 10;
-            config2.num_of_iterations = 500;
-            config2.mutation_operations = {0, 1, 2, 3};
-            config2.num_of_mutations = 1;
-            config2.randomize_population = false;
-            config2.accept_new_best = false;
-            config2.early_exit_sleep = 0;
+            se_config.node_population_size = 10;
+            se_config.num_of_iterations = 500;
+            se_config.mutation_operations = {0, 1, 2, 3};
+            se_config.num_of_mutations = 1;
+            se_config.randomize_population = false;
+            se_config.accept_new_best = false;
+            se_config.early_exit_sleep = 0;
             individual2.numbers = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
             individual2.se_calculate_fitness1();
         }
 
         [[nodiscard]] T run() {
-            T population(config2, individual1->se_clone());
+            T population(se_config, individual1->se_clone());
             population.se_set_loglevel(spdlog::level::level_enum::debug);
             std::vector<uint8_t> result = population.nc_process_data(individual2.se_to_vec_u8());
             individual2.se_from_span_u8(result);
@@ -194,7 +197,7 @@ class TestNP {
             if (print_stats) {
                 TestIndividual1* individual4;
 
-                for (size_t i = 0; i < config2.node_population_size; i++) {
+                for (size_t i = 0; i < se_config.node_population_size; i++) {
                     individual4 = static_cast<TestIndividual1*>(population.se_get_individual(i));
                     std::print("fitness: {}, mutate_called: {}, clone_called: {}, mut ops: {}\n",
                         individual4->fitness1, individual4->mutate_called,

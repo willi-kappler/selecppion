@@ -26,40 +26,40 @@ using namespace secpion;
 
 TEST_CASE("Test population type 8, run 1", "[population_type8]" ) {
     TestNP<SEPopulationNode8<TestRNG>> test_population;
-    test_population.config2.num_of_mutations = 1;
+    test_population.se_config.num_of_mutations = 1;
     SEPopulationNode8<TestRNG> population = test_population.run();
 }
 
 TEST_CASE("Test population type 8, run 2", "[population_type8]" ) {
     TestNP<SEPopulationNode8<TestRNG>> test_population;
-    test_population.config2.num_of_mutations = 1;
+    test_population.se_config.num_of_mutations = 1;
     SEPopulationNode8<TestRNG> population = test_population.run_inverted();
 }
 
 TEST_CASE("Test population type 8, run 3", "[population_type8]" ) {
     TestNP<SEPopulationNode8<TestRNG>> test_population;
-    test_population.config2.num_of_mutations = 5;
+    test_population.se_config.num_of_mutations = 5;
     SEPopulationNode8<TestRNG> population = test_population.run();
 }
 
 TEST_CASE("Test population type 8, run 4", "[population_type8]" ) {
     TestNP<SEPopulationNode8<TestRNG>> test_population;
-    test_population.config2.num_of_mutations = 1;
-    test_population.config2.accept_new_best = true;
+    test_population.se_config.num_of_mutations = 1;
+    test_population.se_config.accept_new_best = true;
     SEPopulationNode8<TestRNG> population = test_population.run();
 }
 
 TEST_CASE("Test population type 8, run 5", "[population_type8]" ) {
     TestNP<SEPopulationNode8<TestRNG>> test_population;
-    test_population.config2.num_of_mutations = 1;
-    test_population.config2.randomize_population = true;
+    test_population.se_config.num_of_mutations = 1;
+    test_population.se_config.randomize_population = true;
     SEPopulationNode8<TestRNG> population = test_population.run();
 }
 
 TEST_CASE("Test population type 8, run 6", "[population_type8]" ) {
     TestNP<SEPopulationNode8<TestRNG>> test_population;
-    test_population.config2.num_of_mutations = 1;
-    test_population.config2.accept_new_best = true;
-    test_population.config2.randomize_population = true;
+    test_population.se_config.num_of_mutations = 1;
+    test_population.se_config.accept_new_best = true;
+    test_population.se_config.randomize_population = true;
     SEPopulationNode8<TestRNG> population = test_population.run();
 }

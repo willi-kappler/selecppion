@@ -15,6 +15,7 @@
 #include <stdfloat>
 #include <memory>
 #include <fstream>
+#include <unordered_map>
 
 // External includes:
 #include <spdlog/spdlog.h>
@@ -38,6 +39,9 @@ class SEServerDP: public NCServerDataProcessor {
         std::shared_ptr<spdlog::logger> se_logger;
         std::vector<std::unique_ptr<SEIndividual>> population;
         T rng;
+        spdlog::stopwatch sw;
+        uint32_t new_fitness_counter;
+        std::unordered_map<NCNodeID, uint32_t> node_stats;
 
     public:
         SEServerDP(SEConfiguration config, std::unique_ptr<SEIndividual> individual):
@@ -45,12 +49,15 @@ class SEServerDP: public NCServerDataProcessor {
             se_logger(),
             population(),
             rng(),
+            sw(),
+            new_fitness_counter(0),
+            node_stats()
         {
             rng.seed();
             spdlog::drop("se_logger");
             se_logger = spdlog::stdout_logger_mt("se_logger");
             se_fill_population(std::move(individual));
-            // TODO: start timer here.
+            se_sort_population();
         }
 
         void se_set_logger(std::shared_ptr<spdlog::logger> logger) {
@@ -88,6 +95,12 @@ class SEServerDP: public NCServerDataProcessor {
             }
         }
 
+        void se_sort_population() {
+            std::sort(population.begin(), population.end(),
+                [] (const std::unique_ptr<SEIndividual>&ind1, const std::unique_ptr<SEIndividual>&ind2) {
+                    return ind1->fitness1 < ind2->fitness1; });
+        }
+
         void se_save_data(std::string_view filename) {
             std::vector<uint8_t> data = population[0]->se_to_vec_u8();
             std::ofstream out(std::filesystem::path(filename), std::ios::binary);
@@ -103,11 +116,11 @@ class SEServerDP: public NCServerDataProcessor {
             bool job_done = population[0]->fitness1 <= se_config.target_fitness1;
 
             if (job_done) {
-                // TODO: stop timer here and log duration.
                 se_logger->info("Job is done, target fitness is met.");
                 se_logger->debug("Best fitness1: {}, target fitness1: {}", population[0]->fitness1, se_config.target_fitness1);
                 se_logger->debug("Best fitness2: {}, target fitness2: {}", population[0]->fitness2, se_config.target_fitness2);
                 se_logger->debug("Actual fitness: {}", population[0]->se_actual_fitness());
+                se_logger->info("Time taken: {} sec.", sw);
             }
 
             return job_done;
@@ -128,7 +141,48 @@ class SEServerDP: public NCServerDataProcessor {
         }
 
         virtual void nc_process_result(NCNodeID node_id, std::vector<uint8_t> result) {
-            // TODO: implement!
+            const size_t last = se_config.server_population_size - 1;
+
+            // se_clone_internal() not needed here since all the values will be overwritten anyways!
+            std::unique_ptr<SEIndividual> new_indi = population[0]->se_clone();
+            // Overwrite all values from result:
+            new_indi->se_from_span_u8(result);
+            std::float64_t new_fitness = new_indi->fitness1;
+            std::float64_t current_best_fitness = 0.0;
+
+            if (new_fitness < population[last]->fitness1) {
+                if (!se_config.allow_same_fitness) {
+                    for (auto &indi: population) {
+                        if (new_fitness == indi->fitness1) {
+                            return;
+                        }
+                    }
+                }
+
+                se_logger->debug("New individual in population: fitness1: {}, actual: {}",
+                    new_fitness, new_indi->se_actual_fitness();
+
+                population[last] = std::move(new_indi);
+                current_best_fitness = population[0]->fitness1;
+                se_sort_population();
+
+                if (new_fitness < current_best_fitness) {
+                    new_fitness_counter++;
+
+                    se_logger->info("New best fitness1: {}, previous: {}", new_fitness, current_best_fitness);
+                    se_logger->info("From node: {}, new fitness counter: {}", node_id, new_fitness_counter);
+                    se_logger->debug("Worst fitness: {}", population[last]->fitness1);
+
+                    node_stats[node_id]++;
+                    se_logger->debug("Node stats: {}", node_stats);
+
+                    population[0]->se_new_best_individual();
+
+                    if (se_config.save_new_fitness) {
+                        se_save_data(fmt("{}_{}", new_fitness_counter, se_config.result_filename));
+                    }
+                }
+            }
         }
 };
 }

@@ -175,7 +175,7 @@ class TestNP {
             print_stats(false)
         {
             se_config.node_population_size = 10;
-            se_config.num_of_iterations = 500;
+            se_config.num_of_iterations = 600;
             se_config.mutation_operations = {0, 1, 2, 3};
             se_config.num_of_mutations = 1;
             se_config.randomize_population = false;

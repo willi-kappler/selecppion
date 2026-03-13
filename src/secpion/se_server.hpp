@@ -198,6 +198,10 @@ class SEServerDP: public NCServerDataProcessor {
         [[nodiscard]] SEIndividual* se_get_worst() {
             return population[se_config.server_population_size - 1].get();
         }
+
+        [[nodiscard]] uint32_t se_get_new_fitness_counter() {
+            return new_fitness_counter;
+        }
 };
 }
 

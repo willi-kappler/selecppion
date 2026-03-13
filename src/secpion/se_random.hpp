@@ -219,6 +219,12 @@ class SERandomGenerator {
         SERandomGenerator():
             random_algorithm() {}
 };
+
+typedef SERandomGenerator<SEAlgorithmLehmer64> SE_RNG_L64;
+typedef SERandomGenerator<SEAlgorithmWyRand> SE_RNG_WY;
+typedef SERandomGenerator<SEAlgorithmSTD_LCG> SE_RNG_LCG;
+typedef SERandomGenerator<SEAlgorithmSTD_Mersenne> SE_RNG_MER;
+typedef SERandomGenerator<SEAlgorithmSTD_SWC> SE_RNG_SWC;
 }
 
 #endif // FILE_SE_RANDOM_HPP_INCLUDED

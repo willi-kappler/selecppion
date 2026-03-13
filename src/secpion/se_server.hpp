@@ -203,6 +203,8 @@ class SEServerDP: public NCServerDataProcessor {
             return new_fitness_counter;
         }
 };
+
+typedef SEServerDP<SE_RNG_L64> SEServerDP_L64;
 }
 
 #endif // FILE_SE_SERVER_HPP_INCLUDED

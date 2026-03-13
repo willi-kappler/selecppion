@@ -103,6 +103,8 @@ class SEPopulationNode8: public NCNodeDataProcessor {
             population.se_set_file_logger(prefix);
         }
 };
+
+typedef SEPopulationNode8<SE_RNG_L64> SEPop8_L64;
 }
 
 #endif // FILE_SE_POPULATION_NODE8_HPP_INCLUDED

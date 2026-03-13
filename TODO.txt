@@ -3,7 +3,7 @@ TODO:
     - add global rng for each type.
     - maybe merge TestIndividual1 and TestIndividual2.
     - add philox4x64 rng.
-    - add stop watch to server.
+    - add examples: bin_packing, function_optimization, knapsack, neural_net, queens, sudoku, tsp.
 
 
 
@@ -98,3 +98,4 @@ Quantum Approximate Optimization Algorithm (QAOA)
 
 Done:
     - add rng from std::random.
+    - add stop watch to server.

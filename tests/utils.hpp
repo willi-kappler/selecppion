@@ -21,11 +21,11 @@
 #include "secpion/se_random.hpp"
 #include "secpion/se_individual.hpp"
 
-typedef SERandomGenerator<SEAlgorithmLehmer64> TestRNG;
-//typedef SERandomGenerator<SEAlgorithmWyRand> TestRNG;
-//typedef SERandomGenerator<SEAlgorithmSTD_LCG> TestRNG;
-//typedef SERandomGenerator<SEAlgorithmSTD_Mersenne> TestRNG;
-//typedef SERandomGenerator<SEAlgorithmSTD_SWC> TestRNG;
+typedef SE_RNG_L64 TestRNG;
+//typedef SE_RNG_WY TestRNG;
+//typedef SE_RNG_LCG TestRNG;
+//typedef SE_RNG_MER TestRNG;
+//typedef SE_RNG_SWC TestRNG;
 
 TestRNG global_rng;
 

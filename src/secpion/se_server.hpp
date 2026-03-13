@@ -22,6 +22,7 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_sinks.h>
 #include <spdlog/fmt/bundled/ranges.h>
+#include <spdlog/stopwatch.h>
 #include <nodcru2/nc_logger.hpp>
 #include <nodcru2/nc_server.hpp>
 
@@ -106,7 +107,7 @@ class SEServerDP: public NCServerDataProcessor {
             std::ofstream out(std::filesystem::path(filename), std::ios::binary);
 
             if (!out) {
-                throw SEServerIOException(fmt("Could not open file for writing: {}", filename));
+                throw SEServerIOException(fmt::format("Could not open file for writing: {}", filename).c_str());
             } else {
                 out.write(reinterpret_cast<const char*>(data.data()), data.size());
             }
@@ -130,7 +131,7 @@ class SEServerDP: public NCServerDataProcessor {
             se_save_data(se_config.result_filename);
         }
 
-        [[nodiscard]] virtual std::vector<uint8_t> nc_get_new_data(NCNodeID node_id) {
+        [[nodiscard]] virtual std::vector<uint8_t> nc_get_new_data([[maybe_unused]] NCNodeID node_id) {
             size_t i = 0;
 
             if (!se_config.share_only_best) {
@@ -160,7 +161,7 @@ class SEServerDP: public NCServerDataProcessor {
                 }
 
                 se_logger->debug("New individual in population: fitness1: {}, actual: {}",
-                    new_fitness, new_indi->se_actual_fitness();
+                    new_fitness, new_indi->se_actual_fitness());
 
                 population[last] = std::move(new_indi);
                 current_best_fitness = population[0]->fitness1;
@@ -179,10 +180,23 @@ class SEServerDP: public NCServerDataProcessor {
                     population[0]->se_new_best_individual();
 
                     if (se_config.save_new_fitness) {
-                        se_save_data(fmt("{}_{}", new_fitness_counter, se_config.result_filename));
+                        se_save_data(fmt::format("{}_{}", new_fitness_counter, se_config.result_filename));
                     }
                 }
             }
+        }
+
+        // These three methods are used for the test cases:
+        [[nodiscard]] size_t se_get_population_size() {
+            return population.size();
+        }
+
+        [[nodiscard]] SEIndividual* se_get_individual(size_t i) {
+            return population[i].get();
+        }
+
+        [[nodiscard]] SEIndividual* se_get_worst() {
+            return population[se_config.server_population_size - 1].get();
         }
 };
 }

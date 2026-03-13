@@ -17,6 +17,7 @@
 #include <spdlog/spdlog.h>
 
 // Local includes:
+#include "secpion/se_config.hpp"
 #include "secpion/se_random.hpp"
 #include "secpion/se_individual.hpp"
 

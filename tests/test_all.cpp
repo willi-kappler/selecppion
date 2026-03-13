@@ -24,3 +24,4 @@
 #include "test_population_node7.hpp"
 #include "test_population_node8.hpp"
 #include "test_population_node9.hpp"
+#include "test_server.hpp"

@@ -92,6 +92,7 @@ target("selecppion")
     -- Tell xmake which headers to give to the user when installing it:
     add_headerfiles("src/(secpion/*.hpp)")
 
+-- Test cases:
 target("se_test")
     set_kind("binary")
     add_files("tests/test_all.cpp")
@@ -102,6 +103,19 @@ target("se_test")
     add_deps("selecppion")
     add_includedirs("src")
     set_default(false) -- Don't build by default
+
+-- All examples:
+target("se_example_tsp")
+    set_kind("binary")
+    add_files("examples/tsp/src/*.cpp")
+    add_packages("node_crunch2")
+    add_packages("spdlog")
+    add_packages("taocpp-json")
+    add_packages("argparse")
+    add_deps("selecppion")
+    add_includedirs("src")
+    set_default(false) -- Don't build by default
+
 
 -- Test package locally in xmake repo:
 -- xmake l scripts/test.lua --shallow -vD selecppion

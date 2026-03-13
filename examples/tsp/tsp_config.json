@@ -1,0 +1,15 @@
+{
+    "server_address": "127.0.0.1",
+    "server_port": 9999,
+    "heartbeat_timeout": 100,
+    "secret_key": "123456789012345678901234567890A1",
+    "node_population_size": 100,
+    "num_of_iterations": 20000,
+    "save_new_fitness": true,
+    "mutation_operations": [
+        0,
+        1,
+        2,
+        3
+    ]
+}

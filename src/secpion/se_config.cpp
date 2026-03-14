@@ -175,6 +175,17 @@ SEConfiguration::SEConfiguration(NCConfiguration nc_config):
     return se_config;
 }
 
+[[nodiscard]] std::string se_file_to_string(std::filesystem::path file_path) {
+    std::ifstream in_file(file_path);
+
+    if (in_file.is_open()) {
+        std::string file_contents {std::istreambuf_iterator<char>(in_file), std::istreambuf_iterator<char>()};
+        return file_contents;
+    } else {
+        throw SEConfigurationException("Open file error");
+    }
+}
+
 [[nodiscard]] SEConfiguration se_config_from_string(std::string_view config_as_string) {
     const tao::json::value json_config = tao::json::from_string(config_as_string);
 
@@ -182,13 +193,6 @@ SEConfiguration::SEConfiguration(NCConfiguration nc_config):
 }
 
 [[nodiscard]] SEConfiguration se_config_from_file(std::filesystem::path file_path) {
-    std::ifstream in_file {file_path};
-
-    if (in_file.is_open()) {
-        std::string file_contents {std::istreambuf_iterator<char>(in_file), std::istreambuf_iterator<char>()};
-        return se_config_from_string(file_contents);
-    } else {
-        throw SEConfigurationException("Open file error");
-    }
+    return se_config_from_string(se_file_to_string(file_path));
 }
 }

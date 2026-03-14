@@ -72,6 +72,8 @@ class SEConfiguration {
 
 [[nodiscard]] SEConfiguration se_config_from_string(std::string_view);
 
+[[nodiscard]] std::string se_file_to_string(std::filesystem::path);
+
 [[nodiscard]] SEConfiguration se_config_from_file(std::filesystem::path);
 
 }

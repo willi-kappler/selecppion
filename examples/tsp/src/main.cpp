@@ -18,6 +18,8 @@
 #include <stdfloat>
 #include <algorithm>
 #include <cmath>
+#include <fstream>
+#include <iostream>
 
 // External includes:
 #include <argparse/argparse.hpp>
@@ -197,9 +199,9 @@ int main(int argc, char *argv[]) {
         std::exit(1);
     }
 
-    // TODO: Read in json file only once!
-    NCConfiguration nc_config = nc_config_from_file("tsp_config.json");
-    SEConfiguration se_config = se_config_from_file("tsp_config.json");
+    std::string file_contents = se_file_to_string("tsp_config.json");
+    NCConfiguration nc_config = nc_config_from_string(file_contents);
+    SEConfiguration se_config = se_config_from_string(file_contents);
 
     if (program["--server"] == true) {
         std::cout << "Server mode" << std::endl;

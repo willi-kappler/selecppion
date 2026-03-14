@@ -20,6 +20,7 @@
 #include <cmath>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 // External includes:
 #include <argparse/argparse.hpp>
@@ -44,8 +45,16 @@ class TSPIndividual: public SEIndividual {
             se_randomize();
         }
 
-        void load_data([[maybe_unused]] std::string_view filename) {
-            // TODO
+        void load_data(std::string_view filename) {
+            std::string city_positions = se_file_to_string(filename);
+            std::istringstream sstream(city_positions);
+            std::float64_t x, y;
+
+            positions.clear();
+
+            while (sstream >> x >> y) {
+                positions.push_back({x, y});
+            }
         }
 
         size_t get_one_index() {
@@ -202,14 +211,22 @@ int main(int argc, char *argv[]) {
     std::string file_contents = se_file_to_string("tsp_config.json");
     NCConfiguration nc_config = nc_config_from_string(file_contents);
     SEConfiguration se_config = se_config_from_string(file_contents);
+    se_config.num_of_iterations = 1000;
+    se_config.num_of_mutations = 1;
+    se_config.mutation_operations = {0, 1, 2, 3};
+    se_config.randomize_population = false;
+
+    std::unique_ptr<TSPIndividual> tsp_individual = std::make_unique<TSPIndividual>();
+    tsp_individual->load_data("city_positions2.txt");
 
     if (program["--server"] == true) {
         std::cout << "Server mode" << std::endl;
 
-        std::unique_ptr<SEIndividual> tsp_individual = std::make_unique<TSPIndividual>();
-        std::shared_ptr<SEServerDP_L64> mandel_server =
+        std::shared_ptr<SEServerDP_L64> tsp_server =
             std::make_shared<SEServerDP_L64>(se_config, std::move(tsp_individual));
-        NCServer nc_server(nc_config, mandel_server);
+        tsp_server->se_set_file_logger("tsp_server");
+        tsp_server->se_set_loglevel(spdlog::level::level_enum::debug);
+        NCServer nc_server(nc_config, tsp_server);
         nc_server.nc_run();
     } else {
         std::cout << "Node (client) mode" << std::endl;
@@ -219,10 +236,12 @@ int main(int argc, char *argv[]) {
             nc_config.server_address = server_address;
         }
 
-        std::unique_ptr<SEIndividual> tsp_individual = std::make_unique<TSPIndividual>();
-        std::shared_ptr<SEPop1_L64> mandel_node =
+        std::shared_ptr<SEPop1_L64> tsp_node =
             std::make_shared<SEPop1_L64>(se_config, std::move(tsp_individual));
-        NCNode nc_node(nc_config, mandel_node);
+        std::string log_filename = nc_gen_log_file_name("tsp_node");
+        tsp_node->se_set_file_logger(log_filename);
+        tsp_node->se_set_loglevel(spdlog::level::level_enum::debug);
+        NCNode nc_node(nc_config, tsp_node);
         nc_node.nc_run();
     }
 }

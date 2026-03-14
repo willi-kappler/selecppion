@@ -252,9 +252,11 @@ int main(int argc, char *argv[]) {
         se_config.node_population_size = 100;
     }
 
-    se_config.mutation_operations = {0, 1, 2, 3};
-    se_config.randomize_count = 0;
-    se_config.target_fitness1 = 8300.0; // For the file "city_positions2.txt"
+    // For the file "city_positions2.txt"
+    // a good target fitness is 8200.0.
+    // This can be set in the configuration
+    // file "tsp_config.json":
+    // "target_fitness1": 8200.0
 
     std::unique_ptr<TSPIndividual> tsp_individual = std::make_unique<TSPIndividual>();
     tsp_individual->load_data("city_positions2.txt");

@@ -84,11 +84,15 @@ class SEPopulationNode1: public NCNodeDataProcessor {
             return population.population[population.se_config.node_population_size - 1].get();
         }
 
-        void se_set_logger(std::shared_ptr<spdlog::logger> logger) {
-            population.se_set_logger(logger);
+        void se_log_info() {
             population.se_logger->info("Population type 1.");
             population.se_logger->info("Clone population and mutate individuals in place. Then sort population by fitness.");
             population.se_logger->info("The worst individuals are overwritten.");
+        }
+
+        void se_set_logger(std::shared_ptr<spdlog::logger> logger) {
+            population.se_set_logger(logger);
+            se_log_info();
         }
 
         void se_set_loglevel(spdlog::level::level_enum level) {
@@ -97,6 +101,7 @@ class SEPopulationNode1: public NCNodeDataProcessor {
 
         void se_set_file_logger(std::string_view prefix) {
             population.se_set_file_logger(prefix);
+            se_log_info();
         }
 };
 

@@ -87,10 +87,14 @@ class SEPopulationNode9: public NCNodeDataProcessor {
             return population.population[population.worst_index].get();
         }
 
-        void se_set_logger(std::shared_ptr<spdlog::logger> logger) {
-            population.se_set_logger(logger);
+        void se_log_info() {
             population.se_logger->info("Population type 9.");
             population.se_logger->info("Use sine wave to set the fitness limit.");
+        }
+
+        void se_set_logger(std::shared_ptr<spdlog::logger> logger) {
+            population.se_set_logger(logger);
+            se_log_info();
         }
 
         void se_set_loglevel(spdlog::level::level_enum level) {
@@ -99,6 +103,7 @@ class SEPopulationNode9: public NCNodeDataProcessor {
 
         void se_set_file_logger(std::string_view prefix) {
             population.se_set_file_logger(prefix);
+            se_log_info();
         }
 };
 

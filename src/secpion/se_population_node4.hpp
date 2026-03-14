@@ -100,13 +100,17 @@ class SEPopulationNode4: public NCNodeDataProcessor {
             return population.population[population.worst_index].get();
         }
 
-        void se_set_logger(std::shared_ptr<spdlog::logger> logger) {
-            population.se_set_logger(logger);
+        void se_log_info() {
             population.se_logger->info("Population type 4.");
             population.se_logger->info("Use a global fitness that is the same for all individuals.");
             population.se_logger->info("Mutate an individual and if it's better than the global fitness keep it.");
             population.se_logger->info("Reduce global fitness each iteration.");
             population.se_logger->info("If no individual is better, increase the global fitness a bit.");
+        }
+
+        void se_set_logger(std::shared_ptr<spdlog::logger> logger) {
+            population.se_set_logger(logger);
+            se_log_info();
         }
 
         void se_set_loglevel(spdlog::level::level_enum level) {
@@ -115,6 +119,7 @@ class SEPopulationNode4: public NCNodeDataProcessor {
 
         void se_set_file_logger(std::string_view prefix) {
             population.se_set_file_logger(prefix);
+            se_log_info();
         }
 };
 

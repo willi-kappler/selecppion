@@ -7,13 +7,13 @@ $EXECUTABLE --server &
 sleep 2
 
 # Start 4 nodes:
-$EXECUTABLE &
+$EXECUTABLE -i 10000 &
 sleep 1
 
-$EXECUTABLE &
+$EXECUTABLE -i 10000 -r &
 sleep 1
 
-$EXECUTABLE &
+$EXECUTABLE -i 10000 -r &
 sleep 1
 
-$EXECUTABLE &
+$EXECUTABLE -i 10000 -r &

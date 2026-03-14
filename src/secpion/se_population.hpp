@@ -61,14 +61,14 @@ class SEPopulation {
         void se_set_logger(std::shared_ptr<spdlog::logger> logger) {
             se_logger = logger;
 
-            se_logger->debug("Population size: {}, target fitness 1: {}, target fitness 2: {}",
+            se_logger->info("Population size: {}, target fitness 1: {}, target fitness 2: {}",
                 se_config.node_population_size, se_config.target_fitness1, se_config.target_fitness2);
-            se_logger->debug("Number of iterations: {}, number of mutations: {}",
+            se_logger->info("Number of iterations: {}, number of mutations: {}",
                 se_config.num_of_iterations, se_config.num_of_mutations);
-            se_logger->debug("Randomize population: {}, randomize count: {}",
+            se_logger->info("Randomize population: {}, randomize count: {}",
                 se_config.randomize_population, se_config.randomize_count);
-            se_logger->debug("Accept new best: {}", se_config.accept_new_best);
-            se_logger->debug("Mutation operations: {}", se_config.mutation_operations);
+            se_logger->info("Accept new best: {}", se_config.accept_new_best);
+            se_logger->info("Mutation operations: {}", se_config.mutation_operations);
         }
 
         void se_set_loglevel(spdlog::level::level_enum level) {
@@ -262,6 +262,7 @@ class SEPopulation {
                 population[best_index]->se_actual_fitness(), population[worst_index]->se_actual_fitness());
             se_logger->debug("Best mutations: {}", population[best_index]->mut_op_counter);
             se_logger->debug("Worst mutations: {}", population[worst_index]->mut_op_counter);
+            se_logger->flush();
         }
 
         [[nodiscard]] std::float64_t se_get_average_fitness1() {

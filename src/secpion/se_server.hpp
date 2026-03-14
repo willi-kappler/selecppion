@@ -64,11 +64,11 @@ class SEServerDP: public NCServerDataProcessor {
         void se_set_logger(std::shared_ptr<spdlog::logger> logger) {
             se_logger = logger;
 
-            se_logger->debug("Population size: {}, target fitness 1: {}, target fitness 2: {}",
+            se_logger->info("Population size: {}, target fitness 1: {}, target fitness 2: {}",
                 se_config.server_population_size, se_config.target_fitness1, se_config.target_fitness2);
-            se_logger->debug("Result filename: {}, save new fitness: {}",
+            se_logger->info("Result filename: {}, save new fitness: {}",
                 se_config.result_filename, se_config.save_new_fitness);
-            se_logger->debug("Allow same fitness: {}, share only best: {}",
+            se_logger->info("Allow same fitness: {}, share only best: {}",
                 se_config.allow_same_fitness, se_config.share_only_best);
         }
 
@@ -184,6 +184,8 @@ class SEServerDP: public NCServerDataProcessor {
                     }
                 }
             }
+
+            se_logger->flush();
         }
 
         // These three methods are used for the test cases:

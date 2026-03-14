@@ -196,8 +196,24 @@ int main(int argc, char *argv[]) {
         .flag();
 
     program.add_argument("--ip")
-        .default_value(std::string(""))
-        .help("Set the ip address for the server");
+        .help("Set the ip address for the server")
+        .default_value(std::string(""));
+
+    program.add_argument("-r")
+        .help("Randomize population")
+        .flag();
+
+    program.add_argument("-m")
+        .help("Number of mutations")
+        .scan<'i', uint32_t>();
+
+    program.add_argument("-i")
+        .help("Number of iterations")
+        .scan<'i', uint32_t>();
+
+    program.add_argument("-p")
+        .help("Population size")
+        .scan<'i', uint32_t>();
 
     try {
         program.parse_args(argc, argv);
@@ -211,10 +227,34 @@ int main(int argc, char *argv[]) {
     std::string file_contents = se_file_to_string("tsp_config.json");
     NCConfiguration nc_config = nc_config_from_string(file_contents);
     SEConfiguration se_config = se_config_from_string(file_contents);
-    se_config.num_of_iterations = 1000;
-    se_config.num_of_mutations = 1;
+
+    if (program["-r"] == true) {
+        se_config.randomize_population = true;
+    } else {
+        se_config.randomize_population = false;
+    }
+
+    if (program.is_used("-m")) {
+        se_config.num_of_mutations = program.get<uint32_t>("-m");
+    } else {
+        se_config.num_of_mutations = 1;
+    }
+
+    if (program.is_used("-i")) {
+        se_config.num_of_iterations = program.get<uint32_t>("-i");
+    } else {
+        se_config.num_of_iterations = 1000;
+    }
+
+    if (program.is_used("-p")) {
+        se_config.node_population_size = program.get<uint32_t>("-p");
+    } else {
+        se_config.node_population_size = 100;
+    }
+
     se_config.mutation_operations = {0, 1, 2, 3};
-    se_config.randomize_population = false;
+    se_config.randomize_count = 0;
+    se_config.target_fitness1 = 8300.0; // For the file "city_positions2.txt"
 
     std::unique_ptr<TSPIndividual> tsp_individual = std::make_unique<TSPIndividual>();
     tsp_individual->load_data("city_positions2.txt");
@@ -238,8 +278,7 @@ int main(int argc, char *argv[]) {
 
         std::shared_ptr<SEPop1_L64> tsp_node =
             std::make_shared<SEPop1_L64>(se_config, std::move(tsp_individual));
-        std::string log_filename = nc_gen_log_file_name("tsp_node");
-        tsp_node->se_set_file_logger(log_filename);
+        tsp_node->se_set_file_logger("tsp_node");
         tsp_node->se_set_loglevel(spdlog::level::level_enum::debug);
         NCNode nc_node(nc_config, tsp_node);
         nc_node.nc_run();

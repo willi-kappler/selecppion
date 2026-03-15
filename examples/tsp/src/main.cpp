@@ -253,10 +253,10 @@ int main(int argc, char *argv[]) {
     }
 
     // For the file "city_positions2.txt"
-    // a good target fitness is 8200.0.
+    // a good target fitness is 8300.0.
     // This can be set in the configuration
     // file "tsp_config.json":
-    // "target_fitness1": 8200.0
+    // "target_fitness1": 8300.0
 
     std::unique_ptr<TSPIndividual> tsp_individual = std::make_unique<TSPIndividual>();
     tsp_individual->load_data("city_positions2.txt");

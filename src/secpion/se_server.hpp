@@ -114,17 +114,7 @@ class SEServerDP: public NCServerDataProcessor {
         }
 
         [[nodiscard]] virtual bool nc_is_job_done() {
-            bool job_done = population[0]->fitness1 <= se_config.target_fitness1;
-
-            if (job_done) {
-                se_logger->info("Job is done, target fitness is met.");
-                se_logger->debug("Best fitness1: {}, target fitness1: {}", population[0]->fitness1, se_config.target_fitness1);
-                se_logger->debug("Best fitness2: {}, target fitness2: {}", population[0]->fitness2, se_config.target_fitness2);
-                se_logger->debug("Actual fitness: {}", population[0]->se_actual_fitness());
-                se_logger->info("Time taken: {} sec.", sw);
-            }
-
-            return job_done;
+            return population[0]->fitness1 <= se_config.target_fitness1;
         }
 
         virtual void nc_save_data() {
@@ -181,6 +171,14 @@ class SEServerDP: public NCServerDataProcessor {
 
                     if (se_config.save_new_fitness) {
                         se_save_data(fmt::format("{}_{}", new_fitness_counter, se_config.result_filename));
+                    }
+
+                    if (new_fitness < se_config.target_fitness1) {
+                        se_logger->info("Job is done, target fitness is met.");
+                        se_logger->debug("Best fitness1: {}, target fitness1: {}", population[0]->fitness1, se_config.target_fitness1);
+                        se_logger->debug("Best fitness2: {}, target fitness2: {}", population[0]->fitness2, se_config.target_fitness2);
+                        se_logger->debug("Actual fitness: {}", population[0]->se_actual_fitness());
+                        se_logger->info("Time taken: {} sec.", sw);
                     }
                 }
             }

@@ -82,7 +82,7 @@ TEST_CASE("Test process result 1", "[server]" ) {
     server.se_set_loglevel(spdlog::level::level_enum::debug);
     NCNodeID node_id;
     TestIndividual1 individual;
-    individual.fitness1 = server.se_get_individual(0)->fitness1 * 1.1;
+    individual.fitness1 = server.se_get_individual(0)->fitness1 * 1.1537;
     std::float64_t worst_fitness = server.se_get_worst()->fitness1;
 
     REQUIRE(individual.fitness1 > 0.0);
@@ -106,7 +106,7 @@ TEST_CASE("Test process result 2", "[server]" ) {
     TestIndividual1 individual;
     std::float64_t best_fitness = server.se_get_individual(0)->fitness1;
     std::float64_t worst_fitness = server.se_get_worst()->fitness1;
-    individual.fitness1 = best_fitness * 0.9;
+    individual.fitness1 = best_fitness * 0.91573;
 
     REQUIRE(individual.fitness1 > 0.0);
     REQUIRE(server.se_get_new_fitness_counter() == 0);

@@ -283,6 +283,13 @@ class SEPopulation {
 
             return sum / static_cast<std::float64_t>(se_config.node_population_size);
         }
+
+        void se_prepare_iteration(std::string_view population_title, std::vector<uint8_t> data) {
+            se_logger->info(population_title);
+            rng.seed();
+            se_randomize_or_accept_best(data);
+            se_shuffle_mutation_operations();
+        }
 };
 }
 

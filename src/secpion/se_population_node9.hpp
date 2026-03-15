@@ -36,10 +36,7 @@ class SEPopulationNode9: public NCNodeDataProcessor {
         }
 
         [[nodiscard]] std::vector<uint8_t> nc_process_data(std::vector<uint8_t> data) override {
-            population.se_logger->info("PN9: Process data.");
-            population.rng.seed();
-            population.se_randomize_or_accept_best(data);
-            population.se_shuffle_mutation_operations();
+            population.se_prepare_iteration("PN9: Process data.", data);
             std::unique_ptr<SEIndividual> cloned_indi;
             std::float64_t current_limit;
 

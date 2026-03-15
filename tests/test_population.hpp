@@ -543,13 +543,13 @@ TEST_CASE("Test randomize or accept best 4", "[population]" ) {
 
 TEST_CASE("Test shuffle mutation operations", "[population]" ) {
     SEPopulation<TestRNG> population = make_population<TestRNG>(0);
-    population.se_config.mutation_operations = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    std::vector<uint8_t> initial_ops = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    population.se_config.mutation_operations = initial_ops;
 
     global_rng.seed();
 
     population.se_shuffle_mutation_operations();
 
-    std::vector<uint8_t> initial_ops = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     REQUIRE(population.se_config.mutation_operations != initial_ops);
 }
 
@@ -736,4 +736,26 @@ TEST_CASE("Test calculate average fitness1", "[population]") {
 
     std::float64_t avg_fitness1 = population.se_get_average_fitness1();
     REQUIRE(avg_fitness1 == 5.276299999999999);
+}
+
+TEST_CASE("Test prepare iteration", "[population]") {
+    SEPopulation<TestRNG> population = make_population<TestRNG>(10);
+    std::vector<uint8_t> initial_ops = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    population.se_config.mutation_operations = initial_ops;
+    TestRNG rng2 = population.rng;
+
+    REQUIRE(population.rng.get_uint8(100) == rng2.get_uint8(100));
+    REQUIRE(population.rng.get_uint16(100) == rng2.get_uint16(100));
+    REQUIRE(population.rng.get_uint32(100) == rng2.get_uint32(100));
+    REQUIRE(population.rng.get_uint64(100) == rng2.get_uint64(100));
+
+    population.se_prepare_iteration("Test prepare iteration", population.population[0]->se_to_vec_u8());
+
+    REQUIRE(population.se_config.mutation_operations.size() == 10);
+    REQUIRE(population.se_config.mutation_operations != initial_ops);
+
+    REQUIRE(population.rng.get_uint8(100) != rng2.get_uint8(100));
+    REQUIRE(population.rng.get_uint16(100) != rng2.get_uint16(100));
+    REQUIRE(population.rng.get_uint32(100) != rng2.get_uint32(100));
+    REQUIRE(population.rng.get_uint64(100) != rng2.get_uint64(100));
 }

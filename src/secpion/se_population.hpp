@@ -41,6 +41,7 @@ class SEPopulation {
         bool minimum_found;
         T rng;
         uint64_t randomize_iteration;
+        std::float64_t previous_best;
 
         SEPopulation(SEConfiguration config):
             se_config(config),
@@ -51,7 +52,8 @@ class SEPopulation {
             mut_op_index(0),
             minimum_found(false),
             rng(),
-            randomize_iteration(0)
+            randomize_iteration(0),
+            previous_best(0.0)
         {
             rng.seed();
             spdlog::drop("se_logger");
@@ -147,15 +149,22 @@ class SEPopulation {
         void se_randomize_or_accept_best(std::span<const uint8_t> data) {
             if (se_config.randomize_population) {
                 randomize_iteration++;
-                if (randomize_iteration > se_config.randomize_count) {
+                if (randomize_iteration >= se_config.randomize_count) {
                     randomize_iteration = 0;
                     se_logger->debug("Randomize population.");
                     se_random_population();
                 }
             } else if (se_config.accept_new_best) {
-                se_logger->debug("Accept new best from server.");
+                previous_best = population[0]->fitness1;
                 population[0]->se_from_span_u8(data);
-                se_logger->debug("Fitness from server: {}", population[0]->fitness1);
+                if (previous_best == population[0]->fitness1) {
+                    se_logger->debug("Maybe stuck in local minimum, randomize population");
+                    se_logger->debug("Previous best: {}", previous_best);
+                    se_random_population();
+                } else {
+                    se_logger->debug("Accept new best from server.");
+                    se_logger->debug("Fitness from server: {}", population[0]->fitness1);
+                }
             }
         }
 

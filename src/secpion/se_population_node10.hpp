@@ -33,9 +33,6 @@ class SEPopulationNode10: public NCNodeDataProcessor {
             NCNodeDataProcessor(),
             population(se_config) {
             population.se_fill_population(std::move(individual));
-            population.se_config.sine_base = 20.0;
-            population.se_config.sine_amplitude = 20.0;
-            population.se_config.sine_frequency = 0.01;
         }
 
         [[nodiscard]] std::vector<uint8_t> nc_process_data(std::vector<uint8_t> data) override {
@@ -86,7 +83,7 @@ class SEPopulationNode10: public NCNodeDataProcessor {
 
         void se_log_info() {
             population.se_logger->info("Population type 10.");
-            population.se_logger->info("Always replace the worst if better.");
+            population.se_logger->info("Always replace the worst individual if better fitness1.");
         }
 
         void se_set_logger(std::shared_ptr<spdlog::logger> logger) {

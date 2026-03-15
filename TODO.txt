@@ -4,10 +4,9 @@ TODO:
     - maybe merge TestIndividual1 and TestIndividual2.
     - add philox4x64 rng.
     - add examples: bin_packing, function_optimization, knapsack, neural_net, queens, sudoku, tsp.
-    - new population (type 10): only replace the worst.
-    - nc_is_job_done() is called twice.
-    - Try to add the nodeid to the log file.
+    - try to add the nodeid to the log file.
     - set type of population via command line.
+    - new option: reseed_rng, wether to get a fresh new seed for the rng at the beginning of the iteration loop.
 
 
 
@@ -101,5 +100,7 @@ Quantum Approximate Optimization Algorithm (QAOA)
 
 
 Done:
-    - add rng from std::random.
-    - add stop watch to server.
+    # add rng from std::random.
+    # add stop watch to server.
+    # new population (type 10): only replace the worst.
+    # nc_is_job_done() is called twice.

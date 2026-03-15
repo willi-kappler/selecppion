@@ -407,7 +407,7 @@ TEST_CASE("Test randomize or accept best 2", "[population]" ) {
     SEPopulation<TestRNG> population = make_population<TestRNG>(10);
     population.se_config.randomize_population = true;
     population.se_config.accept_new_best = false;
-    population.se_config.randomize_count = 1;
+    population.se_config.randomize_count = 2;
     fill_fitness(population, 3.3, 6.2);
 
     global_rng.seed();
@@ -490,7 +490,7 @@ TEST_CASE("Test randomize or accept best 4", "[population]" ) {
     SEPopulation<TestRNG> population = make_population<TestRNG>(10);
     population.se_config.randomize_population = true;
     population.se_config.accept_new_best = true;
-    population.se_config.randomize_count = 1;
+    population.se_config.randomize_count = 2;
     fill_fitness(population, 9.9, 8.8);
 
     global_rng.seed();

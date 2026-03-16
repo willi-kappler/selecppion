@@ -16,13 +16,10 @@
     "node_log_level": "debug",
     "randomize_count": 1,
     "mutation_operations": [
-        0,
-        1,
-        2,
-        3
+        0, 1, 2, 3, 4
     ],
-    "sine_base": 8300.0,
-    "sine_amplitude": 200.0,
-    "sine_frequency": 0.01,
+    "sine_base": 8500.0,
+    "sine_amplitude": 500.0,
+    "sine_frequency": 0.001,
     "limit_factor": 1.5
 }

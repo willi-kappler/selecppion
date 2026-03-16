@@ -32,6 +32,8 @@
 #include "se_random.hpp"
 #include "se_exceptions.hpp"
 
+using namespace nodcru2;
+
 namespace secpion {
 template<typename T>
 class SEServerDP: public NCServerDataProcessor {
@@ -56,7 +58,26 @@ class SEServerDP: public NCServerDataProcessor {
         {
             rng.seed();
             spdlog::drop("se_logger");
-            se_logger = spdlog::stdout_logger_mt("se_logger");
+
+            if (se_config.server_log_file.size() > 0) {
+                std::string file_name = nodcru2::nc_gen_log_file_name(se_config.server_log_file);
+                se_logger = spdlog::basic_logger_mt("se_logger", file_name);
+            } else {
+                se_logger = spdlog::stdout_logger_mt("se_logger");
+            }
+
+            if (se_config.server_log_level == "debug") {
+                se_logger->set_level(spdlog::level::level_enum::debug);
+            } else if ((se_config.server_log_level == "info") || (se_config.server_log_level.size() == 0)) {
+                se_logger->set_level(spdlog::level::level_enum::info);
+            } else if (se_config.server_log_level == "warn") {
+                se_logger->set_level(spdlog::level::level_enum::warn);
+            } else if (se_config.server_log_level == "error") {
+                se_logger->set_level(spdlog::level::level_enum::err);
+            } else {
+                throw SEConfigurationException(fmt::format("Unknown log level: {}", se_config.server_log_level).c_str());
+            }
+
             se_fill_population(std::move(individual));
             se_sort_population();
         }

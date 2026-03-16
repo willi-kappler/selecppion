@@ -28,7 +28,8 @@
 // Local includes:
 #include "secpion/se_config.hpp"
 #include "secpion/se_server.hpp"
-#include "secpion/se_population_node1.hpp"
+//#include "secpion/se_population_node1.hpp"
+#include "secpion/se_population_selector.hpp"
 #include "secpion/se_individual.hpp"
 
 using namespace secpion;
@@ -215,6 +216,11 @@ int main(int argc, char *argv[]) {
         .help("Population size")
         .scan<'i', uint32_t>();
 
+    program.add_argument("-t")
+        .help("Population type")
+        .default_value(static_cast<uint8_t>(1))
+        .scan<'i', uint8_t>();
+
     try {
         program.parse_args(argc, argv);
     }
@@ -230,26 +236,18 @@ int main(int argc, char *argv[]) {
 
     if (program["-r"] == true) {
         se_config.randomize_population = true;
-    } else {
-        se_config.randomize_population = false;
     }
 
     if (program.is_used("-m")) {
         se_config.num_of_mutations = program.get<uint32_t>("-m");
-    } else {
-        se_config.num_of_mutations = 1;
     }
 
     if (program.is_used("-i")) {
         se_config.num_of_iterations = program.get<uint32_t>("-i");
-    } else {
-        se_config.num_of_iterations = 1000;
     }
 
     if (program.is_used("-p")) {
         se_config.node_population_size = program.get<uint32_t>("-p");
-    } else {
-        se_config.node_population_size = 100;
     }
 
     // For the file "city_positions2.txt"
@@ -266,8 +264,6 @@ int main(int argc, char *argv[]) {
 
         std::shared_ptr<SEServerDP_L64> tsp_server =
             std::make_shared<SEServerDP_L64>(se_config, std::move(tsp_individual));
-        tsp_server->se_set_file_logger("tsp_server");
-        tsp_server->se_set_loglevel(spdlog::level::level_enum::debug);
         NCServer nc_server(nc_config, tsp_server);
         nc_server.nc_run();
     } else {
@@ -278,10 +274,9 @@ int main(int argc, char *argv[]) {
             nc_config.server_address = server_address;
         }
 
-        std::shared_ptr<SEPop1_L64> tsp_node =
-            std::make_shared<SEPop1_L64>(se_config, std::move(tsp_individual));
-        tsp_node->se_set_file_logger("tsp_node");
-        tsp_node->se_set_loglevel(spdlog::level::level_enum::debug);
+        uint8_t population_type = program.get<uint8_t>("-t");
+        std::shared_ptr<NCNodeDataProcessor> tsp_node =
+            se_select_population(se_config, std::move(tsp_individual), population_type);
         NCNode nc_node(nc_config, tsp_node);
         nc_node.nc_run();
     }

@@ -17,17 +17,12 @@
 #include <stdfloat>
 
 // External includes:
-#include <nodcru2/nc_config.hpp>
 #include <tao/json.hpp>
-
-using namespace nodcru2;
 
 namespace secpion {
 class SEConfiguration {
     public:
         // Server configuration:
-        // Maybe add NodeCrunch2 NCConfiguration here
-        NCConfiguration nc_config;
         std::float64_t target_fitness1;
         std::float64_t target_fitness2;
         std::string result_filename;
@@ -35,6 +30,8 @@ class SEConfiguration {
         bool allow_same_fitness;
         bool share_only_best;
         uint32_t server_population_size;
+        std::string server_log_file;
+        std::string server_log_level;
 
         // Node configuration:
         uint32_t node_population_size;
@@ -47,6 +44,8 @@ class SEConfiguration {
         uint8_t population_kind;
         std::vector<uint8_t> mutation_operations;
         uint8_t early_exit_sleep;
+        std::string node_log_file;
+        std::string node_log_level;
 
         // Population specific configuration:
         uint8_t min_num_of_individuals;
@@ -56,7 +55,7 @@ class SEConfiguration {
         std::float64_t limit_factor;
 
         // Constructor:
-        SEConfiguration(NCConfiguration);
+        SEConfiguration();
 
         // Default special member functions:
         SEConfiguration(SEConfiguration&&) = default;

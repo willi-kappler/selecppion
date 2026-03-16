@@ -57,11 +57,25 @@ class SEPopulation {
         {
             rng.seed();
             spdlog::drop("se_logger");
-            se_logger = spdlog::stdout_logger_mt("se_logger");
-        }
 
-        void se_set_logger(std::shared_ptr<spdlog::logger> logger) {
-            se_logger = logger;
+            if (se_config.node_log_file.size() > 0) {
+                std::string file_name = nodcru2::nc_gen_log_file_name(se_config.node_log_file);
+                se_logger = spdlog::basic_logger_mt("se_logger", file_name);
+            } else {
+                se_logger = spdlog::stdout_logger_mt("se_logger");
+            }
+
+            if (se_config.node_log_level == "debug") {
+                se_logger->set_level(spdlog::level::level_enum::debug);
+            } else if ((se_config.node_log_level == "info") || (se_config.node_log_level.size() == 0)) {
+                se_logger->set_level(spdlog::level::level_enum::info);
+            } else if (se_config.node_log_level == "warn") {
+                se_logger->set_level(spdlog::level::level_enum::warn);
+            } else if (se_config.node_log_level == "error") {
+                se_logger->set_level(spdlog::level::level_enum::err);
+            } else {
+                throw SEConfigurationException(fmt::format("Unknown log level: {}", se_config.node_log_level).c_str());
+            }
 
             se_logger->info("Population size: {}, target fitness 1: {}, target fitness 2: {}",
                 se_config.node_population_size, se_config.target_fitness1, se_config.target_fitness2);
@@ -73,15 +87,9 @@ class SEPopulation {
             se_logger->info("Mutation operations: {}", se_config.mutation_operations);
         }
 
-        void se_set_loglevel(spdlog::level::level_enum level) {
-            se_logger->set_level(level);
-        }
-
-        void se_set_file_logger(std::string_view prefix) {
-            std::string file_name = nodcru2::nc_gen_log_file_name(prefix);
+        void se_set_logger(std::shared_ptr<spdlog::logger> logger) {
             spdlog::drop("se_logger");
-            std::shared_ptr<spdlog::logger> file_logger = spdlog::basic_logger_mt("se_logger", file_name);
-            se_set_logger(file_logger);
+            se_logger = logger;
         }
 
         void se_fill_population(std::unique_ptr<SEIndividual> individual) {

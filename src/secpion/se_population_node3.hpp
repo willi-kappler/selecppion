@@ -21,6 +21,8 @@
 #include "se_config.hpp"
 #include "se_population.hpp"
 
+using namespace nodcru2;
+
 namespace secpion {
 template<typename T>
 class SEPopulationNode3: public NCNodeDataProcessor {
@@ -32,6 +34,11 @@ class SEPopulationNode3: public NCNodeDataProcessor {
             NCNodeDataProcessor(),
             population(se_config) {
             population.se_fill_population(std::move(individual));
+
+            population.se_logger->info("Population type 3.");
+            population.se_logger->info("Randomly pick an individual and mutate it.");
+            population.se_logger->info("If it's better than the best replace it.");
+            population.se_logger->info("Else if it's better than the worst replace it.");
         }
 
         [[nodiscard]] std::vector<uint8_t> nc_process_data(std::vector<uint8_t> data) override {
@@ -80,25 +87,8 @@ class SEPopulationNode3: public NCNodeDataProcessor {
             return population.population[population.worst_index].get();
         }
 
-        void se_log_info() {
-            population.se_logger->info("Population type 3.");
-            population.se_logger->info("Randomly pick an individual and mutate it.");
-            population.se_logger->info("If it's better than the best replace it.");
-            population.se_logger->info("Else if it's better than the worst replace it.");
-        }
-
         void se_set_logger(std::shared_ptr<spdlog::logger> logger) {
             population.se_set_logger(logger);
-            se_log_info();
-        }
-
-        void se_set_loglevel(spdlog::level::level_enum level) {
-            population.se_set_loglevel(level);
-        }
-
-        void se_set_file_logger(std::string_view prefix) {
-            population.se_set_file_logger(prefix);
-            se_log_info();
         }
 };
 

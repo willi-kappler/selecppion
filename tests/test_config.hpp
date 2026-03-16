@@ -12,7 +12,6 @@
 // External includes:
 #include <snitch/snitch.hpp>
 #include <tao/json.hpp>
-#include <nodcru2/nc_config.hpp>
 
 // Local includes:
 #include "secpion/se_config.hpp"
@@ -21,34 +20,36 @@
 using namespace secpion;
 
 TEST_CASE("Create valid default configuration", "[configuration]" ) {
-    NCConfiguration config1 = NCConfiguration("12345678901234567890123456789012");
-    SEConfiguration config2 = SEConfiguration(config1);
+    SEConfiguration se_config;
 
     // Server configuration:
-    REQUIRE(config2.target_fitness1 == 0.0);
-    REQUIRE(config2.target_fitness2 == 0.0);
-    REQUIRE(config2.result_filename == "best_result.json");
-    REQUIRE(config2.save_new_fitness == true);
-    REQUIRE(config2.allow_same_fitness == false);
-    REQUIRE(config2.share_only_best == true);
-    REQUIRE(config2.server_population_size == 10);
+    REQUIRE(se_config.target_fitness1 == 0.0);
+    REQUIRE(se_config.target_fitness2 == 0.0);
+    REQUIRE(se_config.result_filename == "best_result.json");
+    REQUIRE(se_config.save_new_fitness == true);
+    REQUIRE(se_config.allow_same_fitness == false);
+    REQUIRE(se_config.share_only_best == true);
+    REQUIRE(se_config.server_population_size == 10);
+    REQUIRE(se_config.server_log_file == "");
+    REQUIRE(se_config.server_log_level == "");
 
     // Node configuration:
-    REQUIRE(config2.node_population_size == 10);
-    REQUIRE(config2.num_of_iterations == 1000);
-    REQUIRE(config2.num_of_mutations == 10);
-    REQUIRE(config2.accept_new_best == true);
-    REQUIRE(config2.randomize_population == false);
-    REQUIRE(config2.randomize_count == 5);
-    REQUIRE(config2.population_kind == 1);
-    REQUIRE(config2.mutation_operations == std::vector<uint8_t>{});
-    REQUIRE(config2.early_exit_sleep == 10);
-    REQUIRE(config2.min_num_of_individuals == 2);
-    REQUIRE(config2.sine_base == 100.0);
-    REQUIRE(config2.sine_amplitude == 50.0);
-    REQUIRE(config2.sine_frequency == 0.01);
-    REQUIRE(config2.limit_factor == 2.0);
-    // REQUIRE(config2. == );
+    REQUIRE(se_config.node_population_size == 10);
+    REQUIRE(se_config.num_of_iterations == 1000);
+    REQUIRE(se_config.num_of_mutations == 10);
+    REQUIRE(se_config.accept_new_best == true);
+    REQUIRE(se_config.randomize_population == false);
+    REQUIRE(se_config.randomize_count == 5);
+    REQUIRE(se_config.population_kind == 1);
+    REQUIRE(se_config.mutation_operations == std::vector<uint8_t>{});
+    REQUIRE(se_config.early_exit_sleep == 10);
+    REQUIRE(se_config.node_log_file == "");
+    REQUIRE(se_config.node_log_level == "");
+    REQUIRE(se_config.min_num_of_individuals == 2);
+    REQUIRE(se_config.sine_base == 100.0);
+    REQUIRE(se_config.sine_amplitude == 50.0);
+    REQUIRE(se_config.sine_frequency == 0.01);
+    REQUIRE(se_config.limit_factor == 2.0);
 }
 
 TEST_CASE("Test valid JSON configuration", "[configuration]" ) {
@@ -61,6 +62,8 @@ TEST_CASE("Test valid JSON configuration", "[configuration]" ) {
         {"allow_same_fitness", true},
         {"share_only_best", false},
         {"server_population_size", 15},
+        {"server_log_file", "foo_bar"},
+        {"server_log_level", "debug"},
         {"node_population_size", 21},
         {"num_of_iterations", 321},
         {"num_of_mutations", 7},
@@ -70,40 +73,45 @@ TEST_CASE("Test valid JSON configuration", "[configuration]" ) {
         {"population_kind", 2},
         {"mutation_operations", tao::json::value::array({2, 4, 5})},
         {"early_exit_sleep", 57},
+        {"node_log_file", "node_foo"},
+        {"node_log_level", "warning"},
         {"min_num_of_individuals", 8},
         {"sine_base", 77.77},
         {"sine_amplitude", 44.44},
         {"sine_frequency", 22.22},
         {"limit_factor", 33.33}
-        // { "",  }
     };
 
-    SEConfiguration config1 = se_config_from_json(json_config);
+    SEConfiguration se_config = se_config_from_json(json_config);
 
     // Server configuration:
-    REQUIRE(config1.target_fitness1 == 2.0);
-    REQUIRE(config1.target_fitness2 == 4.5);
-    REQUIRE(config1.result_filename == "nice_simulation.json");
-    REQUIRE(config1.save_new_fitness == false);
-    REQUIRE(config1.allow_same_fitness == true);
-    REQUIRE(config1.share_only_best == false);
-    REQUIRE(config1.server_population_size == 15);
+    REQUIRE(se_config.target_fitness1 == 2.0);
+    REQUIRE(se_config.target_fitness2 == 4.5);
+    REQUIRE(se_config.result_filename == "nice_simulation.json");
+    REQUIRE(se_config.save_new_fitness == false);
+    REQUIRE(se_config.allow_same_fitness == true);
+    REQUIRE(se_config.share_only_best == false);
+    REQUIRE(se_config.server_population_size == 15);
+    REQUIRE(se_config.server_log_file == "foo_bar");
+    REQUIRE(se_config.server_log_level == "debug");
 
     // Node configuration:
-    REQUIRE(config1.node_population_size == 21);
-    REQUIRE(config1.num_of_iterations == 321);
-    REQUIRE(config1.num_of_mutations == 7);
-    REQUIRE(config1.accept_new_best == false);
-    REQUIRE(config1.randomize_population == true);
-    REQUIRE(config1.randomize_count == 15);
-    REQUIRE(config1.population_kind == 2);
-    REQUIRE(config1.mutation_operations == std::vector<uint8_t>{2, 4, 5});
-    REQUIRE(config1.early_exit_sleep == 57);
-    REQUIRE(config1.min_num_of_individuals == 8);
-    REQUIRE(config1.sine_base == 77.77);
-    REQUIRE(config1.sine_amplitude == 44.44);
-    REQUIRE(config1.sine_frequency == 22.22);
-    REQUIRE(config1.limit_factor == 33.33);
+    REQUIRE(se_config.node_population_size == 21);
+    REQUIRE(se_config.num_of_iterations == 321);
+    REQUIRE(se_config.num_of_mutations == 7);
+    REQUIRE(se_config.accept_new_best == false);
+    REQUIRE(se_config.randomize_population == true);
+    REQUIRE(se_config.randomize_count == 15);
+    REQUIRE(se_config.population_kind == 2);
+    REQUIRE(se_config.mutation_operations == std::vector<uint8_t>{2, 4, 5});
+    REQUIRE(se_config.early_exit_sleep == 57);
+    REQUIRE(se_config.node_log_file == "node_foo");
+    REQUIRE(se_config.node_log_level == "warning");
+    REQUIRE(se_config.min_num_of_individuals == 8);
+    REQUIRE(se_config.sine_base == 77.77);
+    REQUIRE(se_config.sine_amplitude == 44.44);
+    REQUIRE(se_config.sine_frequency == 22.22);
+    REQUIRE(se_config.limit_factor == 33.33);
 }
 
 /*

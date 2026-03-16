@@ -22,6 +22,8 @@
 #include "se_config.hpp"
 #include "se_population.hpp"
 
+using namespace nodcru2;
+
 namespace secpion {
 template<typename T>
 class SEPopulationNode10: public NCNodeDataProcessor {
@@ -33,10 +35,15 @@ class SEPopulationNode10: public NCNodeDataProcessor {
             NCNodeDataProcessor(),
             population(se_config) {
             population.se_fill_population(std::move(individual));
+
+            population.se_logger->info("Population type 10.");
+            population.se_logger->info("Always replace the worst individual if better fitness1.");
         }
 
         [[nodiscard]] std::vector<uint8_t> nc_process_data(std::vector<uint8_t> data) override {
             population.se_prepare_iteration("PN10: Process data.", data);
+            population.se_find_worst_individual();
+
             std::unique_ptr<SEIndividual> cloned_indi;
             size_t j = 0;
 
@@ -56,9 +63,9 @@ class SEPopulationNode10: public NCNodeDataProcessor {
 
                 cloned_indi->se_calculate_fitness1();
 
-                population.se_find_worst_individual();
                 if (cloned_indi->fitness1 < population.se_get_worst_fitness()) {
                     population.se_replace_worst(std::move(cloned_indi));
+                    population.se_find_worst_individual();
                 }
             }
 
@@ -78,23 +85,8 @@ class SEPopulationNode10: public NCNodeDataProcessor {
             return population.population[population.worst_index].get();
         }
 
-        void se_log_info() {
-            population.se_logger->info("Population type 10.");
-            population.se_logger->info("Always replace the worst individual if better fitness1.");
-        }
-
         void se_set_logger(std::shared_ptr<spdlog::logger> logger) {
             population.se_set_logger(logger);
-            se_log_info();
-        }
-
-        void se_set_loglevel(spdlog::level::level_enum level) {
-            population.se_set_loglevel(level);
-        }
-
-        void se_set_file_logger(std::string_view prefix) {
-            population.se_set_file_logger(prefix);
-            se_log_info();
         }
 };
 

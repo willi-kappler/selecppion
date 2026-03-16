@@ -11,7 +11,7 @@
 
 // External includes:
 #include <snitch/snitch.hpp>
-#include <nodcru2/nc_config.hpp>
+#include <nodcru2/nc_nodeid.hpp>
 
 // Local includes:
 #include "secpion/se_config.hpp"

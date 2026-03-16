@@ -26,28 +26,24 @@ using namespace secpion;
 
 TEST_CASE("Test population type 10, run 1", "[population_type10]" ) {
     TestNP<SEPopulationNode10<TestRNG>> test_population;
-    test_population.print_stats = true;
     test_population.se_config.num_of_mutations = 1;
     SEPopulationNode10<TestRNG> population = test_population.run();
 }
 
 TEST_CASE("Test population type 10, run 2", "[population_type10]" ) {
     TestNP<SEPopulationNode10<TestRNG>> test_population;
-    test_population.print_stats = true;
     test_population.se_config.num_of_mutations = 1;
     SEPopulationNode10<TestRNG> population = test_population.run_inverted();
 }
 
 TEST_CASE("Test population type 10, run 3", "[population_type10]" ) {
     TestNP<SEPopulationNode10<TestRNG>> test_population;
-    test_population.print_stats = true;
     test_population.se_config.num_of_mutations = 5;
     SEPopulationNode10<TestRNG> population = test_population.run();
 }
 
 TEST_CASE("Test population type 10, run 4", "[population_type10]" ) {
     TestNP<SEPopulationNode10<TestRNG>> test_population;
-    test_population.print_stats = true;
     test_population.se_config.num_of_mutations = 1;
     test_population.se_config.accept_new_best = true;
     SEPopulationNode10<TestRNG> population = test_population.run();
@@ -55,7 +51,6 @@ TEST_CASE("Test population type 10, run 4", "[population_type10]" ) {
 
 TEST_CASE("Test population type 10, run 5", "[population_type10]" ) {
     TestNP<SEPopulationNode10<TestRNG>> test_population;
-    test_population.print_stats = true;
     test_population.se_config.num_of_mutations = 1;
     test_population.se_config.randomize_population = true;
     SEPopulationNode10<TestRNG> population = test_population.run();
@@ -63,7 +58,6 @@ TEST_CASE("Test population type 10, run 5", "[population_type10]" ) {
 
 TEST_CASE("Test population type 10, run 6", "[population_type10]" ) {
     TestNP<SEPopulationNode10<TestRNG>> test_population;
-    test_population.print_stats = true;
     test_population.se_config.num_of_mutations = 1;
     test_population.se_config.accept_new_best = true;
     test_population.se_config.randomize_population = true;

@@ -21,6 +21,8 @@
 #include "se_config.hpp"
 #include "se_population.hpp"
 
+using namespace nodcru2;
+
 namespace secpion {
 template<typename T>
 class SEPopulationNode5: public NCNodeDataProcessor {
@@ -32,6 +34,11 @@ class SEPopulationNode5: public NCNodeDataProcessor {
             NCNodeDataProcessor(),
             population(se_config) {
             population.se_fill_population(std::move(individual));
+
+            population.se_logger->info("Population type 5.");
+            population.se_logger->info("Before iterating calculate the average fitness.");
+            population.se_logger->info("Mutate each individual and if better than the average replace it.");
+            population.se_logger->info("Also lower (update) the average fitness as new bound.");
         }
 
         [[nodiscard]] std::vector<uint8_t> nc_process_data(std::vector<uint8_t> data) override {
@@ -86,25 +93,8 @@ class SEPopulationNode5: public NCNodeDataProcessor {
             return population.population[population.worst_index].get();
         }
 
-        void se_log_info() {
-            population.se_logger->info("Population type 5.");
-            population.se_logger->info("Before iterating calculate the average fitness.");
-            population.se_logger->info("Mutate each individual and if better than the average replace it.");
-            population.se_logger->info("Also lower (update) the average fitness as new bound.");
-        }
-
         void se_set_logger(std::shared_ptr<spdlog::logger> logger) {
             population.se_set_logger(logger);
-            se_log_info();
-        }
-
-        void se_set_loglevel(spdlog::level::level_enum level) {
-            population.se_set_loglevel(level);
-        }
-
-        void se_set_file_logger(std::string_view prefix) {
-            population.se_set_file_logger(prefix);
-            se_log_info();
         }
 };
 

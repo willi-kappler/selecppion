@@ -32,8 +32,7 @@ TestRNG global_rng;
 using namespace secpion;
 
 SEConfiguration make_config() {
-    NCConfiguration nc_config("12345678901234567890123456789012");
-    return SEConfiguration(nc_config);
+    return SEConfiguration();
 }
 
 class TestIndividual1: public SEIndividual {
@@ -181,13 +180,16 @@ class TestNP {
             se_config.randomize_population = false;
             se_config.accept_new_best = false;
             se_config.early_exit_sleep = 0;
+            se_config.server_log_level = "debug";
+            se_config.node_log_level = "debug";
+            se_config.sine_base = 5.0;
+            se_config.sine_amplitude = 5.0;
             individual2.numbers = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
             individual2.se_calculate_fitness1();
         }
 
         [[nodiscard]] T run() {
             T population(se_config, individual1->se_clone());
-            population.se_set_loglevel(spdlog::level::level_enum::debug);
             std::vector<uint8_t> result;
 
             // May need multiple runs:

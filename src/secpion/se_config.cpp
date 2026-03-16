@@ -15,9 +15,8 @@
 #include "se_exceptions.hpp"
 
 namespace secpion {
-SEConfiguration::SEConfiguration(NCConfiguration nc_config):
+SEConfiguration::SEConfiguration():
     // Server configuration:
-    nc_config(nc_config),
     target_fitness1(0.0),
     target_fitness2(0.0),
     result_filename("best_result.json"),
@@ -25,6 +24,8 @@ SEConfiguration::SEConfiguration(NCConfiguration nc_config):
     allow_same_fitness(false),
     share_only_best(true),
     server_population_size(10),
+    server_log_file(""),
+    server_log_level(""),
 
     // Node configuration:
     node_population_size(10),
@@ -36,6 +37,8 @@ SEConfiguration::SEConfiguration(NCConfiguration nc_config):
     population_kind(1),
     mutation_operations(),
     early_exit_sleep(10),
+    node_log_file(""),
+    node_log_level(""),
 
     min_num_of_individuals(2),
     sine_base(100.0),
@@ -45,8 +48,7 @@ SEConfiguration::SEConfiguration(NCConfiguration nc_config):
 {}
 
 [[nodiscard]] SEConfiguration se_config_from_json(const tao::json::value json_config) {
-    NCConfiguration nc_config = nc_config_from_json(json_config);
-    SEConfiguration se_config(nc_config);
+    SEConfiguration se_config;
 
     if (auto v = json_config.find("target_fitness1"); v != nullptr) {
         se_config.target_fitness1 = v->as<double>(); // doesn't like std::float64_t
@@ -84,6 +86,15 @@ SEConfiguration::SEConfiguration(NCConfiguration nc_config):
         }
     }
 
+    if (auto v = json_config.find("server_log_file"); v != nullptr) {
+        se_config.server_log_file = v->as<std::string>();
+    }
+
+    if (auto v = json_config.find("server_log_level"); v != nullptr) {
+        se_config.server_log_level = v->as<std::string>();
+    }
+
+    // Node settings:
     if (auto v = json_config.find("node_population_size"); v != nullptr) {
         se_config.node_population_size = v->as<uint32_t>();
 
@@ -142,6 +153,14 @@ SEConfiguration::SEConfiguration(NCConfiguration nc_config):
 
     if (auto v = json_config.find("early_exit_sleep"); v != nullptr) {
         se_config.early_exit_sleep = v->as<uint8_t>();
+    }
+
+    if (auto v = json_config.find("node_log_file"); v != nullptr) {
+        se_config.node_log_file = v->as<std::string>();
+    }
+
+    if (auto v = json_config.find("node_log_level"); v != nullptr) {
+        se_config.node_log_level = v->as<std::string>();
     }
 
     if (auto v = json_config.find("min_num_of_individuals"); v != nullptr) {

@@ -22,6 +22,8 @@
 #include "se_config.hpp"
 #include "se_population.hpp"
 
+using namespace nodcru2;
+
 namespace secpion {
 template<typename T>
 class SEPopulationNode7: public NCNodeDataProcessor {
@@ -35,6 +37,10 @@ class SEPopulationNode7: public NCNodeDataProcessor {
             population.se_fill_population(std::move(individual));
             population.best_index = 0;
             population.worst_index = population.se_config.node_population_size - 1;
+
+            population.se_logger->info("Population type 7.");
+            population.se_logger->info("Best individual at index 0. Increase factor with index.");
+            population.se_logger->info("Set limit based on factor and best fitness.");
         }
 
         [[nodiscard]] std::vector<uint8_t> nc_process_data(std::vector<uint8_t> data) override {
@@ -87,24 +93,8 @@ class SEPopulationNode7: public NCNodeDataProcessor {
             return population.population[population.worst_index].get();
         }
 
-        void se_log_info() {
-            population.se_logger->info("Population type 7.");
-            population.se_logger->info("Best individual at index 0. Increase factor with index.");
-            population.se_logger->info("Set limit based on factor and best fitness.");
-        }
-
         void se_set_logger(std::shared_ptr<spdlog::logger> logger) {
             population.se_set_logger(logger);
-            se_log_info();
-        }
-
-        void se_set_loglevel(spdlog::level::level_enum level) {
-            population.se_set_loglevel(level);
-        }
-
-        void se_set_file_logger(std::string_view prefix) {
-            population.se_set_file_logger(prefix);
-            se_log_info();
         }
 };
 

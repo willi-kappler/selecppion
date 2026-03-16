@@ -12,32 +12,6 @@
 #include <stdexcept>
 
 namespace secpion {
-/*
-class NCInvalidKeyException: public std::invalid_argument {
-public:
-  NCInvalidKeyException(): std::invalid_argument("Size of secret key must be 32 bytes.") { }
-};
-
-class NCCompressionException: public std::runtime_error {
-public:
-  NCCompressionException(): std::runtime_error("Compression error.") { }
-};
-
-class NCDecompressionException: public std::runtime_error {
-public:
-  NCDecompressionException(): std::runtime_error("Decompression error.") { }
-};
-
-class NCEncryptionException: public std::runtime_error {
-public:
-  NCEncryptionException(const char *msg): std::runtime_error(msg) { }
-};
-
-class NCDecryptionException: public std::runtime_error {
-public:
-  NCDecryptionException(const char *msg): std::runtime_error(msg) { }
-};
-*/
 class SEConfigurationException: public std::runtime_error {
 public:
   SEConfigurationException(const char *msg): std::runtime_error(msg) { }
@@ -56,6 +30,11 @@ public:
 class SEServerIOException: public std::runtime_error {
 public:
   SEServerIOException(const char *msg): std::runtime_error(msg) { }
+};
+
+class SEPopulationException: public std::runtime_error {
+public:
+  SEPopulationException(const char *msg): std::runtime_error(msg) { }
 };
 }
 

@@ -74,23 +74,6 @@ class TSPIndividual: public SEIndividual {
             return {i1, i2};
         }
 
-        std::tuple<size_t, size_t, size_t> get_three_indices() {
-            size_t size = positions.size();
-            size_t i1 = global_rng.get_size_t(size);
-            size_t i2 = global_rng.get_size_t(size);
-            size_t i3 = global_rng.get_size_t(size);
-
-            while (i1 == i2) {
-                i2 = global_rng.get_size_t(size);
-            }
-
-            while ((i1 == i3) || (i2 == i3)) {
-                i3 = global_rng.get_size_t(size);
-            }
-
-            return {i1, i2, i3};
-        }
-
         void reverse() {
             auto [i1, i2] = get_two_indices();
 
@@ -126,102 +109,45 @@ class TSPIndividual: public SEIndividual {
             std::rotate(positions.begin() + i1, positions.begin() + i2 - 1, positions.begin() + i2);
         }
 
-        void try_best_old() {
-            auto [i1, i2, i3] = get_three_indices();
-            std::float64_t current_best = fitness1;
-            // ABC
-            auto p1 = positions[i1];
-            auto p2 = positions[i2];
-            auto p3 = positions[i3];
+        void try_best1() {
+            size_t i1 = get_one_index();
+            std::float64_t current_best_fitness1 = fitness1;
+            auto current_best_posisions = positions;
 
-            std::swap(positions[i1], positions[i2]);
-            // BAC
-            se_calculate_fitness1();
+            for (size_t j = 0; j < positions.size(); j++) {
+                if (i1 != j) {
+                    std::swap(positions[i1], positions[j]);
+                    se_calculate_fitness1();
 
-            if (fitness1 < current_best) {
-                current_best = fitness1;
-                p1 = positions[i1];
-                p2 = positions[i2];
-                // p3 = positions[i3]; // Not changed
+                    if (fitness1 < current_best_fitness1) {
+                        // Store current best.
+                        current_best_fitness1 = fitness1;
+                        current_best_posisions = positions;
+                    }
+                }
             }
 
-            std::swap(positions[i2], positions[i3]);
-            // BCA
-            se_calculate_fitness1();
-
-            if (fitness1 < current_best) {
-                current_best = fitness1;
-                p1 = positions[i1];
-                p2 = positions[i2];
-                p3 = positions[i3];
-            }
-
-            std::swap(positions[i1], positions[i3]);
-            // ACB
-            se_calculate_fitness1();
-
-            if (fitness1 < current_best) {
-                current_best = fitness1;
-                p1 = positions[i1];
-                p2 = positions[i2];
-                p3 = positions[i3];
-            }
-
-            std::swap(positions[i1], positions[i2]);
-            // CAB
-            se_calculate_fitness1();
-
-            if (fitness1 < current_best) {
-                current_best = fitness1;
-                p1 = positions[i1];
-                p2 = positions[i2];
-                p3 = positions[i3];
-            }
-
-            std::swap(positions[i2], positions[i3]);
-            // CBA
-            se_calculate_fitness1();
-
-            if (fitness1 > current_best) {
-                // Not the best, so change it back to the best:
-                fitness1 = current_best;
-                positions[i1] = p1;
-                positions[i2] = p2;
-                positions[i3] = p3;
-            }
+            fitness1 = current_best_fitness1;
+            positions = current_best_posisions;
         }
 
-        std::float64_t get_4_pos_length(size_t i1, size_t i2, size_t i3, size_t i4) {
-            std::float64_t length = 0.0;
-            auto [x1, y1] = positions[i1];
-            auto [x2, y2] = positions[i2];
-            auto [x3, y3] = positions[i3];
-            auto [x4, y4] = positions[i4];
+        void try_best2() {
+            std::float64_t current_best_fitness1 = fitness1;
+            auto current_best_posisions = positions;
 
-            length += hypot((x1 - x2), (y1 - y2));
-            length += hypot((x3 - x4), (y3 - y4));
+            for (size_t i = 0; i < positions.size() - 1; i++) {
+                std::swap(positions[i], positions[i + 1]);
+                se_calculate_fitness1();
 
-            return length;
-        }
-
-        void try_best() {
-            size_t size = positions.size() - 1;
-            size_t i1 = global_rng.get_size_t(size);
-            size_t i2 = global_rng.get_size_t(size);
-
-            while ((i1 == i2) || (i1 + 1 == i2) || (i1 == i2 + 1)) {
-                i2 = global_rng.get_size_t(size);
+                if (fitness1 < current_best_fitness1) {
+                    // Store current best.
+                    current_best_fitness1 = fitness1;
+                    current_best_posisions = positions;
+                }
             }
 
-            std::float64_t len1 = get_4_pos_length(i1, i1 + 1, i2, i2 + 1);
-            std::float64_t len2 = get_4_pos_length(i1, i2, i1 + 1, i2 + 1);
-            std::float64_t len3 = get_4_pos_length(i1, i2 + 1, i2, i1 + 1);
-
-            if ((len2 < len1) && (len2 < len3)) {
-                std::swap(positions[i2], positions[i1 + 1]);
-            } else if ((len3 < len1) && (len3 < len2)) {
-                std::swap(positions[i2 + 1], positions[i1 + 1]);
-            }
+            fitness1 = current_best_fitness1;
+            positions = current_best_posisions;
         }
 
         void se_mutate(uint8_t op) override {
@@ -238,8 +164,11 @@ class TSPIndividual: public SEIndividual {
                 case 3:
                     shift_right();
                     break;
+                case 4:
+                    try_best1();
+                    break;
                 default:
-                    try_best();
+                    try_best2();
                     break;
             }
         }

@@ -6,6 +6,8 @@ run_type() {
     echo "Run type $1."
 
     # Start 4 nodes:
+    $EXECUTABLE -i 20000 -m 1 -o 0 -t $1 &
+    sleep 1
     $EXECUTABLE -i 20000 -m 1 -t $1 &
     sleep 1
     $EXECUTABLE -i 30000 -m 1 -t $1 &

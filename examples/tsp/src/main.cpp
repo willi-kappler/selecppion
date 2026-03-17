@@ -268,6 +268,11 @@ int main(int argc, char *argv[]) {
         .default_value(static_cast<uint8_t>(1))
         .scan<'i', uint8_t>();
 
+    program.add_argument("-o")
+        .help("Mutation operations")
+        .nargs(1, 6)
+        .scan<'i', uint8_t>();
+
     try {
         program.parse_args(argc, argv);
     }
@@ -295,6 +300,10 @@ int main(int argc, char *argv[]) {
 
     if (program.is_used("-p")) {
         se_config.node_population_size = program.get<uint32_t>("-p");
+    }
+
+    if (program.is_used("-o")) {
+        se_config.mutation_operations = program.get<std::vector<uint8_t>>("-o");
     }
 
     // For the file "city_positions2.txt"

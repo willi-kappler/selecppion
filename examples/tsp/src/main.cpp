@@ -311,6 +311,7 @@ int main(int argc, char *argv[]) {
     // This can be set in the configuration
     // file "tsp_config.json":
     // "target_fitness1": 8300.0
+    // Best fitness: 8145.xxxxx
 
     std::unique_ptr<TSPIndividual> tsp_individual = std::make_unique<TSPIndividual>();
     tsp_individual->load_data("city_positions2.txt");

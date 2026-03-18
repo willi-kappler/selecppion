@@ -7,6 +7,7 @@ TODO:
     - try to add the nodeid to the log file.
     - new option: reseed_rng, wether to get a fresh new seed for the rng at the beginning of the iteration loop.
     - maybe add crossover for mutation.
+    - split up example main file.
 
 
 

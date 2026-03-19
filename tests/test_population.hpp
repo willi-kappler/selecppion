@@ -738,16 +738,18 @@ TEST_CASE("Test calculate average fitness1", "[population]") {
     REQUIRE(avg_fitness1 == 5.276299999999999);
 }
 
-TEST_CASE("Test prepare iteration", "[population]") {
+TEST_CASE("Test prepare iteration 1", "[population]") {
     SEPopulation<TestRNG> population = make_population<TestRNG>(10);
     std::vector<uint8_t> initial_ops = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     population.se_config.mutation_operations = initial_ops;
+    population.se_config.seed_count = 0;
     TestRNG rng2 = population.rng;
 
     REQUIRE(population.rng.get_uint8(100) == rng2.get_uint8(100));
     REQUIRE(population.rng.get_uint16(100) == rng2.get_uint16(100));
     REQUIRE(population.rng.get_uint32(100) == rng2.get_uint32(100));
     REQUIRE(population.rng.get_uint64(100) == rng2.get_uint64(100));
+    REQUIRE(population.current_seed_counter == 0);
 
     population.se_prepare_iteration("Test prepare iteration", population.population[0]->se_to_vec_u8());
 
@@ -758,4 +760,25 @@ TEST_CASE("Test prepare iteration", "[population]") {
     REQUIRE(population.rng.get_uint16(100) != rng2.get_uint16(100));
     REQUIRE(population.rng.get_uint32(100) != rng2.get_uint32(100));
     REQUIRE(population.rng.get_uint64(100) != rng2.get_uint64(100));
+    REQUIRE(population.current_seed_counter == 0);
+}
+
+TEST_CASE("Test prepare iteration 2", "[population]") {
+    SEPopulation<TestRNG> population = make_population<TestRNG>(10);
+    population.se_config.seed_count = 2;
+    TestRNG rng2 = population.rng;
+
+    REQUIRE(population.rng.get_uint8(100) == rng2.get_uint8(100));
+    REQUIRE(population.rng.get_uint16(100) == rng2.get_uint16(100));
+    REQUIRE(population.rng.get_uint32(100) == rng2.get_uint32(100));
+    REQUIRE(population.rng.get_uint64(100) == rng2.get_uint64(100));
+    REQUIRE(population.current_seed_counter == 0);
+
+    population.se_prepare_iteration("Test prepare iteration", population.population[0]->se_to_vec_u8());
+
+    REQUIRE(population.rng.get_uint8(100) == rng2.get_uint8(100));
+    REQUIRE(population.rng.get_uint16(100) == rng2.get_uint16(100));
+    REQUIRE(population.rng.get_uint32(100) == rng2.get_uint32(100));
+    REQUIRE(population.rng.get_uint64(100) == rng2.get_uint64(100));
+    REQUIRE(population.current_seed_counter == 1);
 }

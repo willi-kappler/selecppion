@@ -39,6 +39,7 @@ SEConfiguration::SEConfiguration():
     early_exit_sleep(10),
     node_log_file(""),
     node_log_level(""),
+    seed_count(10),
 
     min_num_of_individuals(2),
     sine_base(100.0),
@@ -161,6 +162,10 @@ SEConfiguration::SEConfiguration():
 
     if (auto v = json_config.find("node_log_level"); v != nullptr) {
         se_config.node_log_level = v->as<std::string>();
+    }
+
+    if (auto v = json_config.find("seed_count"); v != nullptr) {
+        se_config.seed_count = v->as<uint32_t>();
     }
 
     if (auto v = json_config.find("min_num_of_individuals"); v != nullptr) {

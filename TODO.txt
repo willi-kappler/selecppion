@@ -5,9 +5,7 @@ TODO:
     - add philox4x64 rng.
     - add examples: bin_packing, function_optimization, knapsack, neural_net, queens, sudoku, tsp.
     - try to add the nodeid to the log file.
-    - new option: reseed_rng, wether to get a fresh new seed for the rng at the beginning of the iteration loop.
     - maybe add crossover for mutation.
-    - split up example main file.
 
 
 
@@ -108,3 +106,5 @@ Done:
     # nc_is_job_done() is called twice.
     # set type of population via command line.
     # add command line option for mutation operation for the tsp example.
+    # split up example main file.
+    # new option: reseed_rng, wether to get a fresh new seed for the rng at the beginning of the iteration loop.

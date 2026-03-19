@@ -45,6 +45,7 @@ TEST_CASE("Create valid default configuration", "[configuration]" ) {
     REQUIRE(se_config.early_exit_sleep == 10);
     REQUIRE(se_config.node_log_file == "");
     REQUIRE(se_config.node_log_level == "");
+    REQUIRE(se_config.seed_count == 10);
     REQUIRE(se_config.min_num_of_individuals == 2);
     REQUIRE(se_config.sine_base == 100.0);
     REQUIRE(se_config.sine_amplitude == 50.0);
@@ -75,6 +76,7 @@ TEST_CASE("Test valid JSON configuration", "[configuration]" ) {
         {"early_exit_sleep", 57},
         {"node_log_file", "node_foo"},
         {"node_log_level", "warning"},
+        {"seed_count", 20},
         {"min_num_of_individuals", 8},
         {"sine_base", 77.77},
         {"sine_amplitude", 44.44},
@@ -107,6 +109,7 @@ TEST_CASE("Test valid JSON configuration", "[configuration]" ) {
     REQUIRE(se_config.early_exit_sleep == 57);
     REQUIRE(se_config.node_log_file == "node_foo");
     REQUIRE(se_config.node_log_level == "warning");
+    REQUIRE(se_config.seed_count == 20);
     REQUIRE(se_config.min_num_of_individuals == 8);
     REQUIRE(se_config.sine_base == 77.77);
     REQUIRE(se_config.sine_amplitude == 44.44);

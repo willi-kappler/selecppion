@@ -46,6 +46,7 @@ class SEConfiguration {
         uint8_t early_exit_sleep;
         std::string node_log_file;
         std::string node_log_level;
+        uint32_t seed_count;
 
         // Population specific configuration:
         uint8_t min_num_of_individuals;

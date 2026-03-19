@@ -42,6 +42,7 @@ class SEPopulation {
         T rng;
         uint64_t randomize_iteration;
         std::float64_t previous_best;
+        uint32_t current_seed_counter;
 
         SEPopulation(SEConfiguration config):
             se_config(config),
@@ -53,7 +54,8 @@ class SEPopulation {
             minimum_found(false),
             rng(),
             randomize_iteration(0),
-            previous_best(0.0)
+            previous_best(0.0),
+            current_seed_counter(0)
         {
             rng.seed();
             spdlog::drop("se_logger");
@@ -294,7 +296,14 @@ class SEPopulation {
 
         void se_prepare_iteration(std::string_view population_title, std::vector<uint8_t> data) {
             se_logger->info(population_title);
-            rng.seed();
+
+            current_seed_counter++;
+            if (current_seed_counter >= se_config.seed_count) {
+                se_logger->debug("Reseed rng");
+                current_seed_counter = 0;
+                rng.seed();
+            }
+
             se_randomize_or_accept_best(data);
             se_shuffle_mutation_operations();
         }

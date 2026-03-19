@@ -33,30 +33,88 @@ SE_RNG_L64 global_rng;
 
 class BinPackingIndividual: public SEIndividual {
     public:
+        std::vector<std::float64_t> items;
+        std::vector<uint32_t> selection;
+        std::float64_t capacity;
+        std::float64_t final_penalty;
 
-        BinPackingIndividual()
-        {
+        BinPackingIndividual(std::vector<std::float64_t> initial_items, std::float64_t initial_capacity):
+        items(initial_items),
+        selection(),
+        capacity(initial_capacity),
+        final_penalty()
+        {}
+
+        void init() {
             se_randomize();
+            reset_penalty();
+        }
+
+        void reset_penalty() {
+            final_penalty = 0.0;
+
+            for (auto v: items) {
+                final_penalty += v;
+            }
+        }
+
+        void inc_bin() {
+            size_t i = global_rng.get_size_t(items.size());
+            selection[i]++;
+        }
+
+        void dec_bin() {
+            size_t i = global_rng.get_size_t(items.size());
+
+            if (selection[i] > 0) {
+                selection[i]++;
+            }
+        }
+
+        void set_to_one() {
+            size_t i = global_rng.get_size_t(items.size());
+            selection[i] = 1;
+        }
+
+        void swap() {
+            global_rng.swap(selection);
         }
 
         void se_mutate(uint8_t op) override {
             switch (op) {
                 case 0:
+                    inc_bin();
+                    break;
+                case 1:
+                    dec_bin();
+                    break;
+                case 2:
+                    set_to_one();
                     break;
                 default:
+                    swap();
                     break;
             }
         }
 
         void se_randomize() override {
-            // global_rng.shuffle(positions);
+            selection.assign(items.size(), 0);
+
+            for (auto &item: selection) {
+                item = global_rng.get_uint8(10);
+            }
         }
 
         void se_calculate_fitness1() override {
         }
 
+        std::float64_t se_actual_fitness() override {
+            return final_penalty - fitness1;
+        }
+
         [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() override {
-            std::unique_ptr<BinPackingIndividual> result = std::make_unique<BinPackingIndividual>();
+            std::unique_ptr<BinPackingIndividual> result = std::make_unique<BinPackingIndividual>(items, capacity);
+            result->selection = selection;
 
             return result;
         }

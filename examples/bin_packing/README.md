@@ -1,4 +1,4 @@
-The TSP (traveling salesman problem) example.
+The bin pakcing example.
 
 Run with:
 

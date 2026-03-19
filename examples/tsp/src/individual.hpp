@@ -80,8 +80,7 @@ class TSPIndividual: public SEIndividual {
         }
 
         void just_swap() {
-            const auto [i1, i2] = get_two_indices();
-            std::swap(positions[i1], positions[i2]);
+            global_rng.swap(positions);
         }
 
         void shift_left() {

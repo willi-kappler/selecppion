@@ -215,6 +215,25 @@ class SERandomGenerator {
             }
         }
 
+        template <typename U>
+        void swap(std::vector<U>& v) {
+            const size_t v_len = v.size();
+
+            if (v_len < 2) {
+                // Nothing to do
+                return;
+            }
+
+            size_t i1 = get_size_t(v_len);
+            size_t i2 = get_size_t(v_len);
+
+            while (i1 == i2) {
+                i2 = get_size_t(v_len);
+            }
+
+            std::swap(v[i1], v[i2]);
+        }
+
         // Constructor:
         SERandomGenerator():
             random_algorithm() {}

@@ -170,28 +170,61 @@ void gen_shuffle_choice() {
     REQUIRE_THROWS_AS(gen.choice(v), SERNGException);
 }
 
+template <typename G>
+void gen_swap() {
+    G gen;
+
+    // Empty:
+    std::vector<uint8_t> v{};
+    gen.swap(v);
+    REQUIRE(v.size() == 0);
+
+    // Only one element:
+    v = {5};
+    gen.swap(v);
+    REQUIRE(v == std::vector<uint8_t>{5});
+
+    // Two elements:
+    v = {11, 25};
+    gen.swap(v);
+    REQUIRE(v == std::vector<uint8_t>{25, 11});
+
+    // More elements:
+    v = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    gen.swap(v);
+    REQUIRE(v != std::vector<uint8_t>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
+}
+
 TEST_CASE("Create some random numbers", "[random]" ) {
-    gen_random_numbers<SERandomGenerator<SEAlgorithmLehmer64>>();
-    gen_random_numbers<SERandomGenerator<SEAlgorithmWyRand>>();
-    gen_random_numbers<SERandomGenerator<SEAlgorithmSTD_LCG>>();
-    gen_random_numbers<SERandomGenerator<SEAlgorithmSTD_Mersenne>>();
-    gen_random_numbers<SERandomGenerator<SEAlgorithmSTD_SWC>>();
+    gen_random_numbers<SE_RNG_L64>();
+    gen_random_numbers<SE_RNG_WY>();
+    gen_random_numbers<SE_RNG_LCG>();
+    gen_random_numbers<SE_RNG_MER>();
+    gen_random_numbers<SE_RNG_SWC>();
 }
 
 TEST_CASE("Test seed", "[random]" ) {
-    gen_seeds<SERandomGenerator<SEAlgorithmLehmer64>>();
-    gen_seeds<SERandomGenerator<SEAlgorithmWyRand>>();
-    gen_seeds<SERandomGenerator<SEAlgorithmSTD_LCG>>();
-    gen_seeds<SERandomGenerator<SEAlgorithmSTD_Mersenne>>();
-    gen_seeds<SERandomGenerator<SEAlgorithmSTD_SWC>>();
+    gen_seeds<SE_RNG_L64>();
+    gen_seeds<SE_RNG_WY>();
+    gen_seeds<SE_RNG_LCG>();
+    gen_seeds<SE_RNG_MER>();
+    gen_seeds<SE_RNG_SWC>();
 }
 
 TEST_CASE("Test shuffle and choice", "[random]" ) {
-    gen_shuffle_choice<SERandomGenerator<SEAlgorithmLehmer64>>();
-    gen_shuffle_choice<SERandomGenerator<SEAlgorithmWyRand>>();
-    gen_shuffle_choice<SERandomGenerator<SEAlgorithmSTD_LCG>>();
-    gen_shuffle_choice<SERandomGenerator<SEAlgorithmSTD_Mersenne>>();
-    gen_shuffle_choice<SERandomGenerator<SEAlgorithmSTD_SWC>>();
+    gen_shuffle_choice<SE_RNG_L64>();
+    gen_shuffle_choice<SE_RNG_WY>();
+    gen_shuffle_choice<SE_RNG_LCG>();
+    gen_shuffle_choice<SE_RNG_MER>();
+    gen_shuffle_choice<SE_RNG_SWC>();
+}
+
+TEST_CASE("Test swap", "[random]" ) {
+    gen_swap<SE_RNG_L64>();
+    gen_swap<SE_RNG_WY>();
+    gen_swap<SE_RNG_LCG>();
+    gen_swap<SE_RNG_MER>();
+    gen_swap<SE_RNG_SWC>();
 }
 
 /*

@@ -113,7 +113,7 @@ target("se_example_tsp")
     add_packages("taocpp-json")
     add_packages("argparse")
     add_deps("selecppion")
-    add_includedirs("src")
+    add_includedirs("src", "examples/utils")
     set_default(false) -- Don't build by default
 
 target("se_example_bin_packing")
@@ -124,7 +124,7 @@ target("se_example_bin_packing")
     add_packages("taocpp-json")
     add_packages("argparse")
     add_deps("selecppion")
-    add_includedirs("src")
+    add_includedirs("src", "examples/utils")
     set_default(false) -- Don't build by default
 
 -- Test package locally in xmake repo:

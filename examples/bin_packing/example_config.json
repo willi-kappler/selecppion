@@ -7,19 +7,19 @@
     "num_of_iterations": 10000,
     "randomize_population": false,
     "num_of_mutations": 1,
-    "target_fitness1": 8300.0,
+    "target_fitness1": 0.0,
     "save_new_fitness": true,
     "share_only_best": true,
-    "server_log_file": "tsp_server",
+    "server_log_file": "example_server",
     "server_log_level": "debug",
-    "node_log_file": "tsp_node",
+    "node_log_file": "example_node",
     "node_log_level": "debug",
     "randomize_count": 1,
     "mutation_operations": [
-        0, 1, 2, 3, 4, 5
+        0
     ],
-    "sine_base": 8500.0,
-    "sine_amplitude": 500.0,
+    "sine_base": 0.0,
+    "sine_amplitude": 10.0,
     "sine_frequency": 0.001,
     "limit_factor": 1.5
 }

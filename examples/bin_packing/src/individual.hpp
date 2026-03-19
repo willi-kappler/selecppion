@@ -3,7 +3,7 @@
     Written by Willi Kappler, MIT License
     https://github.com/willi-kappler/selecppion
 
-    This file includes the individual class for the TSP example
+    This file includes the individual class for the bin packing example
 
     To just build use:
     xmake build se_example_bin_packing
@@ -115,15 +115,22 @@ class BinPackingIndividual: public SEIndividual {
         [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() override {
             std::unique_ptr<BinPackingIndividual> result = std::make_unique<BinPackingIndividual>(items, capacity);
             result->selection = selection;
+            result->final_penalty = final_penalty;
 
             return result;
         }
 
         [[nodiscard]] std::vector<uint8_t> se_to_vec_u8() override {
             tao::json::value json_numbers = tao::json::empty_array;
-            tao::json::value json_tuple;
 
-            const tao::json::value json_data;
+            for (uint32_t v: selection) {
+                json_numbers.get_array().push_back(v);
+            }
+
+            const tao::json::value json_data = {
+                {"fitness1", double(fitness1)},
+                {"selection", json_numbers},
+            };
 
             std::string serialized = tao::json::to_string(json_data);
             std::vector<uint8_t> result(serialized.begin(), serialized.end());
@@ -136,5 +143,11 @@ class BinPackingIndividual: public SEIndividual {
             tao::json::value restored_json = tao::json::from_string(data_ptr, data.size());
 
             fitness1 = restored_json["fitness1"].as<double>();
+
+            const auto& arr1 = restored_json["selection"].get_array();
+
+            for (size_t i = 0; i < selection.size(); i++) {
+                selection[i] = arr1[i].as<uint32_t>();
+            }
         }
 };

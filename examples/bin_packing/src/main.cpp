@@ -3,7 +3,7 @@
     Written by Willi Kappler, MIT License
     https://github.com/willi-kappler/selecppion
 
-    This file includes the main function for the TSP example
+    This file includes the main function for the bin packing example
 
     To just build use:
     xmake build se_example_bin_packing

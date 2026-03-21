@@ -30,35 +30,43 @@
 using namespace secpion;
 
 SE_RNG_L64 global_rng;
+std::vector<std::tuple<std::float64_t, std::float64_t>> global_positions;
+
+void load_data(std::string_view filename) {
+    std::string city_positions = se_file_to_string(filename);
+    std::istringstream sstream(city_positions);
+    std::float64_t x, y;
+
+    global_positions.clear();
+
+    while (sstream >> x >> y) {
+        global_positions.push_back({x, y});
+    }
+}
 
 class TSPIndividual: public SEIndividual {
     public:
-        std::vector<std::tuple<std::float64_t, std::float64_t>> positions;
+        std::vector<size_t> position_indices;
 
         TSPIndividual():
-        positions()
-        {
-            se_randomize();
-        }
+        position_indices()
+        {}
 
-        void load_data(std::string_view filename) {
-            std::string city_positions = se_file_to_string(filename);
-            std::istringstream sstream(city_positions);
-            std::float64_t x, y;
+        void init_positions() {
+            const size_t end = global_positions.size();
+            position_indices.reserve(end);
 
-            positions.clear();
-
-            while (sstream >> x >> y) {
-                positions.push_back({x, y});
+            for (size_t i = 0; i < end; i++) {
+                position_indices.push_back(i);
             }
         }
 
         size_t get_one_index() {
-            return global_rng.get_size_t(positions.size());
+            return global_rng.get_size_t(position_indices.size());
         }
 
         std::tuple<size_t, size_t> get_two_indices() {
-            size_t size = positions.size();
+            size_t size = position_indices.size();
             size_t i1 = global_rng.get_size_t(size);
             size_t i2 = global_rng.get_size_t(size);
 
@@ -76,11 +84,11 @@ class TSPIndividual: public SEIndividual {
                 std::swap(i1, i2);
             }
 
-            std::reverse(positions.begin() + i1, positions.begin() + i2);
+            std::reverse(position_indices.begin() + i1, position_indices.begin() + i2);
         }
 
         void just_swap() {
-            global_rng.swap(positions);
+            global_rng.swap(position_indices);
         }
 
         void shift_left() {
@@ -90,7 +98,8 @@ class TSPIndividual: public SEIndividual {
                 std::swap(i1, i2);
             }
 
-            std::rotate(positions.begin() + i1, positions.begin() + i1 + 1, positions.begin() + i2);
+            std::rotate(position_indices.begin() + i1,
+                position_indices.begin() + i1 + 1, position_indices.begin() + i2);
         }
 
         void shift_right() {
@@ -100,48 +109,49 @@ class TSPIndividual: public SEIndividual {
                 std::swap(i1, i2);
             }
 
-            std::rotate(positions.begin() + i1, positions.begin() + i2 - 1, positions.begin() + i2);
+            std::rotate(position_indices.begin() + i1,
+                position_indices.begin() + i2 - 1, position_indices.begin() + i2);
         }
 
         void try_best1() {
             size_t i1 = get_one_index();
             std::float64_t current_best_fitness1 = fitness1;
-            auto current_best_posisions = positions;
+            auto current_best_posisions = position_indices;
 
-            for (size_t j = 0; j < positions.size(); j++) {
+            for (size_t j = 0; j < position_indices.size(); j++) {
                 if (i1 != j) {
-                    std::swap(positions[i1], positions[j]);
+                    std::swap(position_indices[i1], position_indices[j]);
                     se_calculate_fitness1();
 
                     if (fitness1 < current_best_fitness1) {
                         // Store current best.
                         current_best_fitness1 = fitness1;
-                        current_best_posisions = positions;
+                        current_best_posisions = position_indices;
                     }
                 }
             }
 
             fitness1 = current_best_fitness1;
-            positions = current_best_posisions;
+            position_indices = current_best_posisions;
         }
 
         void try_best2() {
             std::float64_t current_best_fitness1 = fitness1;
-            auto current_best_posisions = positions;
+            auto current_best_posisions = position_indices;
 
-            for (size_t i = 0; i < positions.size() - 1; i++) {
-                std::swap(positions[i], positions[i + 1]);
+            for (size_t i = 0; i < position_indices.size() - 1; i++) {
+                std::swap(position_indices[i], position_indices[i + 1]);
                 se_calculate_fitness1();
 
                 if (fitness1 < current_best_fitness1) {
                     // Store current best.
                     current_best_fitness1 = fitness1;
-                    current_best_posisions = positions;
+                    current_best_posisions = position_indices;
                 }
             }
 
             fitness1 = current_best_fitness1;
-            positions = current_best_posisions;
+            position_indices = current_best_posisions;
         }
 
         void se_mutate(uint8_t op) override {
@@ -168,15 +178,17 @@ class TSPIndividual: public SEIndividual {
         }
 
         void se_randomize() override {
-            global_rng.shuffle(positions);
+            global_rng.shuffle(position_indices);
         }
 
         void se_calculate_fitness1() override {
             fitness1 = 0.0;
 
-            auto [x0, y0] = *(positions.end() - 1);
+            size_t last = *(position_indices.end() - 1);
+            auto [x0, y0] = global_positions[last];
 
-            for (auto [x1, y1]: positions) {
+            for (size_t index: position_indices) {
+                auto [x1, y1] = global_positions[index];
                 fitness1 += hypot(x0 - x1, y0 - y1);
                 x0 = x1;
                 y0 = y1;
@@ -185,7 +197,7 @@ class TSPIndividual: public SEIndividual {
 
         [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() override {
             std::unique_ptr<TSPIndividual> result = std::make_unique<TSPIndividual>();
-            result->positions = positions;
+            result->position_indices = position_indices;
 
             return result;
         }
@@ -194,16 +206,13 @@ class TSPIndividual: public SEIndividual {
             tao::json::value json_numbers = tao::json::empty_array;
             tao::json::value json_tuple;
 
-            for (auto [x, y]: positions) {
-                json_tuple = tao::json::empty_array;
-                json_tuple.push_back(double(x));
-                json_tuple.push_back(double(y));
-                json_numbers.get_array().push_back(json_tuple);
+            for (size_t index: position_indices) {
+                json_numbers.get_array().push_back(index);
             }
 
             const tao::json::value json_data = {
                 {"fitness1", double(fitness1)},
-                {"positions", json_numbers},
+                {"position_indices", json_numbers},
             };
 
             std::string serialized = tao::json::to_string(json_data);
@@ -218,14 +227,10 @@ class TSPIndividual: public SEIndividual {
 
             fitness1 = restored_json["fitness1"].as<double>();
 
-            const auto& arr1 = restored_json["positions"].get_array();
+            const auto& arr1 = restored_json["position_indices"].get_array();
 
-            for (size_t i = 0; i < positions.size(); i++) {
-                //positions[i] = arr1[i].as<std::tuple<double, double>>();
-                auto arr2 = arr1[i].get_array();
-                std::float64_t x = arr2[0].as<double>();
-                std::float64_t y = arr2[1].as<double>();
-                positions[i] = {x, y};
+            for (size_t i = 0; i < position_indices.size(); i++) {
+                position_indices[i] = arr1[i].as<size_t>();
             }
         }
 

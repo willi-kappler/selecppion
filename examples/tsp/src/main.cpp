@@ -28,8 +28,9 @@ int main(int argc, char *argv[]) {
     // "target_fitness1": 8300.0
     // Best fitness: 8149.752945125565
 
+    load_data("city_positions2.txt");
     std::unique_ptr<TSPIndividual> tsp_individual = std::make_unique<TSPIndividual>();
-    tsp_individual->load_data("city_positions2.txt");
+    tsp_individual->init_positions();
 
     make_and_run_example(argc, argv, std::move(tsp_individual));
 }

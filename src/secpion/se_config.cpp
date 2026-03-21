@@ -45,7 +45,9 @@ SEConfiguration::SEConfiguration():
     sine_base(100.0),
     sine_amplitude(50.0),
     sine_frequency(0.01),
-    limit_factor(2.0)
+    limit_factor(2.0),
+    mutation_probability(0.8),
+    crossover_probability(0.6)
 {}
 
 [[nodiscard]] SEConfiguration se_config_from_json(const tao::json::value json_config) {
@@ -194,6 +196,14 @@ SEConfiguration::SEConfiguration():
 
     if (auto v = json_config.find("limit_factor"); v != nullptr) {
         se_config.limit_factor = v->as<double>();
+    }
+
+    if (auto v = json_config.find("mutation_probability"); v != nullptr) {
+        se_config.mutation_probability = v->as<double>();
+    }
+
+    if (auto v = json_config.find("crossover_probability"); v != nullptr) {
+        se_config.crossover_probability = v->as<double>();
     }
 
     return se_config;

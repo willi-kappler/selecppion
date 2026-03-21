@@ -9,6 +9,8 @@ TODO:
     - maybe allow custom compare function for individuals.
 
 
+
+
 Done:
     # add rng from std::random.
     # add stop watch to server.

@@ -54,6 +54,8 @@ class SEConfiguration {
         std::float64_t sine_amplitude;
         std::float64_t sine_frequency;
         std::float64_t limit_factor;
+        std::float64_t mutation_probability;
+        std::float64_t crossover_probability;
 
         // Constructor:
         SEConfiguration();

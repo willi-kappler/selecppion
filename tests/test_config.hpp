@@ -51,6 +51,8 @@ TEST_CASE("Create valid default configuration", "[configuration]" ) {
     REQUIRE(se_config.sine_amplitude == 50.0);
     REQUIRE(se_config.sine_frequency == 0.01);
     REQUIRE(se_config.limit_factor == 2.0);
+    REQUIRE(se_config.mutation_probability == 0.8);
+    REQUIRE(se_config.crossover_probability == 0.6);
 }
 
 TEST_CASE("Test valid JSON configuration", "[configuration]" ) {
@@ -81,7 +83,9 @@ TEST_CASE("Test valid JSON configuration", "[configuration]" ) {
         {"sine_base", 77.77},
         {"sine_amplitude", 44.44},
         {"sine_frequency", 22.22},
-        {"limit_factor", 33.33}
+        {"limit_factor", 33.33},
+        {"mutation_probability", 0.9},
+        {"crossover_probability", 0.5}
     };
 
     SEConfiguration se_config = se_config_from_json(json_config);
@@ -115,6 +119,8 @@ TEST_CASE("Test valid JSON configuration", "[configuration]" ) {
     REQUIRE(se_config.sine_amplitude == 44.44);
     REQUIRE(se_config.sine_frequency == 22.22);
     REQUIRE(se_config.limit_factor == 33.33);
+    REQUIRE(se_config.mutation_probability == 0.9);
+    REQUIRE(se_config.crossover_probability == 0.5);
 }
 
 /*

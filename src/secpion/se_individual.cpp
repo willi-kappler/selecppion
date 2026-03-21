@@ -81,4 +81,9 @@ void SEIndividual::se_reseed_rng([[maybe_unused]] size_t index) {
     // the population seed_counter (SEPopulation).
     // index is the current index of this individual inside the population.
 }
+
+[[nodiscard]] std::unique_ptr<SEIndividual> SEIndividual::se_crossover([[maybe_unused]] const SEIndividual* const individual) {
+    // Must only be implemented if using population type 11.
+    throw SEIndividualException("se_crossover() must be implemented for population type 11!");
+}
 }

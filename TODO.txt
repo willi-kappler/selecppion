@@ -3,9 +3,29 @@ TODO:
     - add global rng for each type.
     - maybe merge TestIndividual1 and TestIndividual2.
     - add philox4x64 rng.
-    - add examples: bin_packing, function_optimization, knapsack, neural_net, queens, sudoku, tsp.
+    - add examples: bin_packing, function_optimization, knapsack, neural_net, queens, sudoku.
     - try to add the nodeid to the log file.
     - maybe add crossover for mutation.
+    - maybe allow custom compare function for individuals.
+
+
+Done:
+    # add rng from std::random.
+    # add stop watch to server.
+    # new population (type 10): only replace the worst.
+    # nc_is_job_done() is called twice.
+    # set type of population via command line.
+    # add command line option for mutation operation for the tsp example.
+    # split up example main file.
+    # new option: reseed_rng, wether to get a fresh new seed for the rng at the beginning of the iteration loop.
+
+
+
+
+
+
+Ideas:
+
 
 
 
@@ -99,12 +119,3 @@ Quantum Approximate Optimization Algorithm (QAOA)
 
 
 
-Done:
-    # add rng from std::random.
-    # add stop watch to server.
-    # new population (type 10): only replace the worst.
-    # nc_is_job_done() is called twice.
-    # set type of population via command line.
-    # add command line option for mutation operation for the tsp example.
-    # split up example main file.
-    # new option: reseed_rng, wether to get a fresh new seed for the rng at the beginning of the iteration loop.

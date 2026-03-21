@@ -228,4 +228,10 @@ class TSPIndividual: public SEIndividual {
                 positions[i] = {x, y};
             }
         }
+
+        void se_reseed_rng(size_t index) {
+            if (index == 0) {
+                global_rng.seed();
+            }
+        }
 };

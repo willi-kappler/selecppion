@@ -28,6 +28,7 @@ class TestIndividual2: public SEIndividual {
     public:
         std::float64_t val1;
         std::float64_t val2;
+        size_t internal_seed;
 
         TestIndividual2();
         void se_mutate(uint8_t) override;
@@ -39,11 +40,13 @@ class TestIndividual2: public SEIndividual {
         void se_from_span_u8(std::span<const uint8_t>) override;
         // std::float64_t se_actual_fitness() override;
         // void se_new_best_individual() override;
+        void se_reseed_rng(size_t) override;
 };
 
 TestIndividual2::TestIndividual2():
     val1(-1.0),
-    val2(-1.0)
+    val2(-1.0),
+    internal_seed(0)
     {}
 
 void TestIndividual2::se_mutate([[maybe_unused]] uint8_t mut_op) {
@@ -114,6 +117,10 @@ void TestIndividual2::se_from_span_u8(std::span<const uint8_t> data) {
     fitness2 = float_64_ptr[1];
     val1 = float_64_ptr[2];
     val2 = float_64_ptr[3];
+}
+
+void TestIndividual2::se_reseed_rng(size_t index) {
+    internal_seed = index * 10;
 }
 
 [[nodiscard]] std::unique_ptr<SEIndividual> make_indi_f1_f2(std::float64_t fitness1, std::float64_t fitness2) {
@@ -751,6 +758,12 @@ TEST_CASE("Test prepare iteration 1", "[population]") {
     REQUIRE(population.rng.get_uint64(100) == rng2.get_uint64(100));
     REQUIRE(population.current_seed_counter == 0);
 
+    TestIndividual2 *test_indi;
+    for (size_t i = 0; i < population.population.size(); i++) {
+        test_indi = static_cast<TestIndividual2*>(population.population[i].get());
+        REQUIRE(test_indi->internal_seed == 0);
+    }
+
     population.se_prepare_iteration("Test prepare iteration", population.population[0]->se_to_vec_u8());
 
     REQUIRE(population.se_config.mutation_operations.size() == 10);
@@ -761,6 +774,11 @@ TEST_CASE("Test prepare iteration 1", "[population]") {
     REQUIRE(population.rng.get_uint32(100) != rng2.get_uint32(100));
     REQUIRE(population.rng.get_uint64(100) != rng2.get_uint64(100));
     REQUIRE(population.current_seed_counter == 0);
+
+    for (size_t i = 0; i < population.population.size(); i++) {
+        test_indi = static_cast<TestIndividual2*>(population.population[i].get());
+        REQUIRE(test_indi->internal_seed == i * 10);
+    }
 }
 
 TEST_CASE("Test prepare iteration 2", "[population]") {
@@ -781,4 +799,10 @@ TEST_CASE("Test prepare iteration 2", "[population]") {
     REQUIRE(population.rng.get_uint32(100) == rng2.get_uint32(100));
     REQUIRE(population.rng.get_uint64(100) == rng2.get_uint64(100));
     REQUIRE(population.current_seed_counter == 1);
+
+    TestIndividual2 *test_indi;
+    for (size_t i = 0; i < population.population.size(); i++) {
+        test_indi = static_cast<TestIndividual2*>(population.population[i].get());
+        REQUIRE(test_indi->internal_seed == 0);
+    }
 }

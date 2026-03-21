@@ -74,4 +74,11 @@ void SEIndividual::se_new_best_individual() {
     // This method will be called whenever there is a new
     // best individual on the server or in a population.
 }
+
+void SEIndividual::se_reseed_rng([[maybe_unused]] size_t index) {
+    // Can be implemented but is not needed.
+    // This will be called whenever seed_count (SEConfiguration) is reached inside
+    // the population seed_counter (SEPopulation).
+    // index is the current index of this individual inside the population.
+}
 }

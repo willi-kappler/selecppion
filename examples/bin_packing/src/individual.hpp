@@ -150,4 +150,10 @@ class BinPackingIndividual: public SEIndividual {
                 selection[i] = arr1[i].as<uint32_t>();
             }
         }
+
+        void se_reseed_rng(size_t index) {
+            if (index == 0) {
+                global_rng.seed();
+            }
+        }
 };

@@ -46,6 +46,7 @@ class SEIndividual {
         virtual void se_from_span_u8(std::span<const uint8_t>);
         [[nodiscard]] virtual std::float64_t se_actual_fitness();
         virtual void se_new_best_individual();
+        virtual void se_reseed_rng(size_t);
 };
 }
 

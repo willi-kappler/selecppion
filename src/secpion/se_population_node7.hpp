@@ -41,6 +41,7 @@ class SEPopulationNode7: public NCNodeDataProcessor {
             population.se_logger->info("Population type 7.");
             population.se_logger->info("Best individual at index 0. Increase factor with index.");
             population.se_logger->info("Set limit based on factor and best fitness.");
+            population.se_logger->info("Limit factor: {}", se_config.limit_factor);
         }
 
         [[nodiscard]] std::vector<uint8_t> nc_process_data(std::vector<uint8_t> data) override {

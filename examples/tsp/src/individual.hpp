@@ -239,4 +239,49 @@ class TSPIndividual: public SEIndividual {
                 global_rng.seed();
             }
         }
+
+        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) {
+            std::unique_ptr<TSPIndividual> result = std::make_unique<TSPIndividual>();
+            result->init_positions();
+            const TSPIndividual* const other_individual = dynamic_cast<const TSPIndividual* const>(individual);
+            auto [i1, i2] = get_two_indices();
+
+            if (i1 > i2) {
+                std::swap(i1, i2);
+            }
+
+            size_t i = 0, j = 0;
+            size_t new_index = 0;
+            size_t positions_size = global_positions.size();
+            std::vector<bool> used(positions_size, false);
+
+            for (i = i1; i < i2; i++) {
+                // Copy from current individual:
+                new_index = position_indices[i];
+                result->position_indices[i] = new_index;
+                used[new_index] = true;
+            }
+
+            // Where to store indices from other individual.
+            // Starting at:
+            j = i2;
+
+            for (i = 0; i < positions_size; i++) {
+                new_index = other_individual->position_indices[i];
+
+                if (!used[new_index]) {
+                    // Now only copy from the other individual if index is not already used:
+                    result->position_indices[j] = new_index;
+                    used[new_index] = true;
+
+                    j++;
+
+                    if (j >= positions_size) {
+                        j = 0;
+                    }
+                }
+            }
+
+            return result;
+        }
 };

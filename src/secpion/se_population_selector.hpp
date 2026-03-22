@@ -23,6 +23,7 @@
 #include "se_population_node8.hpp"
 #include "se_population_node9.hpp"
 #include "se_population_node10.hpp"
+#include "se_population_node11.hpp"
 
 namespace secpion {
 std::shared_ptr<NCNodeDataProcessor> se_select_population(SEConfiguration se_configuration, std::unique_ptr<SEIndividual> individual, uint8_t population_type) {
@@ -58,6 +59,9 @@ std::shared_ptr<NCNodeDataProcessor> se_select_population(SEConfiguration se_con
             break;
         case 10:
             result = std::make_shared<SEPop10_L64>(se_configuration, std::move(individual));
+            break;
+        case 11:
+            result = std::make_shared<SEPop11_L64>(se_configuration, std::move(individual));
             break;
         default:
             throw SEPopulationException("Unknown population type: ");

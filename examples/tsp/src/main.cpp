@@ -31,6 +31,7 @@ int main(int argc, char *argv[]) {
     load_data("city_positions2.txt");
     std::unique_ptr<TSPIndividual> tsp_individual = std::make_unique<TSPIndividual>();
     tsp_individual->init_positions();
+    global_rng.seed();
 
     make_and_run_example(argc, argv, std::move(tsp_individual));
 }

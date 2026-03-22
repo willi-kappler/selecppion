@@ -38,6 +38,8 @@ class SEPopulationNode9: public NCNodeDataProcessor {
 
             population.se_logger->info("Population type 9.");
             population.se_logger->info("Use sine wave to set the fitness limit.");
+            population.se_logger->info("Sine base: {}, amplitude: {}, frequency: {}",
+                se_config.sine_base, se_config.sine_amplitude, se_config.sine_frequency);
         }
 
         [[nodiscard]] std::vector<uint8_t> nc_process_data(std::vector<uint8_t> data) override {

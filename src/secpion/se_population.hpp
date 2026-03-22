@@ -87,7 +87,7 @@ class SEPopulation {
                 se_config.randomize_population, se_config.randomize_count);
             se_logger->info("Accept new best: {}", se_config.accept_new_best);
             se_logger->info("Mutation operations: {}", se_config.mutation_operations);
-            se_logger->info("Reseed max count: ", se_config.seed_count);
+            se_logger->info("Reseed max count: {}", se_config.seed_count);
             se_logger->flush();
         }
 

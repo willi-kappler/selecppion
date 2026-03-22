@@ -40,6 +40,7 @@ class SEPopulationNode4: public NCNodeDataProcessor {
             population.se_logger->info("Mutate an individual and if it's better than the global fitness keep it.");
             population.se_logger->info("Reduce global fitness each iteration.");
             population.se_logger->info("If no individual is better, increase the global fitness a bit.");
+            population.se_logger->info("Minimum number of individuals: {}", se_config.min_num_of_individuals);
         }
 
         [[nodiscard]] std::vector<uint8_t> nc_process_data(std::vector<uint8_t> data) override {

@@ -40,6 +40,8 @@ class SEPopulationNode11: public NCNodeDataProcessor {
             population.se_logger->info("Randomly select one individual to maybe mutate.");
             population.se_logger->info("Randomly select another individual to maybe crossover.");
             population.se_logger->info("If the new fitness is better than the worst replace it.");
+            population.se_logger->info("Mutation probability: {}, crossover probability: {}",
+                se_config.mutation_probability, se_config.crossover_probability);
         }
 
         [[nodiscard]] std::vector<uint8_t> nc_process_data(std::vector<uint8_t> data) override {
@@ -64,8 +66,22 @@ class SEPopulationNode11: public NCNodeDataProcessor {
                     }
 
                     population.population[j1]->se_calculate_fitness1();
+                }
+
+                /*
+                new_indi = population.population[j1]->se_clone_internal();
+
+                for (uint32_t k = 0; k < population.se_config.num_of_mutations; k++) {
+                    new_indi->se_mutate_internal(population.se_get_mut_op());
+                }
+
+                new_indi->se_calculate_fitness1();
+
+                if (new_indi->fitness1 < population.se_get_worst_fitness()) {
+                    population.se_replace_worst(std::move(new_indi));
                     population.se_find_worst_individual();
                 }
+                */
 
                 if (population.rng.get_float64() <= population.se_config.crossover_probability) {
                     j2 = population.rng.get_size_t(population.se_config.node_population_size);

@@ -51,8 +51,8 @@ TEST_CASE("Create valid default configuration", "[configuration]" ) {
     REQUIRE(se_config.sine_amplitude == 50.0);
     REQUIRE(se_config.sine_frequency == 0.01);
     REQUIRE(se_config.limit_factor == 2.0);
-    REQUIRE(se_config.mutation_probability == 0.8);
-    REQUIRE(se_config.crossover_probability == 0.6);
+    REQUIRE(se_config.mutation_probability == 0.1);
+    REQUIRE(se_config.crossover_probability == 0.9);
 }
 
 TEST_CASE("Test valid JSON configuration", "[configuration]" ) {

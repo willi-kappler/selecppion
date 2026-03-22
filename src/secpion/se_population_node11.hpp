@@ -68,21 +68,6 @@ class SEPopulationNode11: public NCNodeDataProcessor {
                     population.population[j1]->se_calculate_fitness1();
                 }
 
-                /*
-                new_indi = population.population[j1]->se_clone_internal();
-
-                for (uint32_t k = 0; k < population.se_config.num_of_mutations; k++) {
-                    new_indi->se_mutate_internal(population.se_get_mut_op());
-                }
-
-                new_indi->se_calculate_fitness1();
-
-                if (new_indi->fitness1 < population.se_get_worst_fitness()) {
-                    population.se_replace_worst(std::move(new_indi));
-                    population.se_find_worst_individual();
-                }
-                */
-
                 if (population.rng.get_float64() <= population.se_config.crossover_probability) {
                     j2 = population.rng.get_size_t(population.se_config.node_population_size);
 

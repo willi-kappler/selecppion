@@ -38,6 +38,7 @@ run_all_types() {
     sleep 1
     $EXECUTABLE -i 20000 -m 1 -t 10 &
     sleep 1
+    $EXECUTABLE -i 20000 -m 1 -t 11 &
 }
 
 # Start the server:
@@ -46,3 +47,6 @@ sleep 1
 
 run_type 1
 # run_all_types
+
+sleep 1
+echo ""

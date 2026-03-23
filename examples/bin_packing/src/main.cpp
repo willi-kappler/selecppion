@@ -26,7 +26,8 @@ int main(int argc, char *argv[]) {
         21.34, 26.59, 30.18, 25.71, 39.13, 24.73, 20.38, 23.90,
         24.44, 21.37, 25.01, 18.32, 10.83, 15.77, 19.99, 13.25,
         16.54, 17.90, 39.87, 35.21}, 100.0);
-    bin_packing_individual->init();
+    bin_packing_individual->se_randomize();
+    global_rng.seed();
 
     make_and_run_example(argc, argv, std::move(bin_packing_individual));
 }

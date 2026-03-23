@@ -34,88 +34,94 @@ SE_RNG_L64 global_rng;
 class BinPackingIndividual: public SEIndividual {
     public:
         std::vector<std::float64_t> items;
-        std::vector<uint32_t> selection;
-        std::float64_t capacity;
-        std::float64_t final_penalty;
+        std::float64_t capacity_per_bin;
+        std::vector<std::vector<std::float64_t>> bins;
 
         BinPackingIndividual(std::vector<std::float64_t> initial_items, std::float64_t initial_capacity):
         items(initial_items),
-        selection(),
-        capacity(initial_capacity),
-        final_penalty()
+        capacity_per_bin(initial_capacity),
+        bins()
         {}
 
-        void init() {
-            se_randomize();
-            reset_penalty();
-        }
+        void swap_items() {
+            // TODO
+            const size_t num_of_bins = bins.size();
 
-        void reset_penalty() {
-            final_penalty = 0.0;
-
-            for (auto v: items) {
-                final_penalty += v;
+            if (num_of_bins <= 1) {
+                return;
             }
+
         }
 
-        void inc_bin() {
-            size_t i = global_rng.get_size_t(items.size());
-            selection[i]++;
-        }
+        void move_item() {
+            // TODO
+            const size_t num_of_bins = bins.size();
 
-        void dec_bin() {
-            size_t i = global_rng.get_size_t(items.size());
-
-            if (selection[i] > 0) {
-                selection[i]++;
+            if (num_of_bins <= 1) {
+                return;
             }
-        }
 
-        void set_to_one() {
-            size_t i = global_rng.get_size_t(items.size());
-            selection[i] = 1;
-        }
+            const size_t index = global_rng.get_size_t(num_of_bins);
+            //std::float64_t item = bins[index].back();
+            bins[index].pop_back();
 
-        void swap() {
-            global_rng.swap(selection);
+            for (size_t i = 0; i < num_of_bins; i++) {
+                if (i != index) {
+
+                }
+            }
         }
 
         void se_mutate(uint8_t op) override {
             switch (op) {
                 case 0:
-                    inc_bin();
-                    break;
-                case 1:
-                    dec_bin();
-                    break;
-                case 2:
-                    set_to_one();
+                    swap_items();
                     break;
                 default:
-                    swap();
+                    move_item();
                     break;
             }
         }
 
         void se_randomize() override {
-            selection.assign(items.size(), 0);
+            const size_t num_items = items.size();
+            std::vector<std::float64_t> selection = std::vector<std::float64_t>(0.0, num_items);
 
-            for (auto &item: selection) {
-                item = global_rng.get_uint8(10);
+            for (size_t i = 0; i < num_items; i++) {
+                selection[i] = items[i];
+            }
+
+            global_rng.shuffle(selection);
+
+            bins.clear();
+            bins.push_back(std::vector<std::float64_t>());
+            size_t current_bin = 0;
+            std::float64_t current_sum = 0.0;
+            std::float64_t current_item = 0.0;
+
+            while (selection.size() > 0) {
+                current_item = selection.back();
+                selection.pop_back();
+
+                if (current_sum + current_item > capacity_per_bin) {
+                    // Add new bin
+                    bins.push_back(std::vector<std::float64_t>());
+                    current_bin++;
+                    current_sum = 0.0;
+                }
+
+                current_sum += current_item;
+                bins[current_bin].push_back(current_item);
             }
         }
 
         void se_calculate_fitness1() override {
-        }
-
-        std::float64_t se_actual_fitness() override {
-            return final_penalty - fitness1;
+            // TODO
+            fitness1 = bins.size();
         }
 
         [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() override {
-            std::unique_ptr<BinPackingIndividual> result = std::make_unique<BinPackingIndividual>(items, capacity);
-            result->selection = selection;
-            result->final_penalty = final_penalty;
+            std::unique_ptr<BinPackingIndividual> result = std::make_unique<BinPackingIndividual>(items, capacity_per_bin);
 
             return result;
         }
@@ -123,14 +129,7 @@ class BinPackingIndividual: public SEIndividual {
         [[nodiscard]] std::vector<uint8_t> se_to_vec_u8() override {
             tao::json::value json_numbers = tao::json::empty_array;
 
-            for (uint32_t v: selection) {
-                json_numbers.get_array().push_back(v);
-            }
-
-            const tao::json::value json_data = {
-                {"fitness1", double(fitness1)},
-                {"selection", json_numbers},
-            };
+            const tao::json::value json_data;
 
             std::string serialized = tao::json::to_string(json_data);
             std::vector<uint8_t> result(serialized.begin(), serialized.end());
@@ -143,17 +142,21 @@ class BinPackingIndividual: public SEIndividual {
             tao::json::value restored_json = tao::json::from_string(data_ptr, data.size());
 
             fitness1 = restored_json["fitness1"].as<double>();
-
-            const auto& arr1 = restored_json["selection"].get_array();
-
-            for (size_t i = 0; i < selection.size(); i++) {
-                selection[i] = arr1[i].as<uint32_t>();
-            }
         }
 
         void se_reseed_rng(size_t index) {
             if (index == 0) {
                 global_rng.seed();
             }
+        }
+
+        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) {
+            const BinPackingIndividual* const other_individual = dynamic_cast<const BinPackingIndividual* const>(individual);
+            std::unique_ptr<BinPackingIndividual> result = std::make_unique<BinPackingIndividual>(items, capacity_per_bin);
+
+            // TODO
+            result->bins = other_individual->bins;
+
+            return result;
         }
 };

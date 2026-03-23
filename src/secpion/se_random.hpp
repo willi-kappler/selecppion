@@ -177,6 +177,16 @@ class SERandomGenerator {
             return get_uint64(n);
         }
 
+        [[nodiscard]] std::tuple<size_t, size_t> get_two_size_t(size_t n) {
+            size_t i1 = get_size_t(n);
+            size_t i2 = get_size_t(n);
+
+            while (i1 == i2) {
+                i2 = get_size_t(n);
+            }
+            return {i1, i2};
+        }
+
         [[nodiscard]] std::float64_t get_float64() {
             const uint64_t v = (random_algorithm.next_u64() >> 11);
             return v * (1.0 / 9007199254740992.0);
@@ -224,12 +234,7 @@ class SERandomGenerator {
                 return;
             }
 
-            size_t i1 = get_size_t(v_len);
-            size_t i2 = get_size_t(v_len);
-
-            while (i1 == i2) {
-                i2 = get_size_t(v_len);
-            }
+            auto [i1, i2] = get_two_size_t(v_len);
 
             std::swap(v[i1], v[i2]);
         }

@@ -25,53 +25,54 @@ using namespace secpion;
 template <typename G>
 void gen_random_numbers() {
     G gen;
+    uint16_t i = 0;
 
     // Test for 64 bit integer values
-    for (uint16_t i = 0; i < 1000; i++) {
+    for (i = 0; i < 1000; i++) {
         uint64_t v = gen.get_uint64(5);
         REQUIRE(v < 5);
     }
 
     // Test for 32 bit integer values
-    for (uint16_t i = 0; i < 1000; i++) {
+    for (i = 0; i < 1000; i++) {
         uint32_t v = gen.get_uint32(11);
         REQUIRE(v < 11);
     }
 
     // Test for 16 bit integer values
-    for (uint16_t i = 0; i < 1000; i++) {
+    for (i = 0; i < 1000; i++) {
         uint16_t v = gen.get_uint16(17);
         REQUIRE(v < 17);
     }
 
     // Test for 8 bit integer values
-    for (uint16_t i = 0; i < 1000; i++) {
+    for (i = 0; i < 1000; i++) {
         uint8_t v = gen.get_uint8(23);
         REQUIRE(v < 23);
     }
 
     // Test for size_t values
-    for (uint16_t i = 0; i < 1000; i++) {
+    for (i = 0; i < 1000; i++) {
         size_t v = gen.get_size_t(29);
         REQUIRE(v < 29);
     }
 
     // Test for float64 values
-    for (uint16_t i = 0; i < 1000; i++) {
+    for (i = 0; i < 1000; i++) {
         std::float64_t v = gen.get_float64();
         REQUIRE(v >= 0.0);
         REQUIRE(v <= 1.0);
     }
 
     // Test for float64 values
-    for (uint16_t i = 0; i < 1000; i++) {
+    for (i = 0; i < 1000; i++) {
         std::float64_t v = gen.get_float64(55.5, 77.7);
         REQUIRE(v >= 55.5);
         REQUIRE(v <= 77.7);
     }
 
     // Test for float64 values
-    for (uint16_t i = 0; i < 1000; i++) {
+    for (i = 0; i < 1000; i++) {
         std::float64_t v = gen.get_float64(-22.22, 34.56);
         REQUIRE(v >= -22.22);
         REQUIRE(v <= 34.56);
@@ -79,7 +80,7 @@ void gen_random_numbers() {
 
     // Check if all values are different:
     std::unordered_map<uint8_t, uint32_t> num_counter;
-    for (uint16_t i = 0; i < 10000; i++) {
+    for (i = 0; i < 10000; i++) {
         uint8_t v = gen.get_uint8(100);
         num_counter[v]++;
     }
@@ -88,6 +89,11 @@ void gen_random_numbers() {
 
     for (auto& [key, value]: num_counter) {
         REQUIRE(value > 5);
+    }
+
+    for (i = 0; i < 1000; i++) {
+        auto [i1, i2] = gen.get_two_size_t(10);
+        REQUIRE(i1 != i2);
     }
 }
 

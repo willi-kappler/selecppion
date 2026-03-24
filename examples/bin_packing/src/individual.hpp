@@ -34,114 +34,48 @@ SE_RNG_L64 global_rng;
 class BinPackingIndividual: public SEIndividual {
     public:
         std::vector<std::float64_t> items;
+        // This contains a mapping: which items are stored in which bin.
+        // [12.3, 8.6, 1.5, 9.9, 22.47]
+        // [0,    0,   1,   2,   1    ]
+        // Bin 0 contains 12.3 and 8.6
+        // Bin 1 contains 1.5 and 22.47
+        // Bin 2 contains 9.9
         std::float64_t capacity_per_bin;
-        std::vector<std::vector<std::float64_t>> bins;
+        std::vector<size_t> bins;
 
         BinPackingIndividual(std::vector<std::float64_t> initial_items, std::float64_t initial_capacity):
         items(initial_items),
         capacity_per_bin(initial_capacity),
-        bins()
+        bins(std::vector<size_t>(initial_items.size(), 0))
         {}
 
-        bool does_fit(std::float64_t item, size_t index) {
-            std::float64_t sum = item;
-
-            for (std::float64_t v: bins[index]) {
-                sum += v;
-            }
-
-            return sum <= capacity_per_bin;
-        }
-
         void swap_items() {
-            // TODO
-            const size_t num_of_bins = bins.size();
+            const size_t num_of_items = bins.size();
+            auto [i1, i2] = global_rng.get_two_size_t(num_of_items);
+            std::swap(bins[i1], bins[i2]);
+        }
 
-            if (num_of_bins <= 1) {
-                return;
-            }
+        void move_bin_up() {
+            size_t i = global_rng.get_size_t(bins.size());
+            bins[i]++;
+        }
 
-            while (true) {
-                auto [i1, i2] = global_rng.get_two_size_t(num_of_bins);
-                size_t size1 = bins[i1].size();
-                size_t size2 = bins[i2].size();
-
-                if ((size1 > 0) && (size2 > 0)) {
-                    size_t j1 = global_rng.get_size_t(size1);
-                    size_t j2 = global_rng.get_size_t(size2);
-                    std::swap(bins[i1][j1], bins[i2][j2]);
-                }
+        void move_bin_down() {
+            size_t i = global_rng.get_size_t(bins.size());
+            if (bins[i] > 0) {
+                bins[i]--;
             }
         }
 
-        void move_item() {
-            const size_t num_of_bins = bins.size();
-
-            if (num_of_bins <= 1) {
-                return;
-            }
-
-            while (true) {
-                auto [i1, i2] = global_rng.get_two_size_t(num_of_bins);
-
-                if (bins[i1].size() > 0) {
-                    size_t j1 = global_rng.get_size_t(bins[i1].size());
-                    // Get item from current bin:
-                    std::float64_t item = bins[i1][j1];
-                    // And remove it from its bin:
-                    bins[i1][j1] = bins[i1].back();
-                    bins[i1].pop_back();
-                    // Put it into the destination bin:
-                    bins[i2].push_back(item);
-
-                    if (bins[i1].size() == 0) {
-                        // Remove this empty bin:
-                        bins[i1] = bins.back();
-                        bins.pop_back();
-                    }
-
-                    break;
-                }
+        void set_to_zero() {
+            for (size_t &b: bins) {
+                b = 0;
             }
         }
 
-        void move_item_old() {
-            // TODO
-            const size_t num_of_bins = bins.size();
-
-            if (num_of_bins <= 1) {
-                return;
-            }
-
-            while (true) {
-                size_t i1 = global_rng.get_size_t(num_of_bins);
-                if (bins[i1].size() > 0) {
-                    size_t j1 = global_rng.get_size_t(bins[i1].size());
-                    // Get item from current bin:
-                    std::float64_t item = bins[i1][j1];
-                    // And remove it from its bin:
-                    bins[i1][j1] = bins[i1].back();
-                    bins[i1].pop_back();
-
-                    if (bins[i1].size() == 0) {
-                        // Remove this empty bin:
-                        bins[i1] = bins.back();
-                        bins.pop_back();
-                    }
-
-                    for (size_t i2 = 0; i2 < num_of_bins; i2++) {
-                        if (i1 != i2) {
-                            if (does_fit(item, i2)) {
-                                bins[i2].push_back(item);
-                                return;
-                            }
-                        }
-                    }
-
-                    // Does not fit in any other bin, so create a new one:
-                    bins.push_back(std::vector<std::float64_t>(item));
-                    break;
-                }
+        void set_ramp() {
+            for (size_t i = 0; i < bins.size(); i++) {
+                bins[i] = i;
             }
         }
 
@@ -150,60 +84,44 @@ class BinPackingIndividual: public SEIndividual {
                 case 0:
                     swap_items();
                     break;
+                case 1:
+                    move_bin_up();
+                    break;
+                case 2:
+                    move_bin_down();
+                    break;
+                case 3:
+                    set_to_zero();
+                    break;
                 default:
-                    move_item();
+                    set_ramp();
                     break;
             }
         }
 
         void se_randomize() override {
-            const size_t num_items = items.size();
-            std::vector<std::float64_t> selection = std::vector<std::float64_t>(0.0, num_items);
+            const size_t num_of_items = items.size();
 
-            for (size_t i = 0; i < num_items; i++) {
-                selection[i] = items[i];
-            }
-
-            global_rng.shuffle(selection);
-
-            bins.clear();
-            bins.push_back(std::vector<std::float64_t>());
-            size_t current_bin = 0;
-            std::float64_t current_sum = 0.0;
-            std::float64_t current_item = 0.0;
-
-            while (selection.size() > 0) {
-                current_item = selection.back();
-                selection.pop_back();
-
-                if (current_sum + current_item > capacity_per_bin) {
-                    // Add new bin
-                    bins.push_back(std::vector<std::float64_t>());
-                    current_bin++;
-                    current_sum = 0.0;
-                }
-
-                current_sum += current_item;
-                bins[current_bin].push_back(current_item);
+            for (size_t &b: bins) {
+                b = global_rng.get_size_t(num_of_items);
             }
         }
 
         void se_calculate_fitness1() override {
-            std::float64_t sum = 0.0;
-            fitness1 = bins.size();
+            std::unordered_map<size_t, std::float64_t> bin_sum;
+            std::float64_t penalty = 0.0;
 
-            for (auto bin: bins) {
-                sum = 0.0;
+            for (size_t i = 0; i < items.size(); i++) {
+                bin_sum[bins[i]] += items[i];
+            }
 
-                for (auto v: bin) {
-                    sum += v;
-                }
-
-                if (sum > capacity_per_bin) {
-                    // Add penalty:
-                    fitness1 += 100.0;
+            for (auto &elem: bin_sum) {
+                if (elem.second > capacity_per_bin) {
+                    penalty += 100.0;
                 }
             }
+
+            fitness1 = bin_sum.size() + penalty;
         }
 
         [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() override {
@@ -216,16 +134,9 @@ class BinPackingIndividual: public SEIndividual {
 
         [[nodiscard]] std::vector<uint8_t> se_to_vec_u8() override {
             tao::json::value json_arrays = tao::json::empty_array;
-            tao::json::value json_numbers = tao::json::empty_array;
 
-            for (auto bin: bins) {
-                json_numbers.get_array().clear();
-
-                for (auto v: bin) {
-                    json_numbers.get_array().push_back(double(v));
-                }
-
-                json_arrays.get_array().push_back(json_numbers);
+            for (size_t bin: bins) {
+                json_arrays.get_array().push_back(bin);
             }
 
             const tao::json::value json_data = {
@@ -245,8 +156,12 @@ class BinPackingIndividual: public SEIndividual {
 
             fitness1 = restored_json["fitness1"].as<double>();
 
-            // TODO
-            // const auto& arr1 = restored_json["bins"].get_array();
+            const auto& arr1 = restored_json["bins"].get_array();
+
+            for (size_t i = 0; i < bins.size(); i++) {
+                bins[i] = arr1[i].as<size_t>();
+            }
+
         }
 
         void se_reseed_rng(size_t index) {
@@ -259,8 +174,16 @@ class BinPackingIndividual: public SEIndividual {
             const BinPackingIndividual* const other_individual = dynamic_cast<const BinPackingIndividual* const>(individual);
             std::unique_ptr<BinPackingIndividual> result = std::make_unique<BinPackingIndividual>(items, capacity_per_bin);
 
-            // TODO
-            result->bins = other_individual->bins;
+            const size_t num_of_bins = bins.size();
+            auto [i1, i2] = global_rng.get_two_size_t(num_of_bins);
+
+            for (size_t i = 0; i < num_of_bins; i++) {
+                if ((i >= i1) && (i < i2)) {
+                    result->bins[i] = bins[i];
+                } else {
+                    result->bins[i] = other_individual->bins[i];
+                }
+            }
 
             return result;
         }

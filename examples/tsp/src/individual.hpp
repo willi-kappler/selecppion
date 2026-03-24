@@ -204,7 +204,6 @@ class TSPIndividual: public SEIndividual {
 
         [[nodiscard]] std::vector<uint8_t> se_to_vec_u8() override {
             tao::json::value json_numbers = tao::json::empty_array;
-            tao::json::value json_tuple;
 
             for (size_t index: position_indices) {
                 json_numbers.get_array().push_back(index);

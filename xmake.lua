@@ -19,6 +19,7 @@ set_project("selecppion")
 
 -- Force rebuild:
 -- rm -rf build/ .xmake ~/.xmake/
+-- xmake p
 -- xmake -a -r
 
 -- Just clean cache and update:

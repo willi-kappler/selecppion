@@ -37,6 +37,8 @@ run_all_types() {
     $EXECUTABLE -i 20000 -m 1 -t 9 &
     sleep 1
     $EXECUTABLE -i 20000 -m 1 -t 10 &
+    sleep 1
+    $EXECUTABLE -i 20000 -m 1 -t 11 &
 }
 
 # Start the server:

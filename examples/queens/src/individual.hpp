@@ -31,7 +31,7 @@
 using namespace secpion;
 
 SE_RNG_L64 global_rng;
-const uint8_t BOARD_SIZE = 8;
+const uint8_t BOARD_SIZE = 100;
 
 class QueensIndividual: public SEIndividual {
     public:

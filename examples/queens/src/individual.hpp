@@ -46,41 +46,42 @@ class QueensIndividual: public SEIndividual {
             std::swap(columns[i1], columns[i2]);
         }
 
-        void set_row() {
-            size_t i = global_rng.get_size_t(BOARD_SIZE);
-            columns[i] = global_rng.get_uint8(BOARD_SIZE);
-        }
-
-        void se_mutate(uint8_t op) override {
-            switch (op) {
-                case 0:
-                    swap_items();
-                    break;
-                default:
-                    set_row();
-                    break;
-            }
+        void se_mutate([[maybe_unused]] uint8_t op) override {
+            swap_items();
         }
 
         void se_randomize() override {
+            // Not really random...
             for (size_t i = 0; i < BOARD_SIZE; i++) {
-                columns[i] = global_rng.get_uint8(BOARD_SIZE);
+                columns[i] = i;
             }
         }
 
         void se_calculate_fitness1() override {
             fitness1 = 0.0;
-            std::set<uint8_t> rows{};
+            uint8_t up = 0;
+            uint8_t down = 0;
 
             for (size_t i = 0; i < BOARD_SIZE; i++) {
-                if (rows.contains(columns[i])) {
-                    fitness1 += 1.0;
-                } else {
-                    rows.insert(columns[i]);
+                up = columns[i];
+                down = columns[i];
+
+                for (size_t j = i + 1; j < BOARD_SIZE; j++) {
+                    if (up > 0) {
+                        up--;
+                        if (up == columns[j]) {
+                            fitness1 += 1.0;
+                        }
+                    }
+
+                    if (down < BOARD_SIZE - 1) {
+                        down++;
+                        if (down == columns[j]) {
+                            fitness1 += 1.0;
+                        }
+                    }
                 }
             }
-
-            // TODO: check diagonals.
         }
 
         [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() override {
@@ -92,11 +93,15 @@ class QueensIndividual: public SEIndividual {
         }
 
         [[nodiscard]] std::vector<uint8_t> se_to_vec_u8() override {
-            tao::json::value json_arrays = tao::json::empty_array;
+            tao::json::value json_array = tao::json::empty_array;
 
-            // TODO
+            for (uint8_t c: columns) {
+                json_array.get_array().push_back(c);
+            }
+
             const tao::json::value json_data = {
-                {"fitness1", double(fitness1)}
+                {"fitness1", double(fitness1)},
+                {"columns", json_array}
             };
 
             std::string serialized = tao::json::to_string(json_data);
@@ -110,7 +115,12 @@ class QueensIndividual: public SEIndividual {
             tao::json::value restored_json = tao::json::from_string(data_ptr, data.size());
 
             fitness1 = restored_json["fitness1"].as<double>();
-            // TODO
+
+            const auto& arr1 = restored_json["columns"].get_array();
+
+            for (size_t i = 0; i < BOARD_SIZE; i++) {
+                columns[i] = arr1[i].as<uint8_t>();
+            }
         }
 
         void se_reseed_rng(size_t index) {

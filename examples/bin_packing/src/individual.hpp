@@ -12,16 +12,6 @@
     ./run_example.sh
 */
 
-// STD includes:
-#include <vector>
-#include <tuple>
-#include <stdfloat>
-#include <algorithm>
-#include <cmath>
-#include <fstream>
-#include <iostream>
-#include <sstream>
-
 // Local includes:
 #include "secpion/se_config.hpp"
 #include "secpion/se_random.hpp"

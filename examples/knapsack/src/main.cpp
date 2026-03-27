@@ -3,10 +3,10 @@
     Written by Willi Kappler, MIT License
     https://github.com/willi-kappler/selecppion
 
-    This file includes the main function for the bin knapsack example
+    This file includes the main function for the knapsack example
 
     To just build use:
-    xmake build se_example_bin_knapsack
+    xmake build se_example_knapsack
 
     Run with:
     ./run_example.sh

@@ -3,7 +3,7 @@
     Written by Willi Kappler, MIT License
     https://github.com/willi-kappler/selecppion
 
-    This file includes the main function for the bin queens example
+    This file includes the main function for the queens example
 
     To just build use:
     xmake build se_example_queens

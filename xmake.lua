@@ -150,6 +150,17 @@ target("se_example_queens")
     add_includedirs("src", "examples/utils")
     set_default(false) -- Don't build by default
 
+target("se_example_sudoku1")
+    set_kind("binary")
+    add_files("examples/sudoku1/src/*.cpp")
+    add_packages("node_crunch2")
+    add_packages("spdlog")
+    add_packages("taocpp-json")
+    add_packages("argparse")
+    add_deps("selecppion")
+    add_includedirs("src", "examples/utils")
+    set_default(false) -- Don't build by default
+
 -- Test package locally in xmake repo:
 -- xmake l scripts/test.lua --shallow -vD selecppion
 -- xmake l scripts/test.lua --shallow -vD -k shared -m debug selecppion

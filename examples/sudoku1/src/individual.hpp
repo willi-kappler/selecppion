@@ -12,6 +12,10 @@
     ./run_example.sh
 */
 
+// STD includes:
+#include <unordered_set>
+#include <stdexcept>
+
 // Local includes:
 #include "secpion/se_config.hpp"
 #include "secpion/se_random.hpp"
@@ -29,7 +33,11 @@ class SudokuIndividual: public SEIndividual {
         SudokuIndividual(std::vector<uint8_t> input):
         fixed_numbers(input),
         solution(std::vector<uint8_t>(81, 0))
-        {}
+        {
+            if (fixed_numbers.size() != 81) {
+                throw std::runtime_error("Input size must be 81 numbers!");
+            }
+        }
 
         uint8_t get_fixed_number(size_t x, size_t y) {
             return fixed_numbers[(y * 9) + x];
@@ -67,6 +75,68 @@ class SudokuIndividual: public SEIndividual {
             }
         }
 
+        void fill_row() {
+            size_t x = 0;
+            size_t y = global_rng.get_size_t(9);
+            size_t i = 0;
+            uint8_t number;
+            std::vector<uint8_t> available_numbers = std::vector<uint8_t>(9, 0);
+
+            for (i = 0; i < 9; i++) {
+                available_numbers[i] = i + 1;
+            }
+
+            // First remove the given numbers:
+            for (x = 0; x < 9; x++) {
+                number = get_fixed_number(x, y);
+                if (number != 0) {
+                    std::erase(available_numbers, number);
+                }
+            }
+
+            global_rng.shuffle(available_numbers);
+
+            i = 0;
+            for (x = 0; x < 9; x++) {
+                if (get_fixed_number(x, y) == 0) {
+                    set_number(x, y, available_numbers[i]);
+                    i++;
+                }
+            }
+
+        }
+
+        void fill_column() {
+            size_t x = global_rng.get_size_t(9);
+            size_t y = 0;
+            size_t i = 0;
+            uint8_t number;
+            std::vector<uint8_t> available_numbers = std::vector<uint8_t>(9, 0);
+
+            for (i = 0; i < 9; i++) {
+                available_numbers[i] = i + 1;
+            }
+
+            // First remove the given numbers:
+            for (y = 0; y < 9; y++) {
+                number = get_fixed_number(x, y);
+                if (number != 0) {
+                    std::erase(available_numbers, number);
+                }
+            }
+
+            global_rng.shuffle(available_numbers);
+
+            i = 0;
+            for (y = 0; y < 9; y++) {
+                if (get_fixed_number(x, y) == 0) {
+                    set_number(x, y, available_numbers[i]);
+                    i++;
+                }
+            }
+
+        }
+
         void se_mutate(uint8_t op) override {
             switch(op) {
                 case 0:
@@ -75,7 +145,11 @@ class SudokuIndividual: public SEIndividual {
                 case 1:
                     swap_numbers();
                     break;
+                case 2:
+                    fill_row();
+                    break;
                 default:
+                    fill_column();
                     break;
             }
         }
@@ -84,12 +158,75 @@ class SudokuIndividual: public SEIndividual {
             for (size_t i = 0; i < 81; i++) {
                 if (fixed_numbers[i] == 0) {
                     solution[i] = global_rng.get_uint8(9) + 1;
+                } else {
+                    solution[i] = fixed_numbers[i];
                 }
             }
         }
 
+        std::float64_t check_block(size_t x, size_t y) {
+            std::float64_t result = 0.0;
+            size_t i, j;
+            uint8_t number;
+            std::unordered_set<uint8_t> numbers;
+
+            for (i = 0; i < 3; i++) {
+                for (j = 0; j < 3; j++) {
+                    number = get_number(x + i, y + j);
+
+                    if (numbers.contains(number)) {
+                        result += 1.0;
+                    } else {
+                        numbers.insert(number);
+                    }
+                }
+            }
+
+            return result;
+        }
+
         void se_calculate_fitness1() override {
             fitness1 = 0.0;
+            size_t i, j;
+            uint8_t number;
+            std::unordered_set<uint8_t> numbers;
+
+            // Check rows:
+            for (j = 0; j < 9; j++) {
+                numbers.clear();
+
+                // Go through each column:
+                for (i = 0; i < 9; i++) {
+                    number = get_number(i, j);
+                    if (numbers.contains(number)) {
+                        fitness1 += 1.0;
+                    } else {
+                        numbers.insert(number);
+                    }
+                }
+            }
+
+            // Check columns:
+            for (i = 0; i < 9; i++) {
+                numbers.clear();
+
+                // Go through each row:
+                for (j = 0; j < 9; j++) {
+                    number = get_number(i, j);
+                    if (numbers.contains(number)) {
+                        fitness1 += 1.0;
+                    } else {
+                        numbers.insert(number);
+                    }
+                }
+            }
+
+            // Check blocks:
+            for (i = 0; i < 9; i+=3) {
+                for (j = 0; j < 9; j+=3) {
+                    fitness1 += check_block(i, j);
+                }
+            }
         }
 
         [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() override {

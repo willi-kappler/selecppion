@@ -16,7 +16,7 @@
     "node_log_level": "debug",
     "randomize_count": 1,
     "mutation_operations": [
-        0, 1, 2, 3, 4
+        0, 1, 2, 3
     ],
     "sine_base": 5.0,
     "sine_amplitude": 5.0,

@@ -20,7 +20,19 @@
 using namespace secpion;
 
 int main(int argc, char *argv[]) {
-    std::vector<uint8_t> input = {0};
+    std::vector<uint8_t> input = {
+        0, 8, 0,   0, 9, 4,   0, 0, 0,
+        2, 0, 3,   0, 0, 0,   9, 4, 0,
+        0, 0, 0,   0, 0, 2,   1, 0, 3,
+
+        0, 0, 8,   0, 0, 0,   7, 9, 0,
+        9, 2, 0,   0, 0, 0,   0, 5, 6,
+        0, 7, 6,   0, 0, 0,   3, 0, 0,
+
+        0, 5, 7,   0, 0, 0,   2, 0, 1,
+        3, 0, 2,   1, 0, 0,   0, 0, 0,
+        0, 0, 0,   2, 6, 0,   0, 3, 0
+    };
     std::unique_ptr<SudokuIndividual> sudoku1_individual =
         std::make_unique<SudokuIndividual>(input);
     sudoku1_individual->se_randomize();

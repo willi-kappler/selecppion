@@ -1,0 +1,11 @@
+includes(
+    "bin_packing",
+    "function_optimization",
+    "knapsack",
+    "neural_net1",
+    "neural_net2",
+    "queens",
+    "sudoku1",
+    "sudoku2",
+    "tsp"
+)

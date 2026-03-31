@@ -1,0 +1,10 @@
+target("se_example_knapsack")
+    set_kind("binary")
+    add_files("src/*.cpp")
+    add_packages("node_crunch2")
+    add_packages("spdlog")
+    add_packages("taocpp-json")
+    add_packages("argparse")
+    add_deps("selecppion")
+    add_includedirs("../../src", "../utils")
+    set_default(false) -- Don't build by default

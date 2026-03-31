@@ -1,0 +1,10 @@
+target("se_test")
+    set_kind("binary")
+    add_files("test_all.cpp")
+    add_packages("node_crunch2")
+    add_packages("snitch")
+    add_packages("spdlog")
+    add_packages("taocpp-json")
+    add_deps("selecppion")
+    add_includedirs("../src")
+    set_default(false) -- Don't build by default

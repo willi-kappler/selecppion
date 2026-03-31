@@ -6,7 +6,6 @@ TODO:
     - add examples: function_optimization, neural_net.
     - try to add the nodeid to the log file.
     - maybe allow custom compare function for individuals.
-    - split xmake.lua file for examples.
 
 
 
@@ -21,6 +20,7 @@ Done:
     # split up example main file.
     # new option: reseed_rng, wether to get a fresh new seed for the rng at the beginning of the iteration loop.
     # maybe add crossover for mutation.
+    # split xmake.lua file for examples.
 
 
 

@@ -1,0 +1,25 @@
+{
+    "server_address": "127.0.0.1",
+    "server_port": 9999,
+    "heartbeat_timeout": 100,
+    "secret_key": "123456789012345678901234567890A1",
+    "node_population_size": 100,
+    "num_of_iterations": 10000,
+    "randomize_population": false,
+    "num_of_mutations": 1,
+    "target_fitness1": 0.0,
+    "save_new_fitness": true,
+    "share_only_best": true,
+    "server_log_file": "example_server",
+    "server_log_level": "debug",
+    "node_log_file": "example_node",
+    "node_log_level": "debug",
+    "randomize_count": 1,
+    "mutation_operations": [
+        0, 1, 2, 3
+    ],
+    "sine_base": 5.0,
+    "sine_amplitude": 5.0,
+    "sine_frequency": 0.001,
+    "limit_factor": 1.5
+}

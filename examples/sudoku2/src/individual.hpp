@@ -3,10 +3,10 @@
     Written by Willi Kappler, MIT License
     https://github.com/willi-kappler/selecppion
 
-    This file includes the individual class for the sudoku1 example
+    This file includes the individual class for the sudoku2 example
 
     To just build use:
-    xmake build se_example_sudoku1
+    xmake build se_example_sudoku2
 
     Run with:
     ./run_example.sh
@@ -48,119 +48,76 @@ class SudokuIndividual: public SEIndividual {
         }
 
         void set_number(size_t x, size_t y, uint8_t number) {
-            if (get_fixed_number(x, y) == 0) {
-                solution[(y * 9) + x] = number;
+            solution[(y * 9) + x] = number;
+        }
+
+        void allowed_numbers_in_row(size_t row, std::unordered_set<uint8_t> &numbers) {
+            for (size_t x = 0; x < 9; x++) {
+                numbers.erase(get_number(x, row));
             }
         }
 
-        void random_number() {
+        void allowed_numbers_in_col(size_t col, std::unordered_set<uint8_t> &numbers) {
+            for (size_t y = 0; y < 9; y++) {
+                numbers.erase(get_number(col, y));
+            }
+        }
+
+        void allowed_numbers_in_block(size_t x, size_t y, std::unordered_set<uint8_t> &numbers) {
+            x = (x / 3) * 3;
+            y = (y / 3) * 3;
+
+            for (size_t i = 0; i < 3; i++) {
+                for (size_t j = 0; j < 3; j++) {
+                    numbers.erase(get_number(x + i, y + j));
+                }
+            }
+        }
+
+        void se_mutate([[maybe_unused]] uint8_t op) override {
+            size_t x, y, num_of_elems;
+            std::unordered_set<uint8_t> allowed_numbers;
+            std::vector<uint8_t> random_numbers;
+
             while (true) {
-                size_t i = global_rng.get_size_t(81);
+                x = global_rng.get_size_t(9);
+                y = global_rng.get_size_t(9);
 
-                if (fixed_numbers[i] == 0) {
-                    solution[i] = global_rng.get_uint8(9) + 1;
-                    break;
-                }
-            }
-        }
-
-        void swap_numbers() {
-            while (true) {
-                auto [i1, i2] = global_rng.get_two_size_t(81);
-
-                if ((fixed_numbers[i1] == 0) && (fixed_numbers[i2] == 0)) {
-                    std::swap(solution[i1], solution[i2]);
-                    break;
-                }
-            }
-        }
-
-        void fill_row() {
-            size_t x = 0;
-            size_t y = global_rng.get_size_t(9);
-            size_t i = 0;
-            uint8_t number;
-            std::vector<uint8_t> available_numbers = std::vector<uint8_t>(9, 0);
-
-            for (i = 0; i < 9; i++) {
-                available_numbers[i] = i + 1;
-            }
-
-            // First remove the given numbers:
-            for (x = 0; x < 9; x++) {
-                number = get_fixed_number(x, y);
-                if (number != 0) {
-                    std::erase(available_numbers, number);
-                }
-            }
-
-            global_rng.shuffle(available_numbers);
-
-            i = 0;
-            for (x = 0; x < 9; x++) {
                 if (get_fixed_number(x, y) == 0) {
-                    set_number(x, y, available_numbers[i]);
-                    i++;
+                    allowed_numbers = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+                    allowed_numbers_in_row(y, allowed_numbers);
+                    allowed_numbers_in_col(x, allowed_numbers);
+                    allowed_numbers_in_block(x, y, allowed_numbers);
+
+                    num_of_elems = allowed_numbers.size();
+
+                    switch(num_of_elems) {
+                        case 0:
+                            // Got stuck, no solution possible.
+                            // Just reset!
+                            se_randomize();
+                        break;
+                        case 1:
+                            random_numbers.assign(allowed_numbers.begin(), allowed_numbers.end());
+                            set_number(x, y, random_numbers[0]);
+                        break;
+                        default:
+                            random_numbers.assign(allowed_numbers.begin(), allowed_numbers.end());
+                            global_rng.shuffle(random_numbers);
+                            set_number(x, y, random_numbers[0]);
+                        break;
+                    }
+
+                    break;
                 }
-            }
-
-        }
-
-        void fill_column() {
-            size_t x = global_rng.get_size_t(9);
-            size_t y = 0;
-            size_t i = 0;
-            uint8_t number;
-            std::vector<uint8_t> available_numbers = std::vector<uint8_t>(9, 0);
-
-            for (i = 0; i < 9; i++) {
-                available_numbers[i] = i + 1;
-            }
-
-            // First remove the given numbers:
-            for (y = 0; y < 9; y++) {
-                number = get_fixed_number(x, y);
-                if (number != 0) {
-                    std::erase(available_numbers, number);
-                }
-            }
-
-            global_rng.shuffle(available_numbers);
-
-            i = 0;
-            for (y = 0; y < 9; y++) {
-                if (get_fixed_number(x, y) == 0) {
-                    set_number(x, y, available_numbers[i]);
-                    i++;
-                }
-            }
-
-        }
-
-        void se_mutate(uint8_t op) override {
-            switch(op) {
-                case 0:
-                    random_number();
-                    break;
-                case 1:
-                    swap_numbers();
-                    break;
-                case 2:
-                    fill_row();
-                    break;
-                default:
-                    fill_column();
-                    break;
             }
         }
 
         void se_randomize() override {
             for (size_t i = 0; i < 81; i++) {
-                if (fixed_numbers[i] == 0) {
-                    solution[i] = global_rng.get_uint8(9) + 1;
-                } else {
-                    solution[i] = fixed_numbers[i];
-                }
+                // Does not randomize, but reset the sudoku:
+                solution[i] = fixed_numbers[i];
             }
         }
 

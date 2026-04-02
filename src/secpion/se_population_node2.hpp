@@ -40,6 +40,10 @@ class SEPopulationNode2: public NCNodeDataProcessor {
             population.se_logger->info("Mutate a clone and if it's better than the previous version keep it.");
         }
 
+        void nc_init([[maybe_unused]] std::vector<uint8_t> data, NCNodeID node_id) override {
+            population.se_logger->info("Current node id: {}", node_id);
+        }
+
         [[nodiscard]] std::vector<uint8_t> nc_process_data(std::vector<uint8_t> data) override {
             population.se_prepare_iteration("PN2: Process data.", data);
             std::unique_ptr<SEIndividual> cloned_indi;

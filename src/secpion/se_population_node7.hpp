@@ -44,6 +44,10 @@ class SEPopulationNode7: public NCNodeDataProcessor {
             population.se_logger->info("Limit factor: {}", se_config.limit_factor);
         }
 
+        void nc_init([[maybe_unused]] std::vector<uint8_t> data, NCNodeID node_id) override {
+            population.se_logger->info("Current node id: {}", node_id);
+        }
+
         [[nodiscard]] std::vector<uint8_t> nc_process_data(std::vector<uint8_t> data) override {
             population.se_prepare_iteration("PN7: Process data.", data);
             std::float64_t current_best_fitness = population.population[0]->fitness1;

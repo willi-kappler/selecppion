@@ -40,6 +40,10 @@ class SEPopulationNode10: public NCNodeDataProcessor {
             population.se_logger->info("Always replace the worst individual if better fitness1.");
         }
 
+        void nc_init([[maybe_unused]] std::vector<uint8_t> data, NCNodeID node_id) override {
+            population.se_logger->info("Current node id: {}", node_id);
+        }
+
         [[nodiscard]] std::vector<uint8_t> nc_process_data(std::vector<uint8_t> data) override {
             population.se_prepare_iteration("PN10: Process data.", data);
             population.se_find_worst_individual();

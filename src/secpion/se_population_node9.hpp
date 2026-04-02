@@ -42,6 +42,10 @@ class SEPopulationNode9: public NCNodeDataProcessor {
                 se_config.sine_base, se_config.sine_amplitude, se_config.sine_frequency);
         }
 
+        void nc_init([[maybe_unused]] std::vector<uint8_t> data, NCNodeID node_id) override {
+            population.se_logger->info("Current node id: {}", node_id);
+        }
+
         [[nodiscard]] std::vector<uint8_t> nc_process_data(std::vector<uint8_t> data) override {
             population.se_prepare_iteration("PN9: Process data.", data);
             std::unique_ptr<SEIndividual> cloned_indi;

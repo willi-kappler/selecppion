@@ -44,6 +44,10 @@ class SEPopulationNode11: public NCNodeDataProcessor {
                 se_config.mutation_probability, se_config.crossover_probability);
         }
 
+        void nc_init([[maybe_unused]] std::vector<uint8_t> data, NCNodeID node_id) override {
+            population.se_logger->info("Current node id: {}", node_id);
+        }
+
         [[nodiscard]] std::vector<uint8_t> nc_process_data(std::vector<uint8_t> data) override {
             population.se_prepare_iteration("PN11: Process data.", data);
             population.se_find_worst_individual();

@@ -41,6 +41,10 @@ class SEPopulationNode5: public NCNodeDataProcessor {
             population.se_logger->info("Also lower (update) the average fitness as new bound.");
         }
 
+        void nc_init([[maybe_unused]] std::vector<uint8_t> data, NCNodeID node_id) override {
+            population.se_logger->info("Current node id: {}", node_id);
+        }
+
         [[nodiscard]] std::vector<uint8_t> nc_process_data(std::vector<uint8_t> data) override {
             population.se_prepare_iteration("PN5: Process data.", data);
 

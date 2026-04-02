@@ -42,6 +42,10 @@ class SEPopulationNode6: public NCNodeDataProcessor {
             population.se_logger->info("The best of all the mutations is kept and the next individual is mutated.");
         }
 
+        void nc_init([[maybe_unused]] std::vector<uint8_t> data, NCNodeID node_id) override {
+            population.se_logger->info("Current node id: {}", node_id);
+        }
+
         [[nodiscard]] std::vector<uint8_t> nc_process_data(std::vector<uint8_t> data) override {
             population.se_prepare_iteration("PN6: Process data.", data);
 

@@ -5,6 +5,7 @@ TODO:
     - add philox4x64 rng.
     - add examples: function_optimization, neural_net.
     - maybe allow custom compare function for individuals.
+    - add more test cases for invalid input.
 
 
 

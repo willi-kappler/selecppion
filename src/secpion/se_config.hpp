@@ -30,8 +30,8 @@ class SEConfiguration {
         bool allow_same_fitness;
         bool share_only_best;
         uint32_t server_population_size;
-        std::string server_log_file;
-        std::string server_log_level;
+        std::string se_server_log_file;
+        std::string se_server_log_level;
 
         // Node configuration:
         uint32_t node_population_size;
@@ -44,8 +44,8 @@ class SEConfiguration {
         uint8_t population_kind;
         std::vector<uint8_t> mutation_operations;
         uint8_t early_exit_sleep;
-        std::string node_log_file;
-        std::string node_log_level;
+        std::string se_node_log_file;
+        std::string se_node_log_level;
         uint32_t seed_count;
 
         // Population specific configuration:

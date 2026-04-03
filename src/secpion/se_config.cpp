@@ -24,8 +24,8 @@ SEConfiguration::SEConfiguration():
     allow_same_fitness(false),
     share_only_best(true),
     server_population_size(10),
-    server_log_file(""),
-    server_log_level(""),
+    se_server_log_file(""),
+    se_server_log_level(""),
 
     // Node configuration:
     node_population_size(10),
@@ -37,8 +37,8 @@ SEConfiguration::SEConfiguration():
     population_kind(1),
     mutation_operations(),
     early_exit_sleep(10),
-    node_log_file(""),
-    node_log_level(""),
+    se_node_log_file(""),
+    se_node_log_level(""),
     seed_count(10),
 
     min_num_of_individuals(2),
@@ -89,12 +89,12 @@ SEConfiguration::SEConfiguration():
         }
     }
 
-    if (auto v = json_config.find("server_log_file"); v != nullptr) {
-        se_config.server_log_file = v->as<std::string>();
+    if (auto v = json_config.find("se_server_log_file"); v != nullptr) {
+        se_config.se_server_log_file = v->as<std::string>();
     }
 
-    if (auto v = json_config.find("server_log_level"); v != nullptr) {
-        se_config.server_log_level = v->as<std::string>();
+    if (auto v = json_config.find("se_server_log_level"); v != nullptr) {
+        se_config.se_server_log_level = v->as<std::string>();
     }
 
     // Node settings:
@@ -158,12 +158,12 @@ SEConfiguration::SEConfiguration():
         se_config.early_exit_sleep = v->as<uint8_t>();
     }
 
-    if (auto v = json_config.find("node_log_file"); v != nullptr) {
-        se_config.node_log_file = v->as<std::string>();
+    if (auto v = json_config.find("se_node_log_file"); v != nullptr) {
+        se_config.se_node_log_file = v->as<std::string>();
     }
 
-    if (auto v = json_config.find("node_log_level"); v != nullptr) {
-        se_config.node_log_level = v->as<std::string>();
+    if (auto v = json_config.find("se_node_log_level"); v != nullptr) {
+        se_config.se_node_log_level = v->as<std::string>();
     }
 
     if (auto v = json_config.find("seed_count"); v != nullptr) {

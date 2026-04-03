@@ -23,7 +23,7 @@
 #include <spdlog/sinks/stdout_sinks.h>
 #include <spdlog/fmt/bundled/ranges.h>
 #include <spdlog/stopwatch.h>
-#include <nodcru2/nc_logger.hpp>
+#include <nodcru2/nc_util.hpp>
 #include <nodcru2/nc_server.hpp>
 
 // Local includes:
@@ -59,23 +59,23 @@ class SEServerDP: public NCServerDataProcessor {
             rng.seed();
             spdlog::drop("se_logger");
 
-            if (se_config.server_log_file.size() > 0) {
-                std::string file_name = nodcru2::nc_gen_log_file_name(se_config.server_log_file);
+            if (se_config.se_server_log_file.size() > 0) {
+                std::string file_name = nodcru2::nc_gen_log_file_name(se_config.se_server_log_file);
                 se_logger = spdlog::basic_logger_mt("se_logger", file_name);
             } else {
                 se_logger = spdlog::stdout_logger_mt("se_logger");
             }
 
-            if (se_config.server_log_level == "debug") {
+            if (se_config.se_server_log_level == "debug") {
                 se_logger->set_level(spdlog::level::level_enum::debug);
-            } else if ((se_config.server_log_level == "info") || (se_config.server_log_level.size() == 0)) {
+            } else if ((se_config.se_server_log_level == "info") || (se_config.se_server_log_level.size() == 0)) {
                 se_logger->set_level(spdlog::level::level_enum::info);
-            } else if (se_config.server_log_level == "warn") {
+            } else if (se_config.se_server_log_level == "warn") {
                 se_logger->set_level(spdlog::level::level_enum::warn);
-            } else if (se_config.server_log_level == "error") {
+            } else if (se_config.se_server_log_level == "error") {
                 se_logger->set_level(spdlog::level::level_enum::err);
             } else {
-                throw SEConfigurationException(fmt::format("Unknown log level: {}", se_config.server_log_level).c_str());
+                throw SEConfigurationException(fmt::format("Unknown log level: {}", se_config.se_server_log_level).c_str());
             }
 
             se_fill_population(std::move(individual));

@@ -206,8 +206,8 @@ class TestNP {
             se_config.randomize_population = false;
             se_config.accept_new_best = false;
             se_config.early_exit_sleep = 0;
-            se_config.server_log_level = "debug";
-            se_config.node_log_level = "debug";
+            se_config.se_server_log_level = "debug";
+            se_config.se_node_log_level = "debug";
             se_config.sine_base = 5.0;
             se_config.sine_amplitude = 5.0;
             individual2.numbers = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};

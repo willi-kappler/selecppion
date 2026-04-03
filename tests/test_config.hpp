@@ -30,8 +30,8 @@ TEST_CASE("Create valid default configuration", "[configuration]" ) {
     REQUIRE(se_config.allow_same_fitness == false);
     REQUIRE(se_config.share_only_best == true);
     REQUIRE(se_config.server_population_size == 10);
-    REQUIRE(se_config.server_log_file == "");
-    REQUIRE(se_config.server_log_level == "");
+    REQUIRE(se_config.se_server_log_file == "");
+    REQUIRE(se_config.se_server_log_level == "");
 
     // Node configuration:
     REQUIRE(se_config.node_population_size == 10);
@@ -43,8 +43,8 @@ TEST_CASE("Create valid default configuration", "[configuration]" ) {
     REQUIRE(se_config.population_kind == 1);
     REQUIRE(se_config.mutation_operations == std::vector<uint8_t>{});
     REQUIRE(se_config.early_exit_sleep == 10);
-    REQUIRE(se_config.node_log_file == "");
-    REQUIRE(se_config.node_log_level == "");
+    REQUIRE(se_config.se_node_log_file == "");
+    REQUIRE(se_config.se_node_log_level == "");
     REQUIRE(se_config.seed_count == 10);
     REQUIRE(se_config.min_num_of_individuals == 2);
     REQUIRE(se_config.sine_base == 100.0);
@@ -65,8 +65,8 @@ TEST_CASE("Test valid JSON configuration", "[configuration]" ) {
         {"allow_same_fitness", true},
         {"share_only_best", false},
         {"server_population_size", 15},
-        {"server_log_file", "foo_bar"},
-        {"server_log_level", "debug"},
+        {"se_server_log_file", "foo_bar"},
+        {"se_server_log_level", "debug"},
         {"node_population_size", 21},
         {"num_of_iterations", 321},
         {"num_of_mutations", 7},
@@ -76,8 +76,8 @@ TEST_CASE("Test valid JSON configuration", "[configuration]" ) {
         {"population_kind", 2},
         {"mutation_operations", tao::json::value::array({2, 4, 5})},
         {"early_exit_sleep", 57},
-        {"node_log_file", "node_foo"},
-        {"node_log_level", "warning"},
+        {"se_node_log_file", "node_foo"},
+        {"se_node_log_level", "warning"},
         {"seed_count", 20},
         {"min_num_of_individuals", 8},
         {"sine_base", 77.77},
@@ -98,8 +98,8 @@ TEST_CASE("Test valid JSON configuration", "[configuration]" ) {
     REQUIRE(se_config.allow_same_fitness == true);
     REQUIRE(se_config.share_only_best == false);
     REQUIRE(se_config.server_population_size == 15);
-    REQUIRE(se_config.server_log_file == "foo_bar");
-    REQUIRE(se_config.server_log_level == "debug");
+    REQUIRE(se_config.se_server_log_file == "foo_bar");
+    REQUIRE(se_config.se_server_log_level == "debug");
 
     // Node configuration:
     REQUIRE(se_config.node_population_size == 21);
@@ -111,8 +111,8 @@ TEST_CASE("Test valid JSON configuration", "[configuration]" ) {
     REQUIRE(se_config.population_kind == 2);
     REQUIRE(se_config.mutation_operations == std::vector<uint8_t>{2, 4, 5});
     REQUIRE(se_config.early_exit_sleep == 57);
-    REQUIRE(se_config.node_log_file == "node_foo");
-    REQUIRE(se_config.node_log_level == "warning");
+    REQUIRE(se_config.se_node_log_file == "node_foo");
+    REQUIRE(se_config.se_node_log_level == "warning");
     REQUIRE(se_config.seed_count == 20);
     REQUIRE(se_config.min_num_of_individuals == 8);
     REQUIRE(se_config.sine_base == 77.77);

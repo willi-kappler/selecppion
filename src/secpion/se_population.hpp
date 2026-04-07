@@ -27,6 +27,8 @@
 #include "se_individual.hpp"
 #include "se_random.hpp"
 
+using namespace nodcru2;
+
 namespace secpion {
 template<typename T>
 class SEPopulation {
@@ -61,7 +63,7 @@ class SEPopulation {
             spdlog::drop("se_logger");
 
             if (se_config.se_node_log_file.size() > 0) {
-                std::string file_name = nodcru2::nc_gen_log_file_name(se_config.se_node_log_file);
+                std::string file_name = nc_gen_log_file_name(se_config.se_node_log_file);
                 se_logger = spdlog::basic_logger_mt("se_logger", file_name);
             } else {
                 se_logger = spdlog::stdout_logger_mt("se_logger");

@@ -60,7 +60,7 @@ class SEServerDP: public NCServerDataProcessor {
             spdlog::drop("se_logger");
 
             if (se_config.se_server_log_file.size() > 0) {
-                std::string file_name = nodcru2::nc_gen_log_file_name(se_config.se_server_log_file);
+                std::string file_name = nc_gen_log_file_name(se_config.se_server_log_file);
                 se_logger = spdlog::basic_logger_mt("se_logger", file_name);
             } else {
                 se_logger = spdlog::stdout_logger_mt("se_logger");
@@ -98,7 +98,7 @@ class SEServerDP: public NCServerDataProcessor {
         }
 
         void se_set_file_logger(std::string_view prefix) {
-            std::string file_name = nodcru2::nc_gen_log_file_name(prefix);
+            std::string file_name = nc_gen_log_file_name(prefix);
             spdlog::drop("se_logger");
             std::shared_ptr<spdlog::logger> file_logger = spdlog::basic_logger_mt("se_logger", file_name);
             se_set_logger(file_logger);
@@ -132,6 +132,8 @@ class SEServerDP: public NCServerDataProcessor {
             } else {
                 out.write(reinterpret_cast<const char*>(data.data()), data.size());
             }
+
+            se_logger->flush();
         }
 
         [[nodiscard]] virtual bool nc_is_job_done() {

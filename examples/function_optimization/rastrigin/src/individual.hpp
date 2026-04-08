@@ -23,45 +23,84 @@ SE_RNG_L64 global_rng;
 
 class RastriginIndividual: public SEIndividual {
     public:
-        size_t dimensions;
-        std::float64_t lower_bound;
-        std::float64_t upper_bound;
+        size_t local_dimensions;
+        std::float64_t local_lower_bound;
+        std::float64_t local_upper_bound;
         std::vector<std::float64_t> values;
 
         RastriginIndividual(size_t dimensions, std::float64_t lower_bound, std::float64_t upper_bound):
-        dimensions(dimensions),
-        lower_bound(lower_bound),
-        upper_bound(upper_bound),
+        local_dimensions(dimensions),
+        local_lower_bound(lower_bound),
+        local_upper_bound(upper_bound),
         values(std::vector<std::float64_t>(dimensions, 0))
         {
-            for (size_t i = 0; i < dimensions; i++) {
-                values[i] = global_rng.get_float64(lower_bound, upper_bound);
+            se_randomize();
+        }
+
+        void inc_value() {
+            size_t i = global_rng.get_size_t(local_dimensions);
+            values[i] += global_rng.get_float64();
+            if (values[i] > local_upper_bound) {
+                values[i] = local_upper_bound;
+            }
+        }
+
+        void dec_value() {
+            size_t i = global_rng.get_size_t(local_dimensions);
+            values[i] += global_rng.get_float64();
+            if (values[i] < local_lower_bound) {
+                values[i] = local_lower_bound;
+            }
+        }
+
+        void random_value1() {
+            size_t i = global_rng.get_size_t(local_dimensions);
+            values[i] = global_rng.get_float64(local_lower_bound, local_upper_bound);
+        }
+
+        void random_value2() {
+            size_t i = global_rng.get_size_t(local_dimensions);
+            values[i] = global_rng.get_float64(local_lower_bound, local_upper_bound);
+        }
+
+        void all_equal() {
+            std::float64_t v = global_rng.get_float64(local_lower_bound, local_upper_bound);
+            for (size_t i = 0; i < local_dimensions; i++) {
+                values[i] = v;
             }
         }
 
         void se_mutate(uint8_t op) override {
             switch (op) {
                 case 0:
+                    inc_value();
                     break;
                 case 1:
+                    dec_value();
                     break;
                 case 2:
+                    random_value1();
                     break;
                 case 3:
+                    random_value2();
                     break;
                 default:
+                    all_equal();
                     break;
             }
         }
 
         void se_randomize() override {
+            for (size_t i = 0; i < local_dimensions; i++) {
+                values[i] = global_rng.get_float64(local_lower_bound, local_upper_bound);
+            }
         }
 
         void se_calculate_fitness1() override {
         }
 
         [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() override {
-            std::unique_ptr<RastriginIndividual> result = std::make_unique<RastriginIndividual>(dimensions, lower_bound, upper_bound);
+            std::unique_ptr<RastriginIndividual> result = std::make_unique<RastriginIndividual>(local_dimensions, local_lower_bound, local_upper_bound);
 
             result->values = values;
 
@@ -97,11 +136,11 @@ class RastriginIndividual: public SEIndividual {
 
         std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) {
             const RastriginIndividual* const other_individual = dynamic_cast<const RastriginIndividual* const>(individual);
-            std::unique_ptr<RastriginIndividual> result = std::make_unique<RastriginIndividual>(dimensions, lower_bound, upper_bound);
+            std::unique_ptr<RastriginIndividual> result = std::make_unique<RastriginIndividual>(local_dimensions, local_lower_bound, local_upper_bound);
 
-            auto [i1, i2] = global_rng.get_two_size_t(dimensions);
+            auto [i1, i2] = global_rng.get_two_size_t(local_dimensions);
 
-            for (size_t i = 0; i < dimensions; i++) {
+            for (size_t i = 0; i < local_dimensions; i++) {
                 if ((i >= i1) && (i <= i2)) {
                     result->values[i] = values[i];
                 } else {

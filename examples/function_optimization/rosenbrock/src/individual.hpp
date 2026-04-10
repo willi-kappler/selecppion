@@ -122,11 +122,15 @@ class RosenbrockIndividual: public SEIndividual {
         }
 
         [[nodiscard]] std::vector<uint8_t> se_to_vec_u8() override {
-            tao::json::value json_arrays = tao::json::empty_array;
+            tao::json::value json_array = tao::json::empty_array;
+
+            for (double v: values) {
+                json_array.get_array().push_back(v);
+            }
 
             const tao::json::value json_data = {
                 {"fitness1", double(fitness1)},
-                {"values", json_arrays}
+                {"values", json_array}
             };
 
             std::string serialized = tao::json::to_string(json_data);
@@ -140,6 +144,12 @@ class RosenbrockIndividual: public SEIndividual {
             tao::json::value restored_json = tao::json::from_string(data_ptr, data.size());
 
             fitness1 = restored_json["fitness1"].as<double>();
+
+            const auto& arr1 = restored_json["values"].get_array();
+
+            for (size_t i = 0; i < local_dimensions; i++) {
+                values[i] = arr1[i].as<double>();
+            }
         }
 
         void se_reseed_rng(size_t index) {

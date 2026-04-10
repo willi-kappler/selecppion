@@ -1,3 +1,4 @@
 includes(
-    "rastrigin"
+    "rastrigin",
+    "rosenbrock"
 )

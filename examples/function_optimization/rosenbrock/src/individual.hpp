@@ -3,10 +3,10 @@
     Written by Willi Kappler, MIT License
     https://github.com/willi-kappler/selecppion
 
-    This file includes the individual class for the rastrigin example
+    This file includes the individual class for the rosenbrock example
 
     To just build use:
-    xmake build se_example_rastrigin
+    xmake build se_example_rosenbrock
 
     Run with:
     ./run_example.sh
@@ -25,14 +25,14 @@ using namespace secpion;
 
 SE_RNG_L64 global_rng;
 
-class RastriginIndividual: public SEIndividual {
+class RosenbrockIndividual: public SEIndividual {
     public:
         size_t local_dimensions;
         std::float64_t local_lower_bound;
         std::float64_t local_upper_bound;
         std::vector<std::float64_t> values;
 
-        RastriginIndividual(size_t dimensions, std::float64_t lower_bound, std::float64_t upper_bound):
+        RosenbrockIndividual(size_t dimensions, std::float64_t lower_bound, std::float64_t upper_bound):
         local_dimensions(dimensions),
         local_lower_bound(lower_bound),
         local_upper_bound(upper_bound),
@@ -101,21 +101,20 @@ class RastriginIndividual: public SEIndividual {
         }
 
         void se_calculate_fitness1() override {
-            const std::float64_t A = 10.0;
-            std::float64_t fitness = A * local_dimensions;
+            std::float64_t fitness = 0.0;
             std::float64_t term1, term2;
 
-            for (size_t i = 0; i < local_dimensions; i++) {
-                term1 = pow(values[i], 2.0);
-                term2 = A * cos(2.0 * std::numbers::pi * values[i]);
-                fitness += term1 - term2;
+            for (size_t i = 0; i < local_dimensions - 1; i++) {
+                term1 = 100.0 * pow(values[i + 1] - pow(values[i], 2.0), 2.0);
+                term2 = pow(1.0 - values[i], 2.0);
+                fitness += term1 + term2;
             }
 
             fitness1 = fitness;
         }
 
         [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() override {
-            std::unique_ptr<RastriginIndividual> result = std::make_unique<RastriginIndividual>(local_dimensions, local_lower_bound, local_upper_bound);
+            std::unique_ptr<RosenbrockIndividual> result = std::make_unique<RosenbrockIndividual>(local_dimensions, local_lower_bound, local_upper_bound);
 
             result->values = values;
 
@@ -150,8 +149,8 @@ class RastriginIndividual: public SEIndividual {
         }
 
         std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) {
-            const RastriginIndividual* const other_individual = dynamic_cast<const RastriginIndividual* const>(individual);
-            std::unique_ptr<RastriginIndividual> result = std::make_unique<RastriginIndividual>(local_dimensions, local_lower_bound, local_upper_bound);
+            const RosenbrockIndividual* const other_individual = dynamic_cast<const RosenbrockIndividual* const>(individual);
+            std::unique_ptr<RosenbrockIndividual> result = std::make_unique<RosenbrockIndividual>(local_dimensions, local_lower_bound, local_upper_bound);
 
             auto [i1, i2] = global_rng.get_two_size_t(local_dimensions);
 

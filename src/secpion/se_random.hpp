@@ -196,6 +196,16 @@ class SERandomGenerator {
             return (get_float64() * (end - start)) + start;
         }
 
+        [[nodiscard]] std::float64_t get_float64_unif1() {
+            // Uniform between -1.0 and 1.0
+            return get_float64(-1.0, 1.0);
+        }
+
+        [[nodiscard]] std::float64_t get_float64_unif2() {
+            // Uniform between -0.01 and 1.01
+            return get_float64(-0.01, 0.01);
+        }
+
         template <typename U>
         void shuffle(std::vector<U>& v) {
             if (v.size() < 2) return;

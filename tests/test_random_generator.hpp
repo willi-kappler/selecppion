@@ -57,25 +57,35 @@ void gen_random_numbers() {
         REQUIRE(v < 29);
     }
 
-    // Test for float64 values
+    // Test for float64 values:
     for (i = 0; i < 1000; i++) {
         std::float64_t v = gen.get_float64();
         REQUIRE(v >= 0.0);
         REQUIRE(v <= 1.0);
     }
 
-    // Test for float64 values
     for (i = 0; i < 1000; i++) {
         std::float64_t v = gen.get_float64(55.5, 77.7);
         REQUIRE(v >= 55.5);
         REQUIRE(v <= 77.7);
     }
 
-    // Test for float64 values
     for (i = 0; i < 1000; i++) {
         std::float64_t v = gen.get_float64(-22.22, 34.56);
         REQUIRE(v >= -22.22);
         REQUIRE(v <= 34.56);
+    }
+
+    for (i = 0; i < 1000; i++) {
+        std::float64_t v = gen.get_float64_unif1();
+        REQUIRE(v >= -1.0);
+        REQUIRE(v <= 1.0);
+    }
+
+    for (i = 0; i < 1000; i++) {
+        std::float64_t v = gen.get_float64_unif2();
+        REQUIRE(v >= -0.01);
+        REQUIRE(v <= 0.01);
     }
 
     // Check if all values are different:

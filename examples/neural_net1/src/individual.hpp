@@ -21,9 +21,9 @@
 #include "secpion/se_random.hpp"
 #include "secpion/se_individual.hpp"
 
-using namespace secpion;
+#include "neuron.hpp"
 
-SE_RNG_L64 global_rng;
+using namespace secpion;
 
 class NeuralNet1Individual: public SEIndividual {
     public:

@@ -46,15 +46,20 @@ class Neuron {
         std::vector<Connection> input_connections;
         std::vector<Connection> hidden_connections;
         std::float64_t bias;
-        std::float64_t current_value;
 
     public:
+        std::float64_t current_value;
+
         Neuron():
             input_connections(),
             hidden_connections(),
             bias(global_rng.get_float64_unif1()),
             current_value(0.0)
         {}
+
+        void reset_value() {
+            current_value = 0.0;
+        }
 
         bool is_empty() {
             return (input_connections.empty()) && (hidden_connections.empty());

@@ -6,7 +6,9 @@ TODO:
     - add examples: function_optimization, neural_net.
     - maybe allow custom compare function for individuals.
     - add more test cases for invalid input.
-
+    - use constexpr when possible.
+    - use std::initializer_list overload when possible.
+    - add json helper functions: vector, pair, std::float64_t, ...
 
 
 

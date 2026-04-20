@@ -16,6 +16,7 @@
 #include "secpion/se_config.hpp"
 #include "secpion/se_random.hpp"
 #include "secpion/se_individual.hpp"
+#include "secpion/se_utils.hpp"
 
 using namespace secpion;
 
@@ -123,35 +124,18 @@ class BinPackingIndividual: public SEIndividual {
         }
 
         [[nodiscard]] std::vector<uint8_t> se_to_vec_u8() override {
-            tao::json::value json_arrays = tao::json::empty_array;
-
-            for (size_t bin: bins) {
-                json_arrays.get_array().push_back(bin);
-            }
-
             const tao::json::value json_data = {
                 {"fitness1", double(fitness1)},
-                {"bins", json_arrays}
+                {"bins", se_vec_to_json<size_t>(bins)}
             };
 
-            std::string serialized = tao::json::to_string(json_data);
-            std::vector<uint8_t> result(serialized.begin(), serialized.end());
-
-            return result;
+            return se_json_to_vec_u8(json_data);
         }
 
         void se_from_span_u8(std::span<const uint8_t> data) override {
-            const char* data_ptr = reinterpret_cast<const char*>(data.data());
-            tao::json::value restored_json = tao::json::from_string(data_ptr, data.size());
-
+            tao::json::value restored_json = se_span_u8_to_json(data);
             fitness1 = restored_json["fitness1"].as<double>();
-
-            const auto& arr1 = restored_json["bins"].get_array();
-
-            for (size_t i = 0; i < bins.size(); i++) {
-                bins[i] = arr1[i].as<size_t>();
-            }
-
+            se_json_to_vec(restored_json["bins"], bins);
         }
 
         void se_reseed_rng(size_t index) {

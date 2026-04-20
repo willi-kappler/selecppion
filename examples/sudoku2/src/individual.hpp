@@ -20,6 +20,7 @@
 #include "secpion/se_config.hpp"
 #include "secpion/se_random.hpp"
 #include "secpion/se_individual.hpp"
+#include "secpion/se_utils.hpp"
 
 using namespace secpion;
 
@@ -195,34 +196,18 @@ class SudokuIndividual: public SEIndividual {
         }
 
         [[nodiscard]] std::vector<uint8_t> se_to_vec_u8() override {
-            tao::json::value json_array = tao::json::empty_array;
-
-            for (uint8_t s: solution) {
-                json_array.get_array().push_back(s);
-            }
-
             const tao::json::value json_data = {
                 {"fitness1", double(fitness1)},
-                {"solution", json_array}
+                {"solution", se_vec_to_json<uint8_t>(solution)}
             };
 
-            std::string serialized = tao::json::to_string(json_data);
-            std::vector<uint8_t> result(serialized.begin(), serialized.end());
-
-            return result;
+            return se_json_to_vec_u8(json_data);
         }
 
         void se_from_span_u8(std::span<const uint8_t> data) override {
-            const char* data_ptr = reinterpret_cast<const char*>(data.data());
-            tao::json::value restored_json = tao::json::from_string(data_ptr, data.size());
-
+            tao::json::value restored_json = se_span_u8_to_json(data);
             fitness1 = restored_json["fitness1"].as<double>();
-
-            const auto& arr1 = restored_json["solution"].get_array();
-
-            for (size_t i = 0; i < 81; i++) {
-                solution[i] = arr1[i].as<uint8_t>();
-            }
+            se_json_to_vec(restored_json["solution"], solution);
         }
 
         void se_reseed_rng(size_t index) {

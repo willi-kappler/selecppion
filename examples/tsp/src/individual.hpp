@@ -16,6 +16,7 @@
 #include "secpion/se_config.hpp"
 #include "secpion/se_random.hpp"
 #include "secpion/se_individual.hpp"
+#include "secpion/se_utils.hpp"
 
 using namespace secpion;
 
@@ -193,34 +194,18 @@ class TSPIndividual: public SEIndividual {
         }
 
         [[nodiscard]] std::vector<uint8_t> se_to_vec_u8() override {
-            tao::json::value json_numbers = tao::json::empty_array;
-
-            for (size_t index: position_indices) {
-                json_numbers.get_array().push_back(index);
-            }
-
             const tao::json::value json_data = {
                 {"fitness1", double(fitness1)},
-                {"position_indices", json_numbers},
+                {"position_indices", se_vec_to_json<size_t>(position_indices)},
             };
 
-            std::string serialized = tao::json::to_string(json_data);
-            std::vector<uint8_t> result(serialized.begin(), serialized.end());
-
-            return result;
+            return se_json_to_vec_u8(json_data);
         }
 
         void se_from_span_u8(std::span<const uint8_t> data) override {
-            const char* data_ptr = reinterpret_cast<const char*>(data.data());
-            tao::json::value restored_json = tao::json::from_string(data_ptr, data.size());
-
+            tao::json::value restored_json = se_span_u8_to_json(data);
             fitness1 = restored_json["fitness1"].as<double>();
-
-            const auto& arr1 = restored_json["position_indices"].get_array();
-
-            for (size_t i = 0; i < position_indices.size(); i++) {
-                position_indices[i] = arr1[i].as<size_t>();
-            }
+            se_json_to_vec(restored_json["position_indices"], position_indices);
         }
 
         void se_reseed_rng(size_t index) {

@@ -104,6 +104,7 @@ class SEPopulation {
             std::unique_ptr<SEIndividual> new_indi;
 
             for (size_t i = 0; i < size; i++) {
+                // se_clone_internal() not needed here
                 new_indi = individual->se_clone();
                 new_indi->se_randomize();
                 new_indi->se_calculate_fitness1();

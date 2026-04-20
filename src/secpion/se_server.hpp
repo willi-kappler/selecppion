@@ -209,7 +209,7 @@ class SEServerDP: public NCServerDataProcessor {
             se_logger->flush();
         }
 
-        // These three methods are used for the test cases:
+        // These four methods are used for the test cases:
         [[nodiscard]] size_t se_get_population_size() {
             return population.size();
         }

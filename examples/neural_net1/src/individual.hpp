@@ -20,6 +20,7 @@
 #include "secpion/se_config.hpp"
 #include "secpion/se_random.hpp"
 #include "secpion/se_individual.hpp"
+#include "secpion/se_utils.hpp"
 
 #include "neuron.hpp"
 
@@ -237,15 +238,11 @@ class NeuralNet1Individual: public SEIndividual {
                 {"hidden_layer", json_array}
             };
 
-            std::string serialized = tao::json::to_string(json_data);
-            std::vector<uint8_t> result(serialized.begin(), serialized.end());
-
-            return result;
+            return se_json_to_vec_u8(json_data);
         }
 
         void se_from_span_u8(std::span<const uint8_t> data) override {
-            const char* data_ptr = reinterpret_cast<const char*>(data.data());
-            tao::json::value restored_json = tao::json::from_string(data_ptr, data.size());
+            tao::json::value restored_json = se_span_u8_to_json(data);
 
             fitness1 = restored_json["fitness1"].as<double>();
             Neuron n;

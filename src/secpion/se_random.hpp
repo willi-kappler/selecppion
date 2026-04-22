@@ -1,5 +1,6 @@
 /*
     Selecppion
+    SPDX-License-Identifier: MIT
     Written by Willi Kappler, MIT License
     https://github.com/willi-kappler/selecppion
 

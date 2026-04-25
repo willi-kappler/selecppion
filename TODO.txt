@@ -9,6 +9,7 @@ TODO:
     - use constexpr when possible.
     - use std::initializer_list overload when possible.
     - add json helper functions: vector, pair, std::float64_t, ...
+    - use final instead of override when possible.
 
 
 

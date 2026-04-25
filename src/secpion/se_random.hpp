@@ -211,8 +211,8 @@ class SERandomGenerator {
 
         template <std::random_access_iterator It>
         void shuffle(It first, It last) {
-            const auto n = std::distance(first, last);
-            if (n < 2) {
+            const auto len = std::distance(first, last);
+            if (len < 2) {
                 // Nothing to do.
                 return;
             }
@@ -220,7 +220,7 @@ class SERandomGenerator {
             size_t j = 0;
 
             // We iterate backwards from the last element to the second element (Knuth)
-            for (auto i = n - 1; i > 0; --i) {
+            for (auto i = len - 1; i > 0; --i) {
                 // Pick a random index j from 0 to i (inclusive)
                 j = get_size_t(i + 1);
 
@@ -229,38 +229,49 @@ class SERandomGenerator {
             }
         }
 
-        void shuffle(std::ranges::random_access_range auto& r) {
+        template <std::ranges::random_access_range R>
+        void shuffle(R& r) {
             // Call iterator-based shuffle internally
             shuffle(std::ranges::begin(r), std::ranges::end(r));
         }
 
-        template <typename U>
-        [[nodiscard]] U choice(std::vector<U>& v) {
-            size_t len = v.size();
+        template <std::random_access_iterator It>
+        [[nodiscard]] auto& choice(It first, It last) {
+            const auto len = std::distance(first, last);
 
             if (len == 0) {
-                throw SERNGException("Called choice() with empty vector!");
+                throw SERNGException("Called choice() with empty range!");
             } else if (len == 1) {
-                return v[0];
+                return *first;
             } else {
-                size_t i = get_size_t(len);
-                return v[i];
+                return *(first + get_size_t(len));
             }
+        }
+
+        template <std::ranges::random_access_range R>
+        [[nodiscard]] auto& choice(R& r) {
+            return choice(std::ranges::begin(r), std::ranges::end(r));
+        }
+
+        template <std::ranges::random_access_range R>
+        [[nodiscard]] const auto& choice(const R& r) {
+            return choice(std::ranges::begin(r), std::ranges::end(r));
         }
 
         template <std::random_access_iterator It>
         void swap(It first, It last) {
-            const auto n = std::distance(first, last);
-            if (n < 2) {
+            const auto len = std::distance(first, last);
+            if (len < 2) {
                 // Nothing to do.
                 return;
             }
 
-            auto [i1, i2] = get_two_size_t(n);
+            auto [i1, i2] = get_two_size_t(len);
             std::swap(*(first + i1), *(first + i2));
         }
 
-        void swap(std::ranges::random_access_range auto& r) {
+        template <std::ranges::random_access_range R>
+        void swap(R& r) {
             // Call iterator-based swap internally
             swap(std::ranges::begin(r), std::ranges::end(r));
         }

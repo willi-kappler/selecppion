@@ -211,13 +211,18 @@ class SERandomGenerator {
 
         template <std::random_access_iterator It>
         void shuffle(It first, It last) {
-            auto n = std::distance(first, last);
-            if (n < 2) return;
+            const auto n = std::distance(first, last);
+            if (n < 2) {
+                // Nothing to do.
+                return;
+            }
+
+            size_t j = 0;
 
             // We iterate backwards from the last element to the second element (Knuth)
             for (auto i = n - 1; i > 0; --i) {
                 // Pick a random index j from 0 to i (inclusive)
-                auto j = get_size_t(i + 1);
+                j = get_size_t(i + 1);
 
                 // Swap elements at iterators (first + i) and (first + j)
                 std::swap(*(first + i), *(first + j));
@@ -243,18 +248,21 @@ class SERandomGenerator {
             }
         }
 
-        template <typename U>
-        void swap(std::vector<U>& v) {
-            const size_t v_len = v.size();
-
-            if (v_len < 2) {
-                // Nothing to do
+        template <std::random_access_iterator It>
+        void swap(It first, It last) {
+            const auto n = std::distance(first, last);
+            if (n < 2) {
+                // Nothing to do.
                 return;
             }
 
-            auto [i1, i2] = get_two_size_t(v_len);
+            auto [i1, i2] = get_two_size_t(n);
+            std::swap(*(first + i1), *(first + i2));
+        }
 
-            std::swap(v[i1], v[i2]);
+        void swap(std::ranges::random_access_range auto& r) {
+            // Call iterator-based swap internally
+            swap(std::ranges::begin(r), std::ranges::end(r));
         }
 
         // Constructor:

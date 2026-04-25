@@ -22,6 +22,8 @@
 #include <concepts>
 #include <random>
 #include <algorithm>
+#include <iterator>
+#include <ranges>
 
 // Local includes:
 #include "se_exceptions.hpp"
@@ -207,19 +209,24 @@ class SERandomGenerator {
             return get_float64(-0.01, 0.01);
         }
 
-        template <typename U>
-        void shuffle(std::vector<U>& v) {
-            if (v.size() < 2) return;
+        template <std::random_access_iterator It>
+        void shuffle(It first, It last) {
+            auto n = std::distance(first, last);
+            if (n < 2) return;
 
             // We iterate backwards from the last element to the second element (Knuth)
-            for (size_t i = v.size() - 1; i > 0; --i) {
-
+            for (auto i = n - 1; i > 0; --i) {
                 // Pick a random index j from 0 to i (inclusive)
-                size_t j = get_size_t(i + 1);
+                auto j = get_size_t(i + 1);
 
-                // Swap the elements
-                std::swap(v[i], v[j]);
+                // Swap elements at iterators (first + i) and (first + j)
+                std::swap(*(first + i), *(first + j));
             }
+        }
+
+        void shuffle(std::ranges::random_access_range auto& r) {
+            // Call iterator-based shuffle internally
+            shuffle(std::ranges::begin(r), std::ranges::end(r));
         }
 
         template <typename U>

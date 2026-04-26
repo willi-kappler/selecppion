@@ -238,7 +238,6 @@ class SERandomGenerator {
         template <std::random_access_iterator It>
         [[nodiscard]] auto& choice(It first, It last) {
             const auto len = std::distance(first, last);
-
             if (len == 0) {
                 throw SERNGException("Called choice() with empty range!");
             } else if (len == 1) {

@@ -64,8 +64,11 @@ class NeuralNet1Individual: public SEIndividual {
                 neuron.reset_value();
             }
 
-            for (auto neuron: hidden_layer) {
-                neuron.evaluate(input_values, hidden_layer);
+            // Evaluate the network two times:
+            for (uint8_t i = 0; i < 2; i++) {
+                for (auto neuron: hidden_layer) {
+                    neuron.evaluate(input_values, hidden_layer);
+                }
             }
         }
 
@@ -103,7 +106,7 @@ class NeuralNet1Individual: public SEIndividual {
             size_t current_size = hidden_layer.size();
             Neuron new_neuron = Neuron();
 
-            // Add a random connextion to the neuron:
+            // Add a random connection to the neuron:
             size_t index = global_rng.get_size_t(current_size);
             new_neuron.add_hidden_connection(index);
 
@@ -117,8 +120,7 @@ class NeuralNet1Individual: public SEIndividual {
 
         void swap_neurons() {
             size_t current_size = hidden_layer.size();
-            size_t i1 = global_rng.get_size_t(current_size);
-            size_t i2 = global_rng.get_size_t(current_size);
+            const auto [i1, i2] = global_rng.get_two_size_t(current_size);
 
             if (hidden_layer[i1].is_empty() || hidden_layer[i2].is_empty()) {
                 mutate_neuron();
@@ -173,7 +175,7 @@ class NeuralNet1Individual: public SEIndividual {
             switch (op) {
                 case 0: {
                     const uint16_t prob = global_rng.get_uint16(new_node_prob);
-                    if (prob == 0) {
+                    if ((prob == 0) && (hidden_layer.size() < 10)) {
                         add_neuron();
                     } else {
                         mutate_neuron();
@@ -218,6 +220,12 @@ class NeuralNet1Individual: public SEIndividual {
             evaluate_with_error({0.0, 0.0}, {0.0});
 
             fitness1 = fitness1 / 4.0;
+
+            /*
+            if (hidden_layer.size() == 10) {
+                fitness1 = 0.0;
+            }
+            */
         }
 
         [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() override {

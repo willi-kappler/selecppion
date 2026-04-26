@@ -106,7 +106,7 @@ class Neuron {
                 input_connections[0].first = new_index;
             } else {
                 size_t index = global_rng.get_size_t(n);
-                input_connections[index].second = new_index;
+                input_connections[index].first = new_index;
             }
         }
 
@@ -146,7 +146,7 @@ class Neuron {
                 hidden_connections[0].first = new_index;
             } else {
                 size_t index = global_rng.get_size_t(n);
-                hidden_connections[index].second = new_index;
+                hidden_connections[index].first = new_index;
             }
         }
 
@@ -181,12 +181,14 @@ class Neuron {
             tao::json::value json_pair = tao::json::empty_array;
 
             for (auto con: input_connections) {
+                json_pair.get_array().clear();
                 json_pair.get_array().push_back(con.first);
                 json_pair.get_array().push_back(double(con.second));
                 json_input_con.get_array().push_back(json_pair);
             }
 
             for (auto con: hidden_connections) {
+                json_pair.get_array().clear();
                 json_pair.get_array().push_back(con.first);
                 json_pair.get_array().push_back(double(con.second));
                 json_hidden_con.get_array().push_back(json_pair);

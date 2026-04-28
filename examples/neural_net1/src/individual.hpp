@@ -62,13 +62,13 @@ class NeuralNet1Individual: public SEIndividual {
 
         void evaluate(std::span<const std::float64_t> input_values) {
             // First reset all neurons:
-            for (auto neuron: hidden_layer) {
+            for (Neuron &neuron: hidden_layer) {
                 neuron.reset_value();
             }
 
             // Evaluate the network two times:
             for (uint8_t i = 0; i < 2; i++) {
-                for (auto neuron: hidden_layer) {
+                for (Neuron &neuron: hidden_layer) {
                     neuron.evaluate(input_values, hidden_layer);
                 }
             }
@@ -222,12 +222,6 @@ class NeuralNet1Individual: public SEIndividual {
             evaluate_with_error({0.0, 0.0}, {0.0});
 
             fitness1 = fitness1 / 4.0;
-
-            /*
-            if (hidden_layer.size() == 10) {
-                fitness1 = 0.0;
-            }
-            */
         }
 
         [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() override {
@@ -240,7 +234,7 @@ class NeuralNet1Individual: public SEIndividual {
         [[nodiscard]] std::vector<uint8_t> se_to_vec_u8() override {
             tao::json::value json_array = tao::json::empty_array;
 
-            for (auto neuron: hidden_layer) {
+            for (Neuron neuron: hidden_layer) {
                 json_array.get_array().push_back(neuron.to_json());
             }
 
@@ -278,5 +272,13 @@ class NeuralNet1Individual: public SEIndividual {
             // TODO
 
             return result;
+        }
+
+        void print_network() {
+            for (Neuron n: hidden_layer) {
+                n.print_neuron();
+                std::print("-----\n");
+            }
+            std::print("#####\n");
         }
 };

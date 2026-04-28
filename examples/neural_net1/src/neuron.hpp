@@ -19,6 +19,7 @@
 #include <utility>
 #include <algorithm>
 #include <span>
+#include <print>
 
 // Local includes:
 #include "secpion/se_random.hpp"
@@ -219,5 +220,11 @@ class Neuron {
                 hidden_connections.push_back({json_pair[0].as<size_t>(), json_pair[1].as<double>()});
             }
 
+        }
+
+        void print_neuron() {
+            std::print("Bias: {}, value: {}\n", bias, current_value);
+            std::print("Input: {}\n", input_connections);
+            std::print("Hidden: {}\n", hidden_connections);
         }
 };

@@ -17,7 +17,6 @@
 #include <algorithm>
 #include <vector>
 #include <utility>
-#include <algorithm>
 #include <span>
 
 // Local includes:

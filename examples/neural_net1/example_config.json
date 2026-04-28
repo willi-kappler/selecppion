@@ -7,7 +7,7 @@
     "num_of_iterations": 10000,
     "randomize_population": false,
     "num_of_mutations": 1,
-    "target_fitness1": 0.001,
+    "target_fitness1": 0.00001,
     "save_new_fitness": true,
     "share_only_best": true,
     "se_server_log_file": "example_server",

@@ -12,19 +12,6 @@
     List all tests: xmake run -w ./ se_test -l
 */
 
-#include "test_config.hpp"
-#include "test_random_generator.hpp"
-#include "test_individual.hpp"
-#include "test_population.hpp"
-#include "test_population_node1.hpp"
-#include "test_population_node2.hpp"
-#include "test_population_node3.hpp"
-#include "test_population_node4.hpp"
-#include "test_population_node5.hpp"
-#include "test_population_node6.hpp"
-#include "test_population_node7.hpp"
-#include "test_population_node8.hpp"
-#include "test_population_node9.hpp"
-#include "test_population_node10.hpp"
-#include "test_population_node11.hpp"
-#include "test_server.hpp"
+#define SNITCH_IMPLEMENTATION
+#include <snitch/snitch.hpp>
+

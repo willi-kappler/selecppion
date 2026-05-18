@@ -1,6 +1,6 @@
 target("se_test")
     set_kind("binary")
-    add_files("test_all.cpp")
+    add_files("*.cpp")
     add_packages("node_crunch2")
     add_packages("snitch")
     add_packages("spdlog")

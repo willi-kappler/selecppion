@@ -24,13 +24,13 @@ TEST_CASE("Test mutate internal with base class", "[individual]" ) {
     SEIndividual individual;
     individual.fitness1 = 1.1;
     individual.fitness2 = 2.2;
-    REQUIRE(individual.mut_op_counter.size() == 0);
+    REQUIRE(individual.mut_op_counter.size() == static_cast<size_t>(0));
 
     // Add some operations:
     REQUIRE_THROWS_AS(individual.se_mutate_internal(11), SEIndividualException);
     REQUIRE(individual.fitness1 == 1.1);
     REQUIRE(individual.fitness2 == 2.2);
-    REQUIRE(individual.mut_op_counter.size() == 1);
+    REQUIRE(individual.mut_op_counter.size() == static_cast<size_t>(1));
     REQUIRE(individual.mut_op_counter[11] == 1);
 
     individual.fitness1 = 2.1;
@@ -88,7 +88,7 @@ TEST_CASE("Test clone with derived class", "[individual]" ) {
     individual.mut_op_counter[15] = 2;
     individual.mut_op_counter[21] = 7;
 
-    REQUIRE(individual.mut_op_counter.size() == 2);
+    REQUIRE(individual.mut_op_counter.size() == static_cast<size_t>(2));
     REQUIRE(individual.mutate_called == 0);
     REQUIRE(individual.clone_called == 0);
 

@@ -139,13 +139,13 @@ class RastriginIndividual: public SEIndividual {
             se_json_to_vec(restored_json["values"], values);
         }
 
-        void se_reseed_rng(size_t index) {
+        void se_reseed_rng(size_t index) override {
             if (index == 0) {
                 global_rng.seed();
             }
         }
 
-        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) {
+        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) override {
             const RastriginIndividual* const other_individual = dynamic_cast<const RastriginIndividual* const>(individual);
             std::unique_ptr<RastriginIndividual> result = std::make_unique<RastriginIndividual>(local_dimensions, local_lower_bound, local_upper_bound);
 

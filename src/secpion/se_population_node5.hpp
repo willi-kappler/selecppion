@@ -57,7 +57,7 @@ class SEPopulationNode5: public NCNodeDataProcessor {
                 for (size_t j = 0; j < population.se_config.node_population_size; j++) {
                     cloned_indi = population.population[j]->se_clone_internal();
 
-                    for (uint32_t i = 0; i < population.se_config.num_of_mutations; i++) {
+                    for (uint32_t k = 0; k < population.se_config.num_of_mutations; k++) {
                         cloned_indi->se_mutate_internal(population.se_get_mut_op());
                     }
 

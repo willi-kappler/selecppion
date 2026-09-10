@@ -137,15 +137,15 @@ class SEServerDP: public NCServerDataProcessor {
             se_logger->flush();
         }
 
-        [[nodiscard]] virtual bool nc_is_job_done() {
+        [[nodiscard]] virtual bool nc_is_job_done() override {
             return population[0]->fitness1 <= se_config.target_fitness1;
         }
 
-        virtual void nc_save_data() {
+        virtual void nc_save_data() override {
             se_save_data(se_config.result_filename);
         }
 
-        [[nodiscard]] virtual std::vector<uint8_t> nc_get_new_data([[maybe_unused]] NCNodeID node_id) {
+        [[nodiscard]] virtual std::vector<uint8_t> nc_get_new_data([[maybe_unused]] NCNodeID node_id) override {
             size_t i = 0;
 
             if (!se_config.share_only_best) {
@@ -155,7 +155,7 @@ class SEServerDP: public NCServerDataProcessor {
             return population[i]->se_to_vec_u8();
         }
 
-        virtual void nc_process_result(NCNodeID node_id, std::vector<uint8_t> result) {
+        virtual void nc_process_result(NCNodeID node_id, std::vector<uint8_t> result) override {
             const size_t last = se_config.server_population_size - 1;
 
             // se_clone_internal() not needed here since all the values will be overwritten anyways!

@@ -1,4 +1,0 @@
-includes(
-    "rastrigin",
-    "rosenbrock"
-)

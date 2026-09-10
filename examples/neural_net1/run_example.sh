@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-EXECUTABLE="../../build/linux/x86_64/release/se_example_neuralnet1"
+EXECUTABLE="../../builddir/neural_net1_example"
 
 run_type() {
     echo "Run type $1."

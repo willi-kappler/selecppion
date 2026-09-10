@@ -157,13 +157,13 @@ class TestIndividual1: public SEIndividual {
             zero_is_optimal = restored_json["zero_is_optimal"].as<bool>();
         }
 
-        void se_reseed_rng(size_t index) {
+        void se_reseed_rng(size_t index) override {
             if (index == 0) {
                 global_rng.seed();
             }
         }
 
-        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) {
+        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) override {
             size_t half_index = numbers.size() / 2;
             size_t i = 0;
 

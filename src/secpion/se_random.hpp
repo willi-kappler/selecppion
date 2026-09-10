@@ -165,19 +165,19 @@ class SERandomGenerator {
         }
 
         [[nodiscard]] uint32_t get_uint32(uint32_t n) {
-            return get_uint64(n);
+            return static_cast<uint32_t>(get_uint64(n));
         }
 
         [[nodiscard]] uint16_t get_uint16(uint16_t n) {
-            return get_uint64(n);
+            return static_cast<uint16_t>(get_uint64(n));
         }
 
         [[nodiscard]] uint8_t get_uint8(uint8_t n) {
-            return get_uint64(n);
+            return static_cast<uint8_t>(get_uint64(n));
         }
 
         [[nodiscard]] size_t get_size_t(size_t n) {
-            return get_uint64(n);
+            return static_cast<size_t>(get_uint64(n));
         }
 
         [[nodiscard]] std::tuple<size_t, size_t> get_two_size_t(size_t n) {
@@ -192,7 +192,7 @@ class SERandomGenerator {
 
         [[nodiscard]] std::float64_t get_float64() {
             const uint64_t v = (random_algorithm.next_u64() >> 11);
-            return v * (1.0 / 9007199254740992.0);
+            return static_cast<std::float64_t>(v) * (1.0 / 9007199254740992.0);
         }
 
         [[nodiscard]] std::float64_t get_float64(std::float64_t start, std::float64_t end) {

@@ -17,7 +17,7 @@ SEIndividual::SEIndividual():
     fitness1(SE_FLOAT_MAX),
     fitness2(SE_FLOAT_MAX),
     mut_op_counter()
-{};
+{}
 
 void SEIndividual::se_reset_counter() {
     mut_op_counter.clear();

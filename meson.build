@@ -7,7 +7,7 @@ project(
 
 # Define custom warning or optimization flags
 extra_flags_gcc_clang = [
-  '-march=native',
+  #'-march=native',
   '-flto',
 
   #'-Werror',
@@ -198,16 +198,61 @@ test_sources = files(
 )
 
 test_exe = executable(
-  'selecppion_tests',
-  test_sources,
-  dependencies: [selecppion_dep, snitch_dep],
+  'selecppion_tests', test_sources, dependencies: [selecppion_dep, snitch_dep]
 )
 
 test('all unit tests', test_exe)
 
 executable(
-  'bin_packing_example',
-  files('examples/bin_packing/src/main.cpp'),
+  'bin_packing_example', files('examples/bin_packing/src/main.cpp'),
   include_directories: include_directories('examples/bin_packing/src', 'examples/utils'),
-  dependencies: [selecppion_dep, argparse_dep],
+   dependencies: [selecppion_dep, argparse_dep]
+)
+
+executable(
+  'rastrigin_example', files('examples/function_optimization/rastrigin/src/main.cpp'),
+  include_directories: include_directories('examples/function_optimization/rastrigin/src', 'examples/utils'),
+   dependencies: [selecppion_dep, argparse_dep]
+)
+
+executable(
+  'rosenbrock_example', files('examples/function_optimization/rosenbrock/src/main.cpp'),
+  include_directories: include_directories('examples/function_optimization/rosenbrock/src', 'examples/utils'),
+   dependencies: [selecppion_dep, argparse_dep]
+)
+
+executable(
+  'knapsack_example', files('examples/knapsack/src/main.cpp'),
+  include_directories: include_directories('examples/knapsack/src', 'examples/utils'),
+   dependencies: [selecppion_dep, argparse_dep]
+)
+
+executable(
+  'neural_net1_example', files('examples/neural_net1/src/main.cpp'),
+  include_directories: include_directories('examples/neural_net1/src', 'examples/utils'),
+   dependencies: [selecppion_dep, argparse_dep]
+)
+
+executable(
+  'queens_example', files('examples/queens/src/main.cpp'),
+  include_directories: include_directories('examples/queens/src', 'examples/utils'),
+   dependencies: [selecppion_dep, argparse_dep]
+)
+
+executable(
+  'sudoku1_example', files('examples/sudoku1/src/main.cpp'),
+  include_directories: include_directories('examples/sudoku1/src', 'examples/utils'),
+   dependencies: [selecppion_dep, argparse_dep]
+)
+
+executable(
+  'sudoku2_example', files('examples/sudoku2/src/main.cpp'),
+  include_directories: include_directories('examples/sudoku2/src', 'examples/utils'),
+   dependencies: [selecppion_dep, argparse_dep]
+)
+
+executable(
+  'tsp_example', files('examples/tsp/src/main.cpp'),
+  include_directories: include_directories('examples/tsp/src', 'examples/utils'),
+   dependencies: [selecppion_dep, argparse_dep]
 )

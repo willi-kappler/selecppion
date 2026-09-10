@@ -59,7 +59,7 @@ class SEPopulationNode1: public NCNodeDataProcessor {
                     // Create a copy of each individual before mutating it (lower half):
                     cloned_indi = population.population[j]->se_clone_internal();
 
-                    for (uint32_t i = 0; i < population.se_config.num_of_mutations; i++) {
+                    for (uint32_t k = 0; k < population.se_config.num_of_mutations; k++) {
                         cloned_indi->se_mutate_internal(population.se_get_mut_op());
                     }
 

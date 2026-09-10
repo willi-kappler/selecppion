@@ -139,7 +139,7 @@ class BinPackingIndividual: public SEIndividual {
             se_json_to_vec(restored_json["bins"], bins);
         }
 
-        void se_reseed_rng(size_t index) {
+        void se_reseed_rng(size_t index) override {
             if (index == 0) {
                 global_rng.seed();
             }

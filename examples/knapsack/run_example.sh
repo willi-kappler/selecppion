@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-EXECUTABLE="../../build/linux/x86_64/release/se_example_knapsack"
+EXECUTABLE="../../builddir/knapsack_example"
 
 run_type() {
     echo "Run type $1."

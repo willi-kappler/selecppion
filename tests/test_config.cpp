@@ -30,7 +30,7 @@ TEST_CASE("Create valid default configuration", "[configuration]" ) {
     REQUIRE(se_config.save_new_fitness == true);
     REQUIRE(se_config.allow_same_fitness == false);
     REQUIRE(se_config.share_only_best == true);
-    REQUIRE(se_config.server_population_size == 10);
+    REQUIRE(se_config.server_population_size == static_cast<size_t>(10));
     REQUIRE(se_config.se_server_log_file == "");
     REQUIRE(se_config.se_server_log_level == "");
 

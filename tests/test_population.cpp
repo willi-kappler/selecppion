@@ -261,7 +261,7 @@ TEST_CASE("Test fill population", "[population]" ) {
     std::unique_ptr<TestIndividual2> individual = std::make_unique<TestIndividual2>();
     population.se_fill_population(std::move(individual));
 
-    REQUIRE(population.se_config.node_population_size == 10);
+    REQUIRE(population.se_config.node_population_size == static_cast<size_t>(10));
     REQUIRE(population.population.size() == population.se_config.node_population_size);
 
     std::float64_t val1;
@@ -284,17 +284,17 @@ TEST_CASE("Test find worst population", "[population]" ) {
 
     population.population.push_back(make_indi_f1_f2(23.5, 0.1));
     population.se_find_worst_individual();
-    REQUIRE(population.worst_index == 0);
+    REQUIRE(population.worst_index == static_cast<size_t>(0));
     check_population_fitness(population, {23.5}, {0.1});
 
     population.population.push_back(make_indi_f1_f2(58.9, 3.3));
     population.se_find_worst_individual();
-    REQUIRE(population.worst_index == 1);
+    REQUIRE(population.worst_index == static_cast<size_t>(1));
     check_population_fitness(population, {23.5, 58.9}, {0.1, 3.3});
 
     population.population[1]->fitness1 = 17.2;
     population.se_find_worst_individual();
-    REQUIRE(population.worst_index == 0);
+    REQUIRE(population.worst_index == static_cast<size_t>(0));
     check_population_fitness(population, {23.5, 17.2}, {0.1, 3.3});
 }
 
@@ -303,14 +303,14 @@ TEST_CASE("Test find best and worst population", "[population]" ) {
 
     population.population.push_back(make_indi_f1_f2(23.5, 4.4));
     population.se_find_best_and_worst_individual();
-    REQUIRE(population.best_index == 0);
-    REQUIRE(population.worst_index == 0);
+    REQUIRE(population.best_index == static_cast<size_t>(0));
+    REQUIRE(population.worst_index == static_cast<size_t>(0));
     check_population_fitness(population, {23.5}, {4.4});
 
     population.population.push_back(make_indi_f1_f2(3.8, 5.5));
     population.se_find_best_and_worst_individual();
-    REQUIRE(population.best_index == 1);
-    REQUIRE(population.worst_index == 0);
+    REQUIRE(population.best_index == static_cast<size_t>(1));
+    REQUIRE(population.worst_index == static_cast<size_t>(0));
     check_population_fitness(population, {23.5, 3.8}, {4.4, 5.5});
 
     population.population.push_back(make_indi_f1_f2(17.2, 6.6));

@@ -45,7 +45,7 @@ class SEPopulationNode4: public NCNodeDataProcessor {
         }
 
         void nc_init([[maybe_unused]] std::vector<uint8_t> data, NCNodeID node_id) override {
-            population.se_logger->info("Current node id: {}", node_id);
+            population.se_logger->info("Current node id: {}", node_id.to_string());
         }
 
         [[nodiscard]] std::vector<uint8_t> nc_process_data(std::vector<uint8_t> data) override {

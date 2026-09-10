@@ -1,0 +1,8 @@
+[wrap-git]
+url = https://github.com/willi-kappler/node_crunch2
+revision = main
+depth = 1
+clone-recursive = true
+
+[provide]
+node_crunch2 = node_crunch2_dep

@@ -40,6 +40,16 @@
 # debug information files
 *.dwo
 
-.xmake/
-build/
 .vscode/
+
+builddir/
+subprojects/.wraplock
+subprojects/argparse-3.2/
+subprojects/asio-1.38.2/
+subprojects/fmt-12.0.0/
+subprojects/node_crunch2/
+subprojects/openssl-3.0.10/
+subprojects/snitch-1.3.2/
+subprojects/spdlog-1.17.0/
+subprojects/taocpp-json/
+packagecache/

@@ -185,11 +185,11 @@ class SEServerDP: public NCServerDataProcessor {
                     new_fitness_counter++;
 
                     se_logger->info("New best fitness1: {}, previous: {}", new_fitness, current_best_fitness);
-                    se_logger->info("From node: {}, new fitness counter: {}", node_id, new_fitness_counter);
+                    se_logger->info("From node: {}, new fitness counter: {}", node_id.to_string(), new_fitness_counter);
                     se_logger->debug("Worst fitness: {}", population[last]->fitness1);
 
                     node_stats[node_id]++;
-                    se_logger->debug("Node stats: {}", node_stats);
+                    //se_logger->debug("Node stats: {}", node_stats);
 
                     population[0]->se_new_best_individual();
 

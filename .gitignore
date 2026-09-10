@@ -53,3 +53,5 @@ subprojects/packagecache/
 subprojects/snitch-1.3.2/
 subprojects/spdlog-1.17.0/
 subprojects/taocpp-json/
+
+*.log

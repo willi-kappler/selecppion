@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-EXECUTABLE="../../build/linux/x86_64/release/se_example_tsp"
+EXECUTABLE="../../builddir/tsp_example"
 
 run_type() {
     echo "Run type $1."

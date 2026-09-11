@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-EXECUTABLE="../../build/linux/x86_64/release/se_example_sudoku2"
+EXECUTABLE="../../builddir/sudoku2_example"
 
 run_type() {
     echo "Run type $1."

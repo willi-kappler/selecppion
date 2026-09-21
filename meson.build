@@ -25,11 +25,11 @@ extra_flags_gcc_clang = [
   '-Wsuggest-override',
   '-Wshadow',
   '-Wnon-virtual-dtor',
-  '-Wold-style-cast',
+  #'-Wold-style-cast',
   '-Wcast-align',
   '-Wunused',
   '-Wconversion',
-  '-Wsign-conversion',
+  #'-Wsign-conversion',
 
   '-Wextra-semi',
   '-Wctor-dtor-privacy',

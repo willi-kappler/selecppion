@@ -7,10 +7,10 @@ project(
 
 # Define custom warning or optimization flags
 extra_flags_gcc_clang = [
-  #'-march=native',
+  '-march=native',
   '-flto',
 
-  #'-Werror',
+  '-Werror',
   '-Wall',
   '-Wextra',
   '-Wpedantic',

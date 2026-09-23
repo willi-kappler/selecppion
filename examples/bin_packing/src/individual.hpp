@@ -113,7 +113,7 @@ class BinPackingIndividual: public SEIndividual {
                 }
             }
 
-            fitness1 = bin_sum.size() + penalty;
+            fitness1 = static_cast<std::float64_t>(bin_sum.size()) + penalty;
         }
 
         [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() override {
@@ -145,7 +145,7 @@ class BinPackingIndividual: public SEIndividual {
             }
         }
 
-        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) {
+        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) override {
             const BinPackingIndividual* const other_individual = dynamic_cast<const BinPackingIndividual* const>(individual);
             std::unique_ptr<BinPackingIndividual> result = std::make_unique<BinPackingIndividual>(items, capacity_per_bin);
 

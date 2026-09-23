@@ -47,7 +47,7 @@ class SEAlgorithmLehmer64 {
 
         [[nodiscard]] uint64_t next_u64() {
             state *= 0xda942042e4dd58b5;
-            return state >> 64;
+            return static_cast<uint64_t>(state >> 64);
         }
 
         SEAlgorithmLehmer64():
@@ -68,9 +68,9 @@ class SEAlgorithmWyRand {
             state += 0x60bee2bee120fc15;
             __uint128_t tmp;
             tmp = (__uint128_t) state * 0xa3b195354a39b70d;
-            uint64_t m1 = (tmp >> 64) ^ tmp;
+            uint64_t m1 = static_cast<uint64_t>((tmp >> 64) ^ tmp);
             tmp = (__uint128_t) m1 * 0x1b03738712fad5c9;
-            uint64_t m2 = (tmp >> 64) ^ tmp;
+            uint64_t m2 = static_cast<uint64_t>((tmp >> 64) ^ tmp);
             return m2;
         }
 

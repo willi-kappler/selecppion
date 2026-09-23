@@ -31,43 +31,43 @@ TEST_CASE("Test mutate internal with base class", "[individual]" ) {
     REQUIRE(individual.fitness1 == 1.1);
     REQUIRE(individual.fitness2 == 2.2);
     REQUIRE(individual.mut_op_counter.size() == static_cast<size_t>(1));
-    REQUIRE(individual.mut_op_counter[11] == 1);
+    REQUIRE(individual.mut_op_counter[11] == 1U);
 
     individual.fitness1 = 2.1;
     individual.fitness2 = 5.2;
     REQUIRE_THROWS_AS(individual.se_mutate_internal(17), SEIndividualException);
     REQUIRE(individual.fitness1 == 2.1);
     REQUIRE(individual.fitness2 == 5.2);
-    REQUIRE(individual.mut_op_counter.size() == 2);
-    REQUIRE(individual.mut_op_counter[11] == 1);
-    REQUIRE(individual.mut_op_counter[17] == 1);
+    REQUIRE(individual.mut_op_counter.size() == 2U);
+    REQUIRE(individual.mut_op_counter[11] == 1U);
+    REQUIRE(individual.mut_op_counter[17] == 1U);
 
     individual.fitness1 = 10.7;
     individual.fitness2 = 52.8;
     REQUIRE_THROWS_AS(individual.se_mutate_internal(23), SEIndividualException);
     REQUIRE(individual.fitness1 == 10.7);
     REQUIRE(individual.fitness2 == 52.8);
-    REQUIRE(individual.mut_op_counter.size() == 3);
-    REQUIRE(individual.mut_op_counter[11] == 1);
-    REQUIRE(individual.mut_op_counter[17] == 1);
-    REQUIRE(individual.mut_op_counter[23] == 1);
+    REQUIRE(individual.mut_op_counter.size() == 3U);
+    REQUIRE(individual.mut_op_counter[11] == 1U);
+    REQUIRE(individual.mut_op_counter[17] == 1U);
+    REQUIRE(individual.mut_op_counter[23] == 1U);
 
     individual.fitness1 = 9.2;
     individual.fitness2 = 4.3;
     REQUIRE_THROWS_AS(individual.se_mutate_internal(11), SEIndividualException);
     REQUIRE(individual.fitness1 == 9.2);
     REQUIRE(individual.fitness2 == 4.3);
-    REQUIRE(individual.mut_op_counter.size() == 3);
-    REQUIRE(individual.mut_op_counter[11] == 2);
-    REQUIRE(individual.mut_op_counter[17] == 1);
-    REQUIRE(individual.mut_op_counter[23] == 1);
+    REQUIRE(individual.mut_op_counter.size() == 3U);
+    REQUIRE(individual.mut_op_counter[11] == 2U);
+    REQUIRE(individual.mut_op_counter[17] == 1U);
+    REQUIRE(individual.mut_op_counter[23] == 1U);
 
     individual.fitness1 = 1.9;
     individual.fitness2 = 0.5;
     individual.se_reset_counter();
     REQUIRE(individual.fitness1 == 1.9);
     REQUIRE(individual.fitness2 == 0.5);
-    REQUIRE(individual.mut_op_counter.size() == 0);
+    REQUIRE(individual.mut_op_counter.size() == 0U);
 }
 
 TEST_CASE("Check required methods", "[individual]" ) {
@@ -89,24 +89,24 @@ TEST_CASE("Test clone with derived class", "[individual]" ) {
     individual.mut_op_counter[21] = 7;
 
     REQUIRE(individual.mut_op_counter.size() == static_cast<size_t>(2));
-    REQUIRE(individual.mutate_called == 0);
-    REQUIRE(individual.clone_called == 0);
+    REQUIRE(individual.mutate_called == 0U);
+    REQUIRE(individual.clone_called == 0U);
 
     // Test call to se_clone_internal():
     std::unique_ptr<SEIndividual> individual2 = individual.se_clone_internal();
     std::unique_ptr<TestIndividual1> individual3(static_cast<TestIndividual1*>(individual2.release()));
 
-    REQUIRE(individual.mut_op_counter.size() == 2);
-    REQUIRE(individual.mutate_called == 0);
-    REQUIRE(individual.clone_called == 1);
+    REQUIRE(individual.mut_op_counter.size() == 2U);
+    REQUIRE(individual.mutate_called == 0U);
+    REQUIRE(individual.clone_called == 1U);
 
     REQUIRE(individual3->fitness1 == 12.5);
     REQUIRE(individual3->fitness2 == 156.0);
-    REQUIRE(individual3->mut_op_counter.size() == 2);
-    REQUIRE(individual3->mut_op_counter[15] == 2);
-    REQUIRE(individual3->mut_op_counter[21] == 7);
-    REQUIRE(individual3->mutate_called == 0);
-    REQUIRE(individual3->clone_called == 0);
+    REQUIRE(individual3->mut_op_counter.size() == 2U);
+    REQUIRE(individual3->mut_op_counter[15] == 2U);
+    REQUIRE(individual3->mut_op_counter[21] == 7U);
+    REQUIRE(individual3->mutate_called == 0U);
+    REQUIRE(individual3->clone_called == 0U);
 }
 
 TEST_CASE("Test mutate internal with derived class", "[individual]" ) {
@@ -114,9 +114,9 @@ TEST_CASE("Test mutate internal with derived class", "[individual]" ) {
     individual.fitness1 = 59.3;
     individual.fitness2 = 31.2;
 
-    REQUIRE(individual.mut_op_counter.size() == 0);
-    REQUIRE(individual.mutate_called == 0);
-    REQUIRE(individual.clone_called == 0);
+    REQUIRE(individual.mut_op_counter.size() == 0U);
+    REQUIRE(individual.mutate_called == 0U);
+    REQUIRE(individual.clone_called == 0U);
 
     individual.se_mutate_internal(3);
     individual.se_mutate_internal(15);
@@ -125,10 +125,10 @@ TEST_CASE("Test mutate internal with derived class", "[individual]" ) {
 
     REQUIRE(individual.fitness1 == 59.3);
     REQUIRE(individual.fitness2 == 31.2);
-    REQUIRE(individual.mut_op_counter.size() == 3);
-    REQUIRE(individual.mut_op_counter[3] == 1);
-    REQUIRE(individual.mut_op_counter[15] == 1);
-    REQUIRE(individual.mut_op_counter[22] == 2);
-    REQUIRE(individual.mutate_called == 4);
-    REQUIRE(individual.clone_called == 0);
+    REQUIRE(individual.mut_op_counter.size() == 3U);
+    REQUIRE(individual.mut_op_counter[3] == 1U);
+    REQUIRE(individual.mut_op_counter[15] == 1U);
+    REQUIRE(individual.mut_op_counter[22] == 2U);
+    REQUIRE(individual.mutate_called == 4U);
+    REQUIRE(individual.clone_called == 0U);
 }

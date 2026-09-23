@@ -103,16 +103,14 @@ class RosenbrockIndividual: public SEIndividual {
         }
 
         void se_calculate_fitness1() override {
-            std::float64_t fitness = 0.0;
+            fitness1 = 0.0;
             std::float64_t term1, term2;
 
             for (size_t i = 0; i < local_dimensions - 1; i++) {
                 term1 = 100.0 * pow(values[i + 1] - pow(values[i], 2.0), 2.0);
                 term2 = pow(1.0 - values[i], 2.0);
-                fitness += term1 + term2;
+                fitness1 += term1 + term2;
             }
-
-            fitness1 = fitness;
         }
 
         [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() override {
@@ -138,13 +136,13 @@ class RosenbrockIndividual: public SEIndividual {
             se_json_to_vec(restored_json["values"], values);
         }
 
-        void se_reseed_rng(size_t index) {
+        void se_reseed_rng(size_t index) override {
             if (index == 0) {
                 global_rng.seed();
             }
         }
 
-        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) {
+        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) override {
             const RosenbrockIndividual* const other_individual = dynamic_cast<const RosenbrockIndividual* const>(individual);
             std::unique_ptr<RosenbrockIndividual> result = std::make_unique<RosenbrockIndividual>(local_dimensions, local_lower_bound, local_upper_bound);
 

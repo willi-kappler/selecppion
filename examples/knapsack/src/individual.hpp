@@ -100,7 +100,7 @@ class KnapSackIndividual: public SEIndividual {
                 item_count += selection[i];
             }
 
-            fitness1 = num_of_items - item_count;
+            fitness1 = static_cast<std::float64_t>(num_of_items - item_count);
 
             if (sum > total_capacity) {
                 // Penalty if capacity exceeded:
@@ -131,13 +131,13 @@ class KnapSackIndividual: public SEIndividual {
             se_json_to_vec(restored_json["bins"], selection);
         }
 
-        void se_reseed_rng(size_t index) {
+        void se_reseed_rng(size_t index) override {
             if (index == 0) {
                 global_rng.seed();
             }
         }
 
-        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) {
+        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) override {
             const KnapSackIndividual* const other_individual = dynamic_cast<const KnapSackIndividual* const>(individual);
             std::unique_ptr<KnapSackIndividual> result = std::make_unique<KnapSackIndividual>(items, total_capacity);
 

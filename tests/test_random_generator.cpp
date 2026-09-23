@@ -31,31 +31,31 @@ void gen_random_numbers() {
     // Test for 64 bit integer values
     for (i = 0; i < 1000; i++) {
         uint64_t v = gen.get_uint64(5);
-        REQUIRE(v < 5);
+        REQUIRE(v < 5U);
     }
 
     // Test for 32 bit integer values
     for (i = 0; i < 1000; i++) {
         uint32_t v = gen.get_uint32(11);
-        REQUIRE(v < 11);
+        REQUIRE(v < 11U);
     }
 
     // Test for 16 bit integer values
     for (i = 0; i < 1000; i++) {
         uint16_t v = gen.get_uint16(17);
-        REQUIRE(v < 17);
+        REQUIRE(v < 17U);
     }
 
     // Test for 8 bit integer values
     for (i = 0; i < 1000; i++) {
         uint8_t v = gen.get_uint8(23);
-        REQUIRE(v < 23);
+        REQUIRE(v < 23U);
     }
 
     // Test for size_t values
     for (i = 0; i < 1000; i++) {
         size_t v = gen.get_size_t(29);
-        REQUIRE(v < 29);
+        REQUIRE(v < 29U);
     }
 
     // Test for float64 values:
@@ -96,10 +96,10 @@ void gen_random_numbers() {
         num_counter[v]++;
     }
 
-    REQUIRE(num_counter.size() > 50);
+    REQUIRE(num_counter.size() > 50U);
 
     for (auto& [key, value]: num_counter) {
-        REQUIRE(value > 5);
+        REQUIRE(value > 5U);
     }
 
     for (i = 0; i < 1000; i++) {
@@ -152,16 +152,16 @@ void gen_shuffle_choice() {
     // Test shuffle:
     std::vector<uint8_t> v{};
     gen.shuffle(v);
-    REQUIRE(v.size() == 0);
+    REQUIRE(v.size() == 0U);
 
     v = {5};
     gen.shuffle(v);
-    REQUIRE(v.size() == 1);
+    REQUIRE(v.size() == 1U);
     REQUIRE(v == std::vector<uint8_t>{5});
 
     v = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     gen.shuffle(v);
-    REQUIRE(v.size() == 10);
+    REQUIRE(v.size() == 10U);
     REQUIRE(v != std::vector<uint8_t>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
     sort(v.begin(), v.end());
     REQUIRE(v == std::vector<uint8_t>{1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
@@ -194,7 +194,7 @@ void gen_swap() {
     // Empty:
     std::vector<uint8_t> v{};
     gen.swap(v);
-    REQUIRE(v.size() == 0);
+    REQUIRE(v.size() == 0U);
 
     // Only one element:
     v = {5};

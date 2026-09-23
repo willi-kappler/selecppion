@@ -35,18 +35,18 @@ TEST_CASE("Create valid default configuration", "[configuration]" ) {
     REQUIRE(se_config.se_server_log_level == "");
 
     // Node configuration:
-    REQUIRE(se_config.node_population_size == 10);
-    REQUIRE(se_config.num_of_iterations == 1000);
-    REQUIRE(se_config.num_of_mutations == 10);
+    REQUIRE(se_config.node_population_size == 10U);
+    REQUIRE(se_config.num_of_iterations == 1000U);
+    REQUIRE(se_config.num_of_mutations == 10U);
     REQUIRE(se_config.accept_new_best == true);
     REQUIRE(se_config.randomize_population == false);
-    REQUIRE(se_config.randomize_count == 5);
+    REQUIRE(se_config.randomize_count == 5U);
     REQUIRE(se_config.population_kind == 1);
     REQUIRE(se_config.mutation_operations == std::vector<uint8_t>{});
     REQUIRE(se_config.early_exit_sleep == 10);
     REQUIRE(se_config.se_node_log_file == "");
     REQUIRE(se_config.se_node_log_level == "");
-    REQUIRE(se_config.seed_count == 10);
+    REQUIRE(se_config.seed_count == 10U);
     REQUIRE(se_config.min_num_of_individuals == 2);
     REQUIRE(se_config.sine_base == 100.0);
     REQUIRE(se_config.sine_amplitude == 50.0);
@@ -98,23 +98,23 @@ TEST_CASE("Test valid JSON configuration", "[configuration]" ) {
     REQUIRE(se_config.save_new_fitness == false);
     REQUIRE(se_config.allow_same_fitness == true);
     REQUIRE(se_config.share_only_best == false);
-    REQUIRE(se_config.server_population_size == 15);
+    REQUIRE(se_config.server_population_size == 15U);
     REQUIRE(se_config.se_server_log_file == "foo_bar");
     REQUIRE(se_config.se_server_log_level == "debug");
 
     // Node configuration:
-    REQUIRE(se_config.node_population_size == 21);
-    REQUIRE(se_config.num_of_iterations == 321);
-    REQUIRE(se_config.num_of_mutations == 7);
+    REQUIRE(se_config.node_population_size == 21U);
+    REQUIRE(se_config.num_of_iterations == 321U);
+    REQUIRE(se_config.num_of_mutations == 7U);
     REQUIRE(se_config.accept_new_best == false);
     REQUIRE(se_config.randomize_population == true);
-    REQUIRE(se_config.randomize_count == 15);
+    REQUIRE(se_config.randomize_count == 15U);
     REQUIRE(se_config.population_kind == 2);
     REQUIRE(se_config.mutation_operations == std::vector<uint8_t>{2, 4, 5});
     REQUIRE(se_config.early_exit_sleep == 57);
     REQUIRE(se_config.se_node_log_file == "node_foo");
     REQUIRE(se_config.se_node_log_level == "warning");
-    REQUIRE(se_config.seed_count == 20);
+    REQUIRE(se_config.seed_count == 20U);
     REQUIRE(se_config.min_num_of_individuals == 8);
     REQUIRE(se_config.sine_base == 77.77);
     REQUIRE(se_config.sine_amplitude == 44.44);

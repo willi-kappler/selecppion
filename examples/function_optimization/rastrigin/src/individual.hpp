@@ -104,7 +104,7 @@ class RastriginIndividual: public SEIndividual {
 
         void se_calculate_fitness1() override {
             const std::float64_t A = 10.0;
-            std::float64_t fitness = A * local_dimensions;
+            std::float64_t fitness = A * static_cast<std::float64_t>(local_dimensions);
             std::float64_t term1, term2;
 
             for (size_t i = 0; i < local_dimensions; i++) {

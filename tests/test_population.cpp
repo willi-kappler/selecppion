@@ -96,6 +96,7 @@ void TestIndividual2::se_calculate_fitness2() {
 }
 
 [[nodiscard]] std::vector<uint8_t> TestIndividual2::se_to_vec_u8() {
+    /*
     std::vector<uint8_t> result(TOTAL_DATA_SIZE);
     std::float64_t *float_64_ptr = reinterpret_cast<std::float64_t*>(result.data());
 
@@ -105,6 +106,14 @@ void TestIndividual2::se_calculate_fitness2() {
     float_64_ptr[3] = val2;
 
     return result;
+    */
+
+    std::vector<uint8_t> result(TOTAL_DATA_SIZE);
+
+    const std::float64_t values[4] = { fitness1, fitness2, val1, val2 };
+    std::memcpy(result.data(), values, sizeof(values));
+
+    return result;
 }
 
 void TestIndividual2::se_from_span_u8(std::span<const uint8_t> data) {
@@ -112,12 +121,22 @@ void TestIndividual2::se_from_span_u8(std::span<const uint8_t> data) {
         return;
     }
 
+    /*
     const std::float64_t *float_64_ptr = reinterpret_cast<const std::float64_t*>(data.data());
 
     fitness1 = float_64_ptr[0];
     fitness2 = float_64_ptr[1];
     val1 = float_64_ptr[2];
     val2 = float_64_ptr[3];
+    */
+
+    std::float64_t values[4];
+    std::memcpy(values, data.data(), sizeof(values));
+
+    fitness1 = values[0];
+    fitness2 = values[1];
+    val1 = values[2];
+    val2 = values[3];
 }
 
 void TestIndividual2::se_reseed_rng(size_t index) {
@@ -315,20 +334,20 @@ TEST_CASE("Test find best and worst population", "[population]" ) {
 
     population.population.push_back(make_indi_f1_f2(17.2, 6.6));
     population.se_find_best_and_worst_individual();
-    REQUIRE(population.best_index == 1);
-    REQUIRE(population.worst_index == 0);
+    REQUIRE(population.best_index == 1U);
+    REQUIRE(population.worst_index == 0U);
     check_population_fitness(population, {23.5, 3.8, 17.2}, {4.4, 5.5, 6.6});
 
     population.population.push_back(make_indi_f1_f2(58.1, 7.7));
     population.se_find_best_and_worst_individual();
-    REQUIRE(population.best_index == 1);
-    REQUIRE(population.worst_index == 3);
+    REQUIRE(population.best_index == 1U);
+    REQUIRE(population.worst_index == 3U);
     check_population_fitness(population, {23.5, 3.8, 17.2, 58.1}, {4.4, 5.5, 6.6, 7.7});
 
     population.population.push_back(make_indi_f1_f2(0.1, 8.8));
     population.se_find_best_and_worst_individual();
-    REQUIRE(population.best_index == 4);
-    REQUIRE(population.worst_index == 3);
+    REQUIRE(population.best_index == 4U);
+    REQUIRE(population.worst_index == 3U);
     check_population_fitness(population, {23.5, 3.8, 17.2, 58.1, 0.1}, {4.4, 5.5, 6.6, 7.7, 8.8});
 }
 
@@ -342,13 +361,13 @@ TEST_CASE("Test sort population", "[population]" ) {
     population.population.push_back(make_indi_f1_f2(0.1, 8.8));
 
     population.se_find_best_and_worst_individual();
-    REQUIRE(population.best_index == 4);
-    REQUIRE(population.worst_index == 3);
+    REQUIRE(population.best_index == 4U);
+    REQUIRE(population.worst_index == 3U);
 
     population.se_sort_population();
     population.se_find_best_and_worst_individual();
-    REQUIRE(population.best_index == 0);
-    REQUIRE(population.worst_index == 4);
+    REQUIRE(population.best_index == 0U);
+    REQUIRE(population.worst_index == 4U);
     check_population_fitness(population, {0.1, 3.8, 17.2, 23.5, 58.1}, {8.8, 5.5, 6.6, 4.4, 7.7});
 }
 
@@ -374,7 +393,7 @@ TEST_CASE("Test random population", "[population]" ) {
     TestIndividual2 *test_indi;
 
     for (auto &individual: population.population) {
-        REQUIRE(individual->mut_op_counter.size() == 0);
+        REQUIRE(individual->mut_op_counter.size() == 0U);
         REQUIRE(individual->fitness1 >= 0.0);
         REQUIRE(individual->fitness1 <= 20.0);
 
@@ -394,9 +413,9 @@ TEST_CASE("Test randomize or accept best 1", "[population]" ) {
     population.se_config.accept_new_best = false;
     fill_fitness(population, 1.6, 9.2);
 
-    REQUIRE(population.randomize_iteration == 0);
+    REQUIRE(population.randomize_iteration == 0U);
     population.se_randomize_or_accept_best({});
-    REQUIRE(population.randomize_iteration == 0);
+    REQUIRE(population.randomize_iteration == 0U);
 
     // No change expected:
     TestIndividual2 *test_indi;
@@ -420,9 +439,9 @@ TEST_CASE("Test randomize or accept best 2", "[population]" ) {
 
     global_rng.seed();
 
-    REQUIRE(population.randomize_iteration == 0);
+    REQUIRE(population.randomize_iteration == 0U);
     population.se_randomize_or_accept_best({});
-    REQUIRE(population.randomize_iteration == 1);
+    REQUIRE(population.randomize_iteration == 1U);
 
     // No change expected:
     TestIndividual2 *test_indi;
@@ -436,9 +455,9 @@ TEST_CASE("Test randomize or accept best 2", "[population]" ) {
         REQUIRE(test_indi->val2 == -1.0);
     }
 
-    REQUIRE(population.randomize_iteration == 1);
+    REQUIRE(population.randomize_iteration == 1U);
     population.se_randomize_or_accept_best({});
-    REQUIRE(population.randomize_iteration == 0);
+    REQUIRE(population.randomize_iteration == 0U);
 
     // Change expected:
     std::float64_t val1;
@@ -470,9 +489,9 @@ TEST_CASE("Test randomize or accept best 3", "[population]" ) {
     best_individual.fitness2 = 2.1;
     best_individual.val1 = 6.3;
     best_individual.val2 = 4.9;
-    REQUIRE(population.randomize_iteration == 0);
+    REQUIRE(population.randomize_iteration == 0U);
     population.se_randomize_or_accept_best(best_individual.se_to_vec_u8());
-    REQUIRE(population.randomize_iteration == 0);
+    REQUIRE(population.randomize_iteration == 0U);
 
     // Only individual at index 0 should be changed:
     TestIndividual2 *test_indi;
@@ -498,7 +517,7 @@ TEST_CASE("Test randomize or accept best 4", "[population]" ) {
     SEPopulation<TestRNG> population = make_population<TestRNG>(10);
     population.se_config.randomize_population = true;
     population.se_config.accept_new_best = true;
-    population.se_config.randomize_count = 2;
+    population.se_config.randomize_count = 2U;
     fill_fitness(population, 9.9, 8.8);
 
     global_rng.seed();
@@ -508,9 +527,9 @@ TEST_CASE("Test randomize or accept best 4", "[population]" ) {
     best_individual.fitness2 = 2.1;
     best_individual.val1 = 6.3;
     best_individual.val2 = 4.9;
-    REQUIRE(population.randomize_iteration == 0);
+    REQUIRE(population.randomize_iteration == 0U);
     population.se_randomize_or_accept_best(best_individual.se_to_vec_u8());
-    REQUIRE(population.randomize_iteration == 1);
+    REQUIRE(population.randomize_iteration == 1U);
 
     // No change expected:
     TestIndividual2 *test_indi;
@@ -528,9 +547,9 @@ TEST_CASE("Test randomize or accept best 4", "[population]" ) {
     best_individual.fitness2 = 2.1;
     best_individual.val1 = 6.3;
     best_individual.val2 = 4.9;
-    REQUIRE(population.randomize_iteration == 1);
+    REQUIRE(population.randomize_iteration == 1U);
     population.se_randomize_or_accept_best(best_individual.se_to_vec_u8());
-    REQUIRE(population.randomize_iteration == 0);
+    REQUIRE(population.randomize_iteration == 0U);
 
     // Change expected:
     std::float64_t val1;
@@ -565,7 +584,7 @@ TEST_CASE("Test randomize worst", "[population]" ) {
     SEPopulation<TestRNG> population = make_population<TestRNG>(10);
     set_fitness1(population, {4.62, 1.74, 4.19, 9.41, 7.42, 6.99, 6.02, 5.58, 7.94, 7.58});
     population.se_find_worst_individual();
-    REQUIRE(population.worst_index == 3);
+    REQUIRE(population.worst_index == 3U);
 
     global_rng.seed();
 
@@ -589,8 +608,8 @@ TEST_CASE("Test replace best 1", "[population]" ) {
     SEPopulation<TestRNG> population = make_population<TestRNG>(10);
     set_fitness1(population, {4.62, 1.74, 4.19, 9.41, 7.42, 6.99, 6.02, 5.58, 7.94, 7.58});
     population.se_find_best_and_worst_individual();
-    REQUIRE(population.best_index == 1);
-    REQUIRE(population.worst_index == 3);
+    REQUIRE(population.best_index == 1U);
+    REQUIRE(population.worst_index == 3U);
 
     population.se_replace_best(make_indi_f1_f2(1.5, 2.3));
     check_population_fitness1(population, {4.62, 1.5, 4.19, 9.41, 7.42, 6.99, 6.02, 5.58, 7.94, 7.58});
@@ -600,29 +619,29 @@ TEST_CASE("Test replace worst", "[population]" ) {
     SEPopulation<TestRNG> population = make_population<TestRNG>(10);
     set_fitness1(population, {4.62, 1.74, 4.19, 9.41, 7.42, 6.99, 6.02, 5.58, 7.94, 7.58});
     population.se_find_best_and_worst_individual();
-    REQUIRE(population.best_index == 1);
-    REQUIRE(population.worst_index == 3);
+    REQUIRE(population.best_index == 1U);
+    REQUIRE(population.worst_index == 3U);
 
     population.se_replace_worst(make_indi_f1_f2(9.8, 4.3));
     check_population_fitness1(population, {4.62, 1.74, 4.19, 9.8, 7.42, 6.99, 6.02, 5.58, 7.94, 7.58});
 
     population.se_find_best_and_worst_individual();
-    REQUIRE(population.best_index == 1);
-    REQUIRE(population.worst_index == 3);
+    REQUIRE(population.best_index == 1U);
+    REQUIRE(population.worst_index == 3U);
 
     population.se_replace_worst(make_indi_f1_f2(2.2, 5.3));
     check_population_fitness1(population, {4.62, 1.74, 4.19, 2.2, 7.42, 6.99, 6.02, 5.58, 7.94, 7.58});
 
     population.se_find_best_and_worst_individual();
-    REQUIRE(population.best_index == 1);
-    REQUIRE(population.worst_index == 8);
+    REQUIRE(population.best_index == 1U);
+    REQUIRE(population.worst_index == 8U);
 
     population.se_replace_worst(make_indi_f1_f2(0.98, 1.3));
     check_population_fitness1(population, {4.62, 1.74, 4.19, 2.2, 7.42, 6.99, 6.02, 5.58, 0.98, 7.58});
 
     population.se_find_best_and_worst_individual();
-    REQUIRE(population.best_index == 8);
-    REQUIRE(population.worst_index == 9);
+    REQUIRE(population.best_index == 8U);
+    REQUIRE(population.worst_index == 9U);
 }
 
 TEST_CASE("Test clone best to worst", "[population]" ) {
@@ -699,8 +718,8 @@ TEST_CASE("Test calculate fitness2 1", "[population]" ) {
     check_population_fitness(population, {4.62, 1.74, 4.19, 9.41, 7.42, 6.99, 6.02, 5.58, 7.94, 7.58},
                                          {1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0});
 
-    REQUIRE(population.best_index == 1);
-    REQUIRE(population.worst_index == 3);
+    REQUIRE(population.best_index == 1U);
+    REQUIRE(population.worst_index == 3U);
 }
 
 TEST_CASE("Test calculate fitness2 2", "[population]" ) {
@@ -716,8 +735,8 @@ TEST_CASE("Test calculate fitness2 2", "[population]" ) {
     check_population_fitness(population, {4.62, 0.001, 4.19, 9.41, 7.42, 0.002, 6.02, 5.58, 7.94, 7.58},
                                          {1.1, 7.0, 1.3, 1.4, 1.5, 45.0, 1.7, 1.8, 1.9, 2.0});
 
-    REQUIRE(population.best_index == 1);
-    REQUIRE(population.worst_index == 3);
+    REQUIRE(population.best_index == 1U);
+    REQUIRE(population.worst_index == 3U);
 }
 
 TEST_CASE("Test calculate fitness2 3", "[population]" ) {
@@ -733,8 +752,8 @@ TEST_CASE("Test calculate fitness2 3", "[population]" ) {
     check_population_fitness(population, {4.62, 0.001, 4.19, 9.41, 7.42, 0.002, 6.02, 5.58, 7.94, 7.58},
                                          {1.1, 45.0, 1.3, 1.4, 1.5, 7.0, 1.7, 1.8, 1.9, 2.0});
 
-    REQUIRE(population.best_index == 5);
-    REQUIRE(population.worst_index == 3);
+    REQUIRE(population.best_index == 5U);
+    REQUIRE(population.worst_index == 3U);
 }
 
 TEST_CASE("Test calculate average fitness1", "[population]") {
@@ -757,28 +776,28 @@ TEST_CASE("Test prepare iteration 1", "[population]") {
     REQUIRE(population.rng.get_uint16(100) == rng2.get_uint16(100));
     REQUIRE(population.rng.get_uint32(100) == rng2.get_uint32(100));
     REQUIRE(population.rng.get_uint64(100) == rng2.get_uint64(100));
-    REQUIRE(population.current_seed_counter == 0);
+    REQUIRE(population.current_seed_counter == 0U);
 
     TestIndividual2 *test_indi;
     for (size_t i = 0; i < population.population.size(); i++) {
         test_indi = static_cast<TestIndividual2*>(population.population[i].get());
-        REQUIRE(test_indi->internal_seed == 0);
+        REQUIRE(test_indi->internal_seed == 0U);
     }
 
     population.se_prepare_iteration("Test prepare iteration", population.population[0]->se_to_vec_u8());
 
-    REQUIRE(population.se_config.mutation_operations.size() == 10);
+    REQUIRE(population.se_config.mutation_operations.size() == 10U);
     REQUIRE(population.se_config.mutation_operations != initial_ops);
 
     REQUIRE(population.rng.get_uint8(100) != rng2.get_uint8(100));
     REQUIRE(population.rng.get_uint16(100) != rng2.get_uint16(100));
     REQUIRE(population.rng.get_uint32(100) != rng2.get_uint32(100));
     REQUIRE(population.rng.get_uint64(100) != rng2.get_uint64(100));
-    REQUIRE(population.current_seed_counter == 0);
+    REQUIRE(population.current_seed_counter == 0U);
 
     for (size_t i = 0; i < population.population.size(); i++) {
         test_indi = static_cast<TestIndividual2*>(population.population[i].get());
-        REQUIRE(test_indi->internal_seed == i * 10);
+        REQUIRE(test_indi->internal_seed == i * 10U);
     }
 }
 
@@ -791,7 +810,7 @@ TEST_CASE("Test prepare iteration 2", "[population]") {
     REQUIRE(population.rng.get_uint16(100) == rng2.get_uint16(100));
     REQUIRE(population.rng.get_uint32(100) == rng2.get_uint32(100));
     REQUIRE(population.rng.get_uint64(100) == rng2.get_uint64(100));
-    REQUIRE(population.current_seed_counter == 0);
+    REQUIRE(population.current_seed_counter == 0U);
 
     population.se_prepare_iteration("Test prepare iteration", population.population[0]->se_to_vec_u8());
 
@@ -799,11 +818,11 @@ TEST_CASE("Test prepare iteration 2", "[population]") {
     REQUIRE(population.rng.get_uint16(100) == rng2.get_uint16(100));
     REQUIRE(population.rng.get_uint32(100) == rng2.get_uint32(100));
     REQUIRE(population.rng.get_uint64(100) == rng2.get_uint64(100));
-    REQUIRE(population.current_seed_counter == 1);
+    REQUIRE(population.current_seed_counter == 1U);
 
     TestIndividual2 *test_indi;
     for (size_t i = 0; i < population.population.size(); i++) {
         test_indi = static_cast<TestIndividual2*>(population.population[i].get());
-        REQUIRE(test_indi->internal_seed == 0);
+        REQUIRE(test_indi->internal_seed == 0U);
     }
 }

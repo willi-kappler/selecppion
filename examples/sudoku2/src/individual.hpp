@@ -211,13 +211,13 @@ class SudokuIndividual: public SEIndividual {
             se_json_to_vec(restored_json["solution"], solution);
         }
 
-        void se_reseed_rng(size_t index) {
+        void se_reseed_rng(size_t index) override {
             if (index == 0) {
                 global_rng.seed();
             }
         }
 
-        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) {
+        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) override {
             const SudokuIndividual* const other_individual = dynamic_cast<const SudokuIndividual* const>(individual);
             std::unique_ptr<SudokuIndividual> result = std::make_unique<SudokuIndividual>(fixed_numbers);
 

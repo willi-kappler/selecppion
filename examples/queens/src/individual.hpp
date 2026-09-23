@@ -44,7 +44,7 @@ class QueensIndividual: public SEIndividual {
         void se_randomize() override {
             // Not really random...
             for (size_t i = 0; i < BOARD_SIZE; i++) {
-                columns[i] = i;
+                columns[i] = static_cast<uint8_t>(i);
             }
         }
 
@@ -98,13 +98,13 @@ class QueensIndividual: public SEIndividual {
             se_json_to_vec(restored_json["columns"], columns);
         }
 
-        void se_reseed_rng(size_t index) {
+        void se_reseed_rng(size_t index) override {
             if (index == 0) {
                 global_rng.seed();
             }
         }
 
-        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) {
+        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) override {
             const QueensIndividual* const other_individual = dynamic_cast<const QueensIndividual* const>(individual);
             std::unique_ptr<QueensIndividual> result = std::make_unique<QueensIndividual>();
 

@@ -259,13 +259,13 @@ class NeuralNet1Individual: public SEIndividual {
             }
         }
 
-        void se_reseed_rng(size_t index) {
+        void se_reseed_rng(size_t index) override {
             if (index == 0) {
                 global_rng.seed();
             }
         }
 
-        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) {
+        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) override {
             [[maybe_unused]] const NeuralNet1Individual* const other_individual = dynamic_cast<const NeuralNet1Individual* const>(individual);
             std::unique_ptr<NeuralNet1Individual> result = std::make_unique<NeuralNet1Individual>(input_size_local, output_size_local);
 

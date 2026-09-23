@@ -32,7 +32,7 @@ TEST_CASE("Test server, basic configuration", "[server]" ) {
     server.se_set_loglevel(spdlog::level::level_enum::debug);
 
     // Default server population size is 10:
-    REQUIRE(server.se_get_population_size() == 10);
+    REQUIRE(server.se_get_population_size() == 10U);
     REQUIRE(server.nc_is_job_done() == false);
     REQUIRE(server.se_get_individual(0)->fitness1 < server.se_get_worst()->fitness1);
     REQUIRE(server.se_get_individual(0)->fitness1 > 0.0);
@@ -87,11 +87,11 @@ TEST_CASE("Test process result 1", "[server]" ) {
     std::float64_t worst_fitness = server.se_get_worst()->fitness1;
 
     REQUIRE(individual.fitness1 > 0.0);
-    REQUIRE(server.se_get_new_fitness_counter() == 0);
+    REQUIRE(server.se_get_new_fitness_counter() == 0U);
 
     server.nc_process_result(node_id, individual.se_to_vec_u8());
 
-    REQUIRE(server.se_get_new_fitness_counter() == 0);
+    REQUIRE(server.se_get_new_fitness_counter() == 0U);
     REQUIRE(server.nc_is_job_done() == false);
     REQUIRE(server.se_get_worst()->fitness1 < worst_fitness);
     REQUIRE(server.se_get_individual(0)->fitness1 < individual.fitness1);
@@ -110,11 +110,11 @@ TEST_CASE("Test process result 2", "[server]" ) {
     individual.fitness1 = best_fitness * 0.91573;
 
     REQUIRE(individual.fitness1 > 0.0);
-    REQUIRE(server.se_get_new_fitness_counter() == 0);
+    REQUIRE(server.se_get_new_fitness_counter() == 0U);
 
     server.nc_process_result(node_id, individual.se_to_vec_u8());
 
-    REQUIRE(server.se_get_new_fitness_counter() == 1);
+    REQUIRE(server.se_get_new_fitness_counter() == 1U);
     REQUIRE(server.nc_is_job_done() == false);
     REQUIRE(server.se_get_worst()->fitness1 < worst_fitness);
     REQUIRE(server.se_get_individual(0)->fitness1 < best_fitness);
@@ -134,11 +134,11 @@ TEST_CASE("Test process result 3", "[server]" ) {
     individual.fitness1 = best_fitness * 0.9;
 
     REQUIRE(individual.fitness1 > 0.0);
-    REQUIRE(server.se_get_new_fitness_counter() == 0);
+    REQUIRE(server.se_get_new_fitness_counter() == 0U);
 
     server.nc_process_result(node_id, individual.se_to_vec_u8());
 
-    REQUIRE(server.se_get_new_fitness_counter() == 1);
+    REQUIRE(server.se_get_new_fitness_counter() == 1U);
     REQUIRE(server.nc_is_job_done() == false);
     REQUIRE(server.se_get_individual(0)->fitness1 < best_fitness);
     REQUIRE(server.se_get_individual(0)->fitness1 == individual.fitness1);
@@ -146,7 +146,7 @@ TEST_CASE("Test process result 3", "[server]" ) {
 
     server.nc_process_result(node_id, individual.se_to_vec_u8());
 
-    REQUIRE(server.se_get_new_fitness_counter() == 1);
+    REQUIRE(server.se_get_new_fitness_counter() == 1U);
     REQUIRE(server.nc_is_job_done() == false);
     REQUIRE(server.se_get_individual(0)->fitness1 < best_fitness);
     REQUIRE(server.se_get_individual(0)->fitness1 == individual.fitness1);
@@ -165,11 +165,11 @@ TEST_CASE("Test process result 4", "[server]" ) {
     individual.fitness1 = best_fitness * 0.9;
 
     REQUIRE(individual.fitness1 > 0.0);
-    REQUIRE(server.se_get_new_fitness_counter() == 0);
+    REQUIRE(server.se_get_new_fitness_counter() == 0U);
 
     server.nc_process_result(node_id, individual.se_to_vec_u8());
 
-    REQUIRE(server.se_get_new_fitness_counter() == 1);
+    REQUIRE(server.se_get_new_fitness_counter() == 1U);
     REQUIRE(server.nc_is_job_done() == false);
     REQUIRE(server.se_get_individual(0)->fitness1 < best_fitness);
     REQUIRE(server.se_get_individual(0)->fitness1 == individual.fitness1);
@@ -177,7 +177,7 @@ TEST_CASE("Test process result 4", "[server]" ) {
 
     server.nc_process_result(node_id, individual.se_to_vec_u8());
 
-    REQUIRE(server.se_get_new_fitness_counter() == 1);
+    REQUIRE(server.se_get_new_fitness_counter() == 1U);
     REQUIRE(server.nc_is_job_done() == false);
     REQUIRE(server.se_get_individual(0)->fitness1 < best_fitness);
     REQUIRE(server.se_get_individual(0)->fitness1 == individual.fitness1);
@@ -197,11 +197,11 @@ TEST_CASE("Test process result 5", "[server]" ) {
     individual.fitness1 = best_fitness * 0.9;
 
     REQUIRE(individual.fitness1 > 0.0);
-    REQUIRE(server.se_get_new_fitness_counter() == 0);
+    REQUIRE(server.se_get_new_fitness_counter() == 0U);
 
     server.nc_process_result(node_id, individual.se_to_vec_u8());
 
-    REQUIRE(server.se_get_new_fitness_counter() == 1);
+    REQUIRE(server.se_get_new_fitness_counter() == 1U);
     REQUIRE(server.nc_is_job_done() == false);
     REQUIRE(server.se_get_individual(0)->fitness1 < best_fitness);
     REQUIRE(server.se_get_individual(0)->fitness1 == individual.fitness1);
@@ -210,7 +210,7 @@ TEST_CASE("Test process result 5", "[server]" ) {
     individual.fitness1 = 0.0;
     server.nc_process_result(node_id, individual.se_to_vec_u8());
 
-    REQUIRE(server.se_get_new_fitness_counter() == 2);
+    REQUIRE(server.se_get_new_fitness_counter() == 2U);
     REQUIRE(server.nc_is_job_done() == true);
     REQUIRE(server.se_get_individual(0)->fitness1 < best_fitness);
     REQUIRE(server.se_get_individual(0)->fitness1 == 0.0);

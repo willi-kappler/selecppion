@@ -35,6 +35,7 @@ class RosenbrockIndividual: public SEIndividual {
         std::vector<std::float64_t> values;
 
         RosenbrockIndividual(size_t dimensions, std::float64_t lower_bound, std::float64_t upper_bound):
+        SEIndividual(),
         local_dimensions(dimensions),
         local_lower_bound(lower_bound),
         local_upper_bound(upper_bound),
@@ -110,6 +111,10 @@ class RosenbrockIndividual: public SEIndividual {
                 term1 = 100.0 * pow(values[i + 1] - pow(values[i], 2.0), 2.0);
                 term2 = pow(1.0 - values[i], 2.0);
                 fitness1 += term1 + term2;
+            }
+
+            if (fitness1 < 0.0) {
+                fitness1 = -fitness1;
             }
         }
 

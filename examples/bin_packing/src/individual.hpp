@@ -36,6 +36,7 @@ class BinPackingIndividual: public SEIndividual {
         std::vector<size_t> bins;
 
         BinPackingIndividual(std::vector<std::float64_t> initial_items, std::float64_t initial_capacity):
+        SEIndividual(),
         items(initial_items),
         capacity_per_bin(initial_capacity),
         bins(std::vector<size_t>(initial_items.size(), 0))

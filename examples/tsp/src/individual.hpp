@@ -41,6 +41,7 @@ class TSPIndividual: public SEIndividual {
         std::vector<size_t> position_indices;
 
         TSPIndividual():
+        SEIndividual(),
         position_indices()
         {}
 

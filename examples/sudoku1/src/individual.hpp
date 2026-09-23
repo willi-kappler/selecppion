@@ -33,6 +33,7 @@ class SudokuIndividual: public SEIndividual {
         std::vector<uint8_t> solution;
 
         SudokuIndividual(std::vector<uint8_t> input):
+        SEIndividual(),
         fixed_numbers(input),
         solution(std::vector<uint8_t>(81, 0))
         {

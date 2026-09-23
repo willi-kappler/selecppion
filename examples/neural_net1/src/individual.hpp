@@ -36,11 +36,12 @@ class NeuralNet1Individual: public SEIndividual {
         std::vector<Neuron> hidden_layer;
 
         NeuralNet1Individual(size_t input_size, size_t output_size):
-            input_size_local(input_size),
-            output_size_local(output_size),
-            new_node_prob(10000),
-            new_connection_prob(100),
-            hidden_layer()
+        SEIndividual(),
+        input_size_local(input_size),
+        output_size_local(output_size),
+        new_node_prob(10000),
+        new_connection_prob(100),
+        hidden_layer()
         {
             se_randomize();
         }

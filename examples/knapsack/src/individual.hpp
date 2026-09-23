@@ -30,6 +30,7 @@ class KnapSackIndividual: public SEIndividual {
         std::vector<uint8_t> selection;
 
         KnapSackIndividual(std::vector<std::float64_t> initial_items, std::float64_t initial_capacity):
+        SEIndividual(),
         items(initial_items),
         total_capacity(initial_capacity),
         selection(std::vector<uint8_t>(initial_items.size(), 0))

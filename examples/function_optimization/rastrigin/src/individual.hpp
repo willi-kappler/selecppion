@@ -35,6 +35,7 @@ class RastriginIndividual: public SEIndividual {
         std::vector<std::float64_t> values;
 
         RastriginIndividual(size_t dimensions, std::float64_t lower_bound, std::float64_t upper_bound):
+        SEIndividual(),
         local_dimensions(dimensions),
         local_lower_bound(lower_bound),
         local_upper_bound(upper_bound),

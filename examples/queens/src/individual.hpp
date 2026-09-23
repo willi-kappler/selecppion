@@ -29,6 +29,7 @@ class QueensIndividual: public SEIndividual {
         std::vector<uint8_t> columns;
 
         QueensIndividual():
+        SEIndividual(),
         columns(std::vector<uint8_t>(BOARD_SIZE, 0))
         {}
 

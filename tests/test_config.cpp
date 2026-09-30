@@ -7,7 +7,7 @@
     This file contains the tests for the configuration class.
 
     Run only configuration tests:
-    xmake run -w ./ se_test [configuration]
+    builddir/selecppion_tests [configuration]
 */
 
 // External includes:

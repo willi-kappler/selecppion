@@ -7,7 +7,7 @@
     This file contains the tests for the individual class.
 
     Run only individual tests:
-    xmake run -w ./ se_test [individual]
+    builddir/selecppion_tests [individual]
 */
 
 // External includes:

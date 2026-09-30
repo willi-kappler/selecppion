@@ -7,7 +7,7 @@
     This file contains the tests for the population class type 6.
 
     Run only population type 6 tests:
-    xmake run -w ./ se_test [population_type6]
+    builddir/selecppion_tests [population_type6]
 */
 
 // STD includes:

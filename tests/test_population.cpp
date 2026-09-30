@@ -7,7 +7,7 @@
     This file contains the tests for the population class.
 
     Run only population tests:
-    xmake run -w ./ se_test [population]
+    builddir/selecppion_tests [population]
 */
 
 // External includes:

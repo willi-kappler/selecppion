@@ -6,8 +6,8 @@
 
     This file includes the main function for the knapsack example
 
-    To just build use:
-    xmake build se_example_knapsack
+    To just build use (from the main folder):
+    ./build.sh
 
     Run with:
     ./run_example.sh

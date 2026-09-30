@@ -7,7 +7,7 @@
     This file contains the tests for the population class type 3.
 
     Run only population type 3 tests:
-    xmake run -w ./ se_test [population_type3]
+    builddir/selecppion_tests [population_type3]
 */
 
 // STD includes:

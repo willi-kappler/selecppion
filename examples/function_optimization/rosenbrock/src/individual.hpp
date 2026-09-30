@@ -6,8 +6,8 @@
 
     This file includes the individual class for the rosenbrock example
 
-    To just build use:
-    xmake build se_example_rosenbrock
+    To just build use (from the main folder):
+    ./build.sh
 
     Run with:
     ./run_example.sh

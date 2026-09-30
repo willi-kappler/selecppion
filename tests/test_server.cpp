@@ -7,7 +7,7 @@
     This file contains the tests for the server class.
 
     Run only server tests:
-    xmake run -w ./ se_test [server]
+    builddir/selecppion_tests [server]
 */
 
 // External includes:

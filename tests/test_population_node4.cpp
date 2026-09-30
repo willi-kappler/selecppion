@@ -7,7 +7,7 @@
     This file contains the tests for the population class type 4.
 
     Run only population type 4 tests:
-    xmake run -w ./ se_test [population_type4]
+    builddir/selecppion_tests [population_type4]
 */
 
 // STD includes:

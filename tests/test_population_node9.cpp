@@ -7,7 +7,7 @@
     This file contains the tests for the population class type 9.
 
     Run only population type 10 tests:
-    xmake run -w ./ se_test [population_type9]
+    builddir/selecppion_tests [population_type9]
 */
 
 // STD includes:

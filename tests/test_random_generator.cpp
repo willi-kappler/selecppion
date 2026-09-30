@@ -7,7 +7,7 @@
     This file contains the tests for the random number generator classes.
 
     Run only rng tests:
-    xmake run -w ./ se_test [random]
+    builddir/selecppion_tests [random]
 */
 
 // STD includes:

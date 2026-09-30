@@ -22,7 +22,7 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_sinks.h>
-#include <spdlog/fmt/bundled/ranges.h>
+// #include <spdlog/fmt/bundled/ranges.h>
 #include <spdlog/stopwatch.h>
 #include <nodcru2/nc_util.hpp>
 #include <nodcru2/nc_server.hpp>

@@ -14,7 +14,7 @@
 #include <print>
 
 // External includes:
-#include <tao/json.hpp>
+#include <nlohmann/json.hpp>
 #include <spdlog/spdlog.h>
 
 // Local includes:
@@ -118,13 +118,13 @@ class TestIndividual1: public SEIndividual {
         }
 
         [[nodiscard]] std::vector<uint8_t> se_to_vec_u8() override {
-            tao::json::value json_numbers = tao::json::empty_array;
+            nlohmann::json json_numbers = nlohmann::json::array();
 
             for (uint8_t n: numbers) {
-                json_numbers.get_array().push_back(n);
+                json_numbers.push_back(n);
             }
 
-            const tao::json::value json_data = {
+            const nlohmann::json json_data = {
                 {"mutate_called", mutate_called},
                 {"clone_called", clone_called},
                 {"fitness1", double(fitness1)},
@@ -133,28 +133,27 @@ class TestIndividual1: public SEIndividual {
                 {"zero_is_optimal", zero_is_optimal}
             };
 
-            std::string serialized = tao::json::to_string(json_data);
+            std::string serialized = json_data.dump();
             std::vector<uint8_t> result(serialized.begin(), serialized.end());
 
             return result;
         }
 
         void se_from_span_u8(std::span<const uint8_t> data) override {
-            const char* data_ptr = reinterpret_cast<const char*>(data.data());
-            tao::json::value restored_json = tao::json::from_string(data_ptr, data.size());
+            nlohmann::json restored_json = nlohmann::json::parse(data);
 
-            mutate_called = restored_json["mutate_called"].as<uint32_t>();
-            clone_called = restored_json["clone_called"].as<uint32_t>();
-            fitness1 = restored_json["fitness1"].as<double>();
-            fitness2 = restored_json["fitness2"].as<double>();
+            mutate_called = restored_json["mutate_called"].get<uint32_t>();
+            clone_called = restored_json["clone_called"].get<uint32_t>();
+            fitness1 = restored_json["fitness1"].get<double>();
+            fitness2 = restored_json["fitness2"].get<double>();
 
-            const auto& arr = restored_json["numbers"].get_array();
+            const auto& arr = restored_json["numbers"];
 
             for (size_t i = 0; i < numbers.size(); i++) {
-                numbers[i] = arr[i].as<uint8_t>();
+                numbers[i] = arr[i].get<uint8_t>();
             }
 
-            zero_is_optimal = restored_json["zero_is_optimal"].as<bool>();
+            zero_is_optimal = restored_json["zero_is_optimal"].get<bool>();
         }
 
         void se_reseed_rng(size_t index) override {

@@ -85,18 +85,18 @@ class QueensIndividual: public SEIndividual {
         }
 
         [[nodiscard]] std::vector<uint8_t> se_to_vec_u8() override {
-            const tao::json::value json_data = {
-                {"fitness1", double(fitness1)},
-                {"columns", se_vec_to_json<uint8_t>(columns)}
+            const nlohmann::json json_data = {
+                {"fitness1", fitness1},
+                {"columns", columns}
             };
 
             return se_json_to_vec_u8(json_data);
         }
 
         void se_from_span_u8(std::span<const uint8_t> data) override {
-            tao::json::value restored_json = se_span_u8_to_json(data);
-            fitness1 = restored_json["fitness1"].as<double>();
-            se_json_to_vec(restored_json["columns"], columns);
+            nlohmann::json restored_json = nlohmann::json::parse(data);
+            fitness1 = restored_json["fitness1"].get<double>();
+            columns = restored_json["columns"].get<std::vector<uint8_t>>();
         }
 
         void se_reseed_rng(size_t index) override {

@@ -20,6 +20,9 @@
 #include <span>
 #include <print>
 
+// External includes:
+#include <nlohmann/json.hpp>
+
 // Local includes:
 #include "secpion/se_random.hpp"
 
@@ -175,26 +178,19 @@ class Neuron {
             return result;
         }
 
-        [[nodiscard]] tao::json::value to_json() {
-            tao::json::value json_input_con = tao::json::empty_array;
-            tao::json::value json_hidden_con = tao::json::empty_array;
-            tao::json::value json_pair = tao::json::empty_array;
+        [[nodiscard]] nlohmann::json to_json() {
+            nlohmann::json json_input_con = nlohmann::json::array();
+            nlohmann::json json_hidden_con = nlohmann::json::array();
 
             for (auto con: input_connections) {
-                json_pair.get_array().clear();
-                json_pair.get_array().push_back(con.first);
-                json_pair.get_array().push_back(double(con.second));
-                json_input_con.get_array().push_back(json_pair);
+                json_input_con.push_back({con.first, double(con.second)});
             }
 
             for (auto con: hidden_connections) {
-                json_pair.get_array().clear();
-                json_pair.get_array().push_back(con.first);
-                json_pair.get_array().push_back(double(con.second));
-                json_hidden_con.get_array().push_back(json_pair);
+                json_hidden_con.push_back({con.first, double(con.second)});
             }
 
-            const tao::json::value result = {
+            const nlohmann::json result = {
                 {"bias", double(bias)},
                 {"input_connections", json_input_con},
                 {"hidden_connections", json_hidden_con}
@@ -203,20 +199,17 @@ class Neuron {
             return result;
         }
 
-        void from_json(tao::json::value neuron) {
-            bias = neuron["bias"].as<double>();
+        void from_json(nlohmann::json neuron) {
+            bias = neuron["bias"].get<double>();
             input_connections.clear();
             hidden_connections.clear();
 
-            tao::json::value json_pair;
-            for (auto p: neuron["input_connections"].get_array()) {
-                json_pair = p.get_array();
-                input_connections.push_back({json_pair[0].as<size_t>(), json_pair[1].as<double>()});
+            for (auto p: neuron["input_connections"]) {
+                input_connections.push_back({p[0].get<size_t>(), p[1].get<double>()});
             }
 
-            for (auto p: neuron["hidden_connections"].get_array()) {
-                json_pair = p.get_array();
-                hidden_connections.push_back({json_pair[0].as<size_t>(), json_pair[1].as<double>()});
+            for (auto p: neuron["hidden_connections"]) {
+                hidden_connections.push_back({p[0].get<size_t>(), p[1].get<double>()});
             }
 
         }

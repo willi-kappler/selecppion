@@ -196,18 +196,18 @@ class TSPIndividual: public SEIndividual {
         }
 
         [[nodiscard]] std::vector<uint8_t> se_to_vec_u8() override {
-            const tao::json::value json_data = {
-                {"fitness1", double(fitness1)},
-                {"position_indices", se_vec_to_json<size_t>(position_indices)},
+            const nlohmann::json json_data = {
+                {"fitness1", fitness1},
+                {"position_indices", position_indices},
             };
 
             return se_json_to_vec_u8(json_data);
         }
 
         void se_from_span_u8(std::span<const uint8_t> data) override {
-            tao::json::value restored_json = se_span_u8_to_json(data);
-            fitness1 = restored_json["fitness1"].as<double>();
-            se_json_to_vec(restored_json["position_indices"], position_indices);
+            nlohmann::json restored_json = nlohmann::json::parse(data);
+            fitness1 = restored_json["fitness1"].get<double>();
+            position_indices = restored_json["position_indices"].get<std::vector<size_t>>();
         }
 
         void se_reseed_rng(size_t index) override {

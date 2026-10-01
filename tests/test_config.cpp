@@ -12,7 +12,7 @@
 
 // External includes:
 #include <snitch/snitch.hpp>
-#include <tao/json.hpp>
+#include <nlohmann/json.hpp>
 
 // Local includes:
 #include "secpion/se_config.hpp"
@@ -57,7 +57,7 @@ TEST_CASE("Create valid default configuration", "[configuration]" ) {
 }
 
 TEST_CASE("Test valid JSON configuration", "[configuration]" ) {
-    const tao::json::value json_config = {
+    const nlohmann::json json_config = {
         {"secret_key", "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEF"},
         {"target_fitness1", 2.0},
         {"target_fitness2", 4.5},
@@ -75,7 +75,7 @@ TEST_CASE("Test valid JSON configuration", "[configuration]" ) {
         {"randomize_population", true},
         {"randomize_count", 15},
         {"population_kind", 2},
-        {"mutation_operations", tao::json::value::array({2, 4, 5})},
+        {"mutation_operations", {2, 4, 5}},
         {"early_exit_sleep", 57},
         {"se_node_log_file", "node_foo"},
         {"se_node_log_level", "warning"},

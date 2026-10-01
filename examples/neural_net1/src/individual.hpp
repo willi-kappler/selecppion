@@ -233,13 +233,13 @@ class NeuralNet1Individual: public SEIndividual {
         }
 
         [[nodiscard]] std::vector<uint8_t> se_to_vec_u8() override {
-            tao::json::value json_array = tao::json::empty_array;
+            nlohmann::json json_array = nlohmann::json::array();
 
             for (Neuron neuron: hidden_layer) {
-                json_array.get_array().push_back(neuron.to_json());
+                json_array.push_back(neuron.to_json());
             }
 
-            const tao::json::value json_data = {
+            const nlohmann::json json_data = {
                 {"fitness1", double(fitness1)},
                 {"hidden_layer", json_array}
             };
@@ -248,13 +248,13 @@ class NeuralNet1Individual: public SEIndividual {
         }
 
         void se_from_span_u8(std::span<const uint8_t> data) override {
-            tao::json::value restored_json = se_span_u8_to_json(data);
+            nlohmann::json restored_json = nlohmann::json::parse(data);
 
-            fitness1 = restored_json["fitness1"].as<double>();
+            fitness1 = restored_json["fitness1"].get<double>();
             Neuron n;
             hidden_layer.clear();
 
-            for (auto item: restored_json["hidden_layer"].get_array()) {
+            for (auto item: restored_json["hidden_layer"]) {
                 n.from_json(item);
                 hidden_layer.push_back(n);
             }

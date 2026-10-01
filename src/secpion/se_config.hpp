@@ -18,7 +18,7 @@
 #include <stdfloat>
 
 // External includes:
-#include <tao/json.hpp>
+#include <nlohmann/json.hpp>
 
 namespace secpion {
 class SEConfiguration {
@@ -71,7 +71,7 @@ class SEConfiguration {
         SEConfiguration& operator=(const SEConfiguration&&) = delete;
 };
 
-[[nodiscard]] SEConfiguration se_config_from_json(const tao::json::value);
+[[nodiscard]] SEConfiguration se_config_from_json(const nlohmann::json);
 
 [[nodiscard]] SEConfiguration se_config_from_string(std::string_view);
 

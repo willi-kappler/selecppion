@@ -51,160 +51,160 @@ SEConfiguration::SEConfiguration():
     crossover_probability(0.9)
 {}
 
-[[nodiscard]] SEConfiguration se_config_from_json(const tao::json::value json_config) {
+[[nodiscard]] SEConfiguration se_config_from_json(const nlohmann::json json_config) {
     SEConfiguration se_config;
 
-    if (auto v = json_config.find("target_fitness1"); v != nullptr) {
-        se_config.target_fitness1 = v->as<double>(); // doesn't like std::float64_t
+    if (json_config.contains("target_fitness1")) {
+        se_config.target_fitness1 = json_config["target_fitness1"].get<double>(); // doesn't like std::float64_t
     }
 
-    if (auto v = json_config.find("target_fitness2"); v != nullptr) {
-        se_config.target_fitness2 = v->as<double>();
+    if (json_config.contains("target_fitness2")) {
+        se_config.target_fitness2 = json_config["target_fitness2"].get<double>();
     }
 
-    if (auto v = json_config.find("result_filename"); v != nullptr) {
-        se_config.result_filename = v->as<std::string>();
+    if (json_config.contains("result_filename")) {
+        se_config.result_filename = json_config["result_filename"].get<std::string>();
 
         if (se_config.result_filename.size() == 0) {
             throw SEConfigurationException("result_filename is empty!");
         }
     }
 
-    if (auto v = json_config.find("save_new_fitness"); v != nullptr) {
-        se_config.save_new_fitness = v->as<bool>();
+    if (json_config.contains("save_new_fitness")) {
+        se_config.save_new_fitness = json_config["save_new_fitness"].get<bool>();
     }
 
-    if (auto v = json_config.find("allow_same_fitness"); v != nullptr) {
-        se_config.allow_same_fitness = v->as<bool>();
+    if (json_config.contains("allow_same_fitness")) {
+        se_config.allow_same_fitness = json_config["allow_same_fitness"].get<bool>();
     }
 
-    if (auto v = json_config.find("share_only_best"); v != nullptr) {
-        se_config.share_only_best = v->as<bool>();
+    if (json_config.contains("share_only_best")) {
+        se_config.share_only_best = json_config["share_only_best"].get<bool>();
     }
 
-    if (auto v = json_config.find("server_population_size"); v != nullptr) {
-        se_config.server_population_size = v->as<uint32_t>();
+    if (json_config.contains("server_population_size")) {
+        se_config.server_population_size = json_config["server_population_size"].get<uint32_t>();
 
         if (se_config.server_population_size < 2) {
             throw SEConfigurationException("server_population_size < 2!");
         }
     }
 
-    if (auto v = json_config.find("se_server_log_file"); v != nullptr) {
-        se_config.se_server_log_file = v->as<std::string>();
+    if (json_config.contains("se_server_log_file")) {
+        se_config.se_server_log_file = json_config["se_server_log_file"].get<std::string>();
     }
 
-    if (auto v = json_config.find("se_server_log_level"); v != nullptr) {
-        se_config.se_server_log_level = v->as<std::string>();
+    if (json_config.contains("se_server_log_level")) {
+        se_config.se_server_log_level = json_config["se_server_log_level"].get<std::string>();
     }
 
     // Node settings:
-    if (auto v = json_config.find("node_population_size"); v != nullptr) {
-        se_config.node_population_size = v->as<uint32_t>();
+    if (json_config.contains("node_population_size")) {
+        se_config.node_population_size = json_config["node_population_size"].get<uint32_t>();
 
         if (se_config.node_population_size < 2) {
             throw SEConfigurationException("node_population_size < 2!");
         }
     }
 
-    if (auto v = json_config.find("num_of_iterations"); v != nullptr) {
-        se_config.num_of_iterations = v->as<uint32_t>();
+    if (json_config.contains("num_of_iterations")) {
+        se_config.num_of_iterations = json_config["num_of_iterations"].get<uint32_t>();
 
         if (se_config.num_of_iterations < 2) {
             throw SEConfigurationException("num_of_iterations < 2!");
         }
     }
 
-    if (auto v = json_config.find("num_of_mutations"); v != nullptr) {
-        se_config.num_of_mutations = v->as<uint32_t>();
+    if (json_config.contains("num_of_mutations")) {
+        se_config.num_of_mutations = json_config["num_of_mutations"].get<uint32_t>();
 
         if (se_config.num_of_mutations == 0) {
             throw SEConfigurationException("num_of_mutations == 0!");
         }
     }
 
-    if (auto v = json_config.find("random_num_of_mutations"); v != nullptr) {
-        se_config.random_num_of_mutations = v->as<bool>();
+    if (json_config.contains("random_num_of_mutations")) {
+        se_config.random_num_of_mutations = json_config["random_num_of_mutations"].get<bool>();
     }
 
-    if (auto v = json_config.find("accept_new_best"); v != nullptr) {
-        se_config.accept_new_best = v->as<bool>();
+    if (json_config.contains("accept_new_best")) {
+        se_config.accept_new_best = json_config["accept_new_best"].get<bool>();
     }
 
-    if (auto v = json_config.find("randomize_population"); v != nullptr) {
-        se_config.randomize_population = v->as<bool>();
+    if (json_config.contains("randomize_population")) {
+        se_config.randomize_population = json_config["randomize_population"].get<bool>();
     }
 
-    if (auto v = json_config.find("randomize_count"); v != nullptr) {
-        se_config.randomize_count = v->as<uint32_t>();
+    if (json_config.contains("randomize_count")) {
+        se_config.randomize_count = json_config["randomize_count"].get<uint32_t>();
     }
 
-    if (auto v = json_config.find("population_kind"); v != nullptr) {
-        se_config.population_kind = v->as<uint8_t>();
+    if (json_config.contains("population_kind")) {
+        se_config.population_kind = json_config["population_kind"].get<uint8_t>();
 
         if ((se_config.population_kind < 1) || (se_config.population_kind > 8)) {
             throw SEConfigurationException("population_kind must be between 1 and 8!");
         }
     }
 
-    if (auto v = json_config.find("mutation_operations"); v != nullptr) {
+    if (json_config.contains("mutation_operations")) {
         se_config.mutation_operations = std::vector<uint8_t>();
 
-        for (auto data: v->get_array()) {
-            se_config.mutation_operations.push_back(data.as<uint8_t>());
+        for (auto &data: json_config["mutation_operations"]) {
+            se_config.mutation_operations.push_back(data.get<uint8_t>());
         }
     }
 
-    if (auto v = json_config.find("early_exit_sleep"); v != nullptr) {
-        se_config.early_exit_sleep = v->as<uint8_t>();
+    if (json_config.contains("early_exit_sleep")) {
+        se_config.early_exit_sleep = json_config["early_exit_sleep"].get<uint8_t>();
     }
 
-    if (auto v = json_config.find("se_node_log_file"); v != nullptr) {
-        se_config.se_node_log_file = v->as<std::string>();
+    if (json_config.contains("se_node_log_file")) {
+        se_config.se_node_log_file = json_config["se_node_log_file"].get<std::string>();
     }
 
-    if (auto v = json_config.find("se_node_log_level"); v != nullptr) {
-        se_config.se_node_log_level = v->as<std::string>();
+    if (json_config.contains("se_node_log_level")) {
+        se_config.se_node_log_level = json_config["se_node_log_level"].get<std::string>();
     }
 
-    if (auto v = json_config.find("seed_count"); v != nullptr) {
-        se_config.seed_count = v->as<uint32_t>();
+    if (json_config.contains("seed_count")) {
+        se_config.seed_count = json_config["seed_count"].get<uint32_t>();
     }
 
-    if (auto v = json_config.find("min_num_of_individuals"); v != nullptr) {
-        se_config.min_num_of_individuals = v->as<uint8_t>();
+    if (json_config.contains("min_num_of_individuals")) {
+        se_config.min_num_of_individuals = json_config["min_num_of_individuals"].get<uint8_t>();
     }
 
-    if (auto v = json_config.find("sine_base"); v != nullptr) {
-        se_config.sine_base = v->as<double>();
+    if (json_config.contains("sine_base")) {
+        se_config.sine_base = json_config["sine_base"].get<double>();
     }
 
-    if (auto v = json_config.find("sine_amplitude"); v != nullptr) {
-        se_config.sine_amplitude = v->as<double>();
+    if (json_config.contains("sine_amplitude")) {
+        se_config.sine_amplitude = json_config["sine_amplitude"].get<double>();
 
         if (se_config.sine_amplitude <= 0.0) {
             throw SEConfigurationException("sine_amplitude must be > 0!");
         }
     }
 
-    if (auto v = json_config.find("sine_frequency"); v != nullptr) {
-        se_config.sine_frequency = v->as<double>();
+    if (json_config.contains("sine_frequency")) {
+        se_config.sine_frequency = json_config["sine_frequency"].get<double>();
 
         if (se_config.sine_frequency <= 0.0) {
             throw SEConfigurationException("sine_frequency must be > 0!");
         }
     }
 
-    if (auto v = json_config.find("limit_factor"); v != nullptr) {
-        se_config.limit_factor = v->as<double>();
+    if (json_config.contains("limit_factor")) {
+        se_config.limit_factor = json_config["limit_factor"].get<double>();
     }
 
-    if (auto v = json_config.find("mutation_probability"); v != nullptr) {
-        se_config.mutation_probability = v->as<double>();
+    if (json_config.contains("mutation_probability")) {
+        se_config.mutation_probability = json_config["mutation_probability"].get<double>();
     }
 
-    if (auto v = json_config.find("crossover_probability"); v != nullptr) {
-        se_config.crossover_probability = v->as<double>();
+    if (json_config.contains("crossover_probability")) {
+        se_config.crossover_probability = json_config["crossover_probability"].get<double>();
     }
 
     return se_config;
@@ -222,7 +222,7 @@ SEConfiguration::SEConfiguration():
 }
 
 [[nodiscard]] SEConfiguration se_config_from_string(std::string_view config_as_string) {
-    const tao::json::value json_config = tao::json::from_string(config_as_string);
+    const nlohmann::json json_config = nlohmann::json::parse(config_as_string);
 
     return se_config_from_json(json_config);
 }

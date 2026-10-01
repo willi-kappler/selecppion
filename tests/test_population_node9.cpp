@@ -15,7 +15,7 @@
 // External includes:
 #include <snitch/snitch.hpp>
 #include <nodcru2/nc_config.hpp>
-#include <tao/json.hpp>
+#include <nlohmann/json.hpp>
 
 // Local includes:
 #include "secpion/se_config.hpp"

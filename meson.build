@@ -200,7 +200,8 @@ test_sources = files(
   'tests/test_population_node10.cpp',
   'tests/test_population_node11.cpp',
   'tests/test_random_generator.cpp',
-  'tests/test_server.cpp'
+  'tests/test_server.cpp',
+  'tests/test_utils.cpp'
 )
 
 test_exe = executable(

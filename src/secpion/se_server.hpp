@@ -190,7 +190,7 @@ class SEServerDP: public NCServerDataProcessor {
 
                     node_stats[node_id]++;
                     se_logger->debug("Node stats:");
-                    for (auto const& [key, val]: node_stats) {
+                    for (const auto& [key, val]: node_stats) {
                         se_logger->debug("{} -> {}", key.to_string(), val);
                     }
 

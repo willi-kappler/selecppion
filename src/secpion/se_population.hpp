@@ -243,7 +243,7 @@ class SEPopulation {
 
             if (iteration == 0) {
                 // Wait some seconds to avoid spamming the server
-                auto const sleep_time = std::chrono::seconds(se_config.early_exit_sleep);
+                const auto sleep_time = std::chrono::seconds(se_config.early_exit_sleep);
                 std::this_thread::sleep_for(sleep_time);
             }
         }

@@ -149,8 +149,8 @@ class SEAlgorithmSTD_Philox4x64 {
         // Helper for a single Philox round
         void step_round(std::array<uint64_t, 4>& v, const std::array<uint64_t, 2>& k) {
             // Standard Philox multipliers for 64-bit
-            constexpr uint64_t M0 = 0xD2B74407B1CE6E93ULL;
-            constexpr uint64_t M1 = 0xCA5A826395121157ULL;
+            const uint64_t M0 = 0xD2B74407B1CE6E93ULL;
+            const uint64_t M1 = 0xCA5A826395121157ULL;
 
             auto multiply_high = [](uint64_t a, uint64_t b) -> uint64_t {
                 return static_cast<uint64_t>((static_cast<__uint128_t>(a) * b) >> 64);
@@ -172,8 +172,8 @@ class SEAlgorithmSTD_Philox4x64 {
             std::array<uint64_t, 2> working_key = key;
 
             // Constants for key scheduling
-            constexpr uint64_t W0 = 0x9E3779B97F4A7C15ULL; // Golden ratio
-            constexpr uint64_t W1 = 0xBB67AE8584CAA73BULL; // Sqrt(3)
+            const uint64_t W0 = 0x9E3779B97F4A7C15ULL; // Golden ratio
+            const uint64_t W1 = 0xBB67AE8584CAA73BULL; // Sqrt(3)
 
             // 10 rounds as per C++26 philox4x64
             for (int i = 0; i < 10; ++i) {

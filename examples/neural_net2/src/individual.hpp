@@ -48,10 +48,9 @@ class NeuralNet2Individual: public SEIndividual {
 
         std::float64_t test_network() {
             std::float64_t loss = 0.0;
+            // TODO
 
-	    // TODO
-
-            return loss / 4.0;
+            return loss;
         }
 
         void evaluate(std::span<const std::float64_t> input_values) {
@@ -194,25 +193,13 @@ class NeuralNet2Individual: public SEIndividual {
                 hidden_layer.push_back(Neuron());
             }
 
-            // Start with two neurons:
+            // Start with one neuron:
             add_neuron();
-            add_neuron();
-
-            // Two connection to the first input layer:
-            size_t current_size = hidden_layer.size();
-
-            hidden_layer[current_size - 2].add_input_connection(0);
-            hidden_layer[current_size - 2].add_input_connection(1);
-            hidden_layer[current_size - 1].add_input_connection(0);
-            hidden_layer[current_size - 1].add_input_connection(1);
         }
 
         void se_calculate_fitness1() override {
             fitness1 = 0.0;
-
-	    // TODO
-
-            fitness1 = fitness1 / 4.0;
+	        // TODO
         }
 
         [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() override {

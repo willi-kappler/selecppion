@@ -2,7 +2,7 @@ TODO:
     - add more test cases for invalid configurations.
     - add global rng for each type.
     - maybe merge TestIndividual1 and TestIndividual2.
-    - maybe allow custom compare function for individuals.
+    - maybe allow custom compare function for individuals, space ship operator <=>
     - add more test cases for invalid input.
     - use constexpr when possible.
     - use std::initializer_list overload when possible.

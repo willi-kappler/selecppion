@@ -201,17 +201,8 @@ class NeuralNet1Individual: public SEIndividual {
                 hidden_layer.push_back(Neuron());
             }
 
-            // Start with two neurons:
+            // Start with one neuron:
             add_neuron();
-            add_neuron();
-
-            // Two connection to the first input layer:
-            size_t current_size = hidden_layer.size();
-
-            hidden_layer[current_size - 2].add_input_connection(0);
-            hidden_layer[current_size - 2].add_input_connection(1);
-            hidden_layer[current_size - 1].add_input_connection(0);
-            hidden_layer[current_size - 1].add_input_connection(1);
         }
 
         void se_calculate_fitness1() override {

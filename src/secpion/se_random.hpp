@@ -120,6 +120,77 @@ class SEAlgorithmSTD_SWC {
         }
 };
 
+// STD C++26 Philox4x64, Google Gemini 3
+class SEAlgorithmSTD_Philox4x64 {
+    public:
+        SEAlgorithmSTD_Philox4x64(uint64_t s = 0) { seed(s); }
+
+        void seed(uint64_t s) {
+            key[0] = s;
+            key[1] = 0; // Standard Philox uses a 128-bit key, we'll use seed as low bits
+            counter.fill(0);
+            buffer_idx = 4; // Force immediate generation on first call
+        }
+
+        uint64_t next_u64() {
+            if (buffer_idx >= 4) {
+                generate_block();
+                buffer_idx = 0;
+            }
+            return results[buffer_idx++];
+        }
+
+    private:
+        std::array<uint64_t, 4> counter;
+        std::array<uint64_t, 2> key;
+        std::array<uint64_t, 4> results;
+        size_t buffer_idx;
+
+        // Helper for a single Philox round
+        void step_round(std::array<uint64_t, 4>& v, const std::array<uint64_t, 2>& k) {
+            // Standard Philox multipliers for 64-bit
+            constexpr uint64_t M0 = 0xD2B74407B1CE6E93ULL;
+            constexpr uint64_t M1 = 0xCA5A826395121157ULL;
+
+            auto multiply_high = [](uint64_t a, uint64_t b) -> uint64_t {
+                return static_cast<uint64_t>((static_cast<__uint128_t>(a) * b) >> 64);
+            };
+
+            uint64_t hi0 = multiply_high(v[0], M0);
+            uint64_t lo0 = v[0] * M0;
+            uint64_t hi1 = multiply_high(v[2], M1);
+            uint64_t lo1 = v[2] * M1;
+
+            v[0] = hi1 ^ v[1] ^ k[0];
+            v[1] = lo1;
+            v[2] = hi0 ^ v[3] ^ k[1];
+            v[3] = lo0;
+        }
+
+        void generate_block() {
+            results = counter;
+            std::array<uint64_t, 2> working_key = key;
+
+            // Constants for key scheduling
+            constexpr uint64_t W0 = 0x9E3779B97F4A7C15ULL; // Golden ratio
+            constexpr uint64_t W1 = 0xBB67AE8584CAA73BULL; // Sqrt(3)
+
+            // 10 rounds as per C++26 philox4x64
+            for (int i = 0; i < 10; ++i) {
+                if (i > 0) {
+                    working_key[0] += W0;
+                    working_key[1] += W1;
+                }
+                step_round(results, working_key);
+            }
+
+            // Increment counter for next block (128-bit or 256-bit carry)
+            for (auto& c : counter) {
+                if (++c != 0) break;
+            }
+        }
+};
+
 template <SERandomAlgorithm T>
 class SERandomGenerator {
     private:
@@ -285,6 +356,7 @@ typedef SERandomGenerator<SEAlgorithmWyRand> SE_RNG_WY;
 typedef SERandomGenerator<SEAlgorithmSTD_LCG> SE_RNG_LCG;
 typedef SERandomGenerator<SEAlgorithmSTD_Mersenne> SE_RNG_MER;
 typedef SERandomGenerator<SEAlgorithmSTD_SWC> SE_RNG_SWC;
+typedef SERandomGenerator<SEAlgorithmSTD_Philox4x64> SE_RNG_PHX;
 }
 
 #endif // FILE_SE_RANDOM_HPP_INCLUDED

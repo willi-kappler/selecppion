@@ -218,6 +218,7 @@ TEST_CASE("Create some random numbers", "[random]" ) {
     gen_random_numbers<SE_RNG_LCG>();
     gen_random_numbers<SE_RNG_MER>();
     gen_random_numbers<SE_RNG_SWC>();
+    gen_random_numbers<SE_RNG_PHX>();
 }
 
 TEST_CASE("Test seed", "[random]" ) {
@@ -226,6 +227,7 @@ TEST_CASE("Test seed", "[random]" ) {
     gen_seeds<SE_RNG_LCG>();
     gen_seeds<SE_RNG_MER>();
     gen_seeds<SE_RNG_SWC>();
+    gen_seeds<SE_RNG_PHX>();
 }
 
 TEST_CASE("Test shuffle and choice", "[random]" ) {
@@ -234,6 +236,7 @@ TEST_CASE("Test shuffle and choice", "[random]" ) {
     gen_shuffle_choice<SE_RNG_LCG>();
     gen_shuffle_choice<SE_RNG_MER>();
     gen_shuffle_choice<SE_RNG_SWC>();
+    gen_shuffle_choice<SE_RNG_PHX>();
 }
 
 TEST_CASE("Test swap", "[random]" ) {
@@ -242,6 +245,7 @@ TEST_CASE("Test swap", "[random]" ) {
     gen_swap<SE_RNG_LCG>();
     gen_swap<SE_RNG_MER>();
     gen_swap<SE_RNG_SWC>();
+    gen_swap<SE_RNG_PHX>();
 }
 
 /*

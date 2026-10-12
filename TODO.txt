@@ -2,15 +2,12 @@ TODO:
     - add more test cases for invalid configurations.
     - add global rng for each type.
     - maybe merge TestIndividual1 and TestIndividual2.
-    - add philox4x64 rng.
     - maybe allow custom compare function for individuals.
     - add more test cases for invalid input.
     - use constexpr when possible.
     - use std::initializer_list overload when possible.
-    - add json helper functions: vector, pair, std::float64_t, ...
     - use final instead of override when possible.
     - add neural net 2 example.
-    - fix clang warnings and errors.
     - compile and test on MacOS.
     - compile and test on Windows.
 
@@ -31,6 +28,8 @@ Done:
     # add examples: function_optimization, neural_net.
     # add GCC flag "-fhardened" and fix warnings.
     # replace tao json with nlohmann json.
+    # add philox4x64 rng.
+    # add json helper functions: vector, pair, std::float64_t, ...
 
 
 

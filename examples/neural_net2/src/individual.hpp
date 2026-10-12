@@ -24,6 +24,7 @@
 #include "secpion/se_utils.hpp"
 
 #include "neuron.hpp"
+#include "data_provider.hpp"
 
 using namespace secpion;
 

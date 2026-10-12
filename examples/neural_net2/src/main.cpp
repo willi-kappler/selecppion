@@ -22,7 +22,7 @@ using namespace secpion;
 
 int main(int argc, char *argv[]) {
     std::unique_ptr<NeuralNet2Individual> neuralnet2_individual =
-        std::make_unique<NeuralNet2Individual>(2, 1);
+        std::make_unique<NeuralNet2Individual>(4, 3);
     global_rng.seed();
     neuralnet2_individual->se_randomize();
 

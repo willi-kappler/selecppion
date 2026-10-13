@@ -28,6 +28,8 @@
 
 using namespace secpion;
 
+DataProvider global_data_provider;
+
 class NeuralNet2Individual: public SEIndividual {
     public:
         size_t input_size_local;
@@ -45,13 +47,6 @@ class NeuralNet2Individual: public SEIndividual {
         hidden_layer()
         {
             se_randomize();
-        }
-
-        std::float64_t test_network() {
-            std::float64_t loss = 0.0;
-            // TODO
-
-            return loss;
         }
 
         void evaluate(std::span<const std::float64_t> input_values) {
@@ -87,14 +82,14 @@ class NeuralNet2Individual: public SEIndividual {
             return calculate_error(std::span<const std::float64_t>{expected_values.begin(), expected_values.end()});
         }
 
-        void evaluate_with_error(std::span<const std::float64_t> input_values, std::span<const std::float64_t> expected_outputs) {
+        std::float64_t evaluate_with_error(std::span<const std::float64_t> input_values, std::span<const std::float64_t> expected_outputs) {
             evaluate(input_values);
-            fitness1 += calculate_error(expected_outputs);
+            return calculate_error(expected_outputs);
         }
 
-        void evaluate_with_error(std::initializer_list<std::float64_t> input_values,
+        std::float64_t evaluate_with_error(std::initializer_list<std::float64_t> input_values,
             std::initializer_list<std::float64_t> expected_outputs) {
-            evaluate_with_error(std::span<const std::float64_t>{input_values.begin(), input_values.end()},
+            return evaluate_with_error(std::span<const std::float64_t>{input_values.begin(), input_values.end()},
                 std::span<const std::float64_t>{expected_outputs.begin(), expected_outputs.end()});
         }
 
@@ -171,7 +166,7 @@ class NeuralNet2Individual: public SEIndividual {
             switch (op) {
                 case 0: {
                     const uint16_t prob = global_rng.get_uint16(new_node_prob);
-                    if ((prob == 0) && (hidden_layer.size() < 10)) {
+                    if ((prob == 0) && (hidden_layer.size() < 7)) {
                         add_neuron();
                     } else {
                         mutate_neuron();
@@ -200,7 +195,23 @@ class NeuralNet2Individual: public SEIndividual {
 
         void se_calculate_fitness1() override {
             fitness1 = 0.0;
-	        // TODO
+
+            for (uint16_t i = 0; i < global_data_provider.batch_size; i++) {
+                fitness1 += evaluate_with_error(global_data_provider.train_input_values[i], global_data_provider.train_output_values[i]);
+            }
+
+            fitness1 = fitness1 / static_cast<std::float64_t>(global_data_provider.batch_size);
+        }
+
+        void se_calculate_fitness2() override {
+            fitness2 = 0.0;
+            const size_t test_size = global_data_provider.test_input_values.size();
+
+            for (uint16_t i = 0; i < test_size; i++) {
+                fitness2 += evaluate_with_error(global_data_provider.test_input_values[i], global_data_provider.test_output_values[i]);
+            }
+
+            fitness2 = fitness2 / static_cast<std::float64_t>(test_size);
         }
 
         [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() override {
@@ -219,6 +230,7 @@ class NeuralNet2Individual: public SEIndividual {
 
             const nlohmann::json json_data = {
                 {"fitness1", double(fitness1)},
+                {"fitness2", double(fitness2)},
                 {"hidden_layer", json_array}
             };
 
@@ -229,6 +241,7 @@ class NeuralNet2Individual: public SEIndividual {
             nlohmann::json restored_json = nlohmann::json::parse(data);
 
             fitness1 = restored_json["fitness1"].get<double>();
+            fitness2 = restored_json["fitness2"].get<double>();
             Neuron n;
             hidden_layer.clear();
 
@@ -241,6 +254,16 @@ class NeuralNet2Individual: public SEIndividual {
         void se_reseed_rng(size_t index) override {
             if (index == 0) {
                 global_rng.seed();
+            }
+        }
+
+        void se_prepare_individual(size_t index) override {
+            // This is called before the iteration begins.
+            if (index == 0) {
+                // This needs to be done only once, for the individual at index 0.
+                // They all share the same global data provider.
+                // This will create a new batch of training data:
+                global_data_provider.set_new_training_batch();
             }
         }
 

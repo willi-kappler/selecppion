@@ -7,7 +7,8 @@
     "num_of_iterations": 10000,
     "randomize_population": false,
     "num_of_mutations": 1,
-    "target_fitness1": 0.00001,
+    "target_fitness1": 0.0,
+    "target_fitness2": 0.01,
     "save_new_fitness": true,
     "share_only_best": true,
     "se_server_log_file": "example_server",
@@ -20,7 +21,7 @@
     "nc_node_log_level": "debug",
     "randomize_count": 1,
     "mutation_operations": [
-        0
+        0, 1, 2
     ],
     "sine_base": 22.0,
     "sine_amplitude": 5.0,

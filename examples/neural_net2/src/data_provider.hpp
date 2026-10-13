@@ -41,22 +41,20 @@ struct DataPoint {
 
 class DataProvider {
     private:
-        const uint16_t batch_size;
         std::vector<DataPoint> training_set;
-        std::vector<DataPoint> test_set;
         secpion::SE_RNG_L64 local_rng;
 
     public:
+        const uint16_t batch_size;
         std::vector<std::vector<std::float64_t>> train_input_values;
         std::vector<std::vector<std::float64_t>> train_output_values;
         std::vector<std::vector<std::float64_t>> test_input_values;
         std::vector<std::vector<std::float64_t>> test_output_values;
 
-        DataProvider():
-            batch_size(20),
+        DataProvider(uint16_t training_batch_size = 20):
             training_set(),
-            test_set(),
             local_rng(),
+            batch_size(training_batch_size),
             train_input_values(),
             train_output_values(),
             test_input_values(),
@@ -81,7 +79,6 @@ class DataProvider {
 
                 const std::regex pattern(R"(^([^,]+),([^,]+),([^,]+),([^,]+),([^,]+),([^,]+)$)");
                 std::smatch match;
-                std::float64_t sl, sw, pl, pw;
                 DataPoint dp;
 
                 while (std::getline(in_file, line)) {
@@ -110,33 +107,30 @@ class DataProvider {
                 }
 
                 const size_t training_size = training_set.size();
-                std::print("Num of data points: {}", training_size);
+                std::print("Num of data points: {}\n", training_size);
                 local_rng.shuffle(training_set);
 
                 // Split all data points into training set (80%) and test set (20%):
                 const size_t test_size = training_size * 20 / 100;
-                auto last = training_set.end();
-                auto first = last - test_size;
-                test_set.assign(std::make_move_iterator(first), std::make_move_iterator(last));
-                training_set.erase(first, last);
 
-                /*
-                auto first = last - static_cast<std::ptrdiff_t>(test_size);
-                test_set.reserve(test_size);
-                test_set.insert(test_set.end(), std::make_move_iterator(first), std::make_move_iterator(last));
-                training_set.erase(first, last);
-                */
+                std::print("Test size: {}\n", test_size);
 
                 test_input_values.clear();
+                test_input_values.reserve(test_size);
                 test_output_values.clear();
+                test_output_values.reserve(test_size);
+
+                const size_t offset = training_size - test_size;
 
                 for (uint16_t i = 0; i < test_size; i++) {
-                    test_input_values.push_back({test_set[i].sl, test_set[i].sw, test_set[i].pl, test_set[i].pw});
-                    test_output_values.push_back({test_set[i].i1, test_set[i].i2, test_set[i].i3});
+                    test_input_values.push_back({training_set[i + offset].sl, training_set[i + offset].sw, training_set[i + offset].pl, training_set[i + offset].pw});
+                    test_output_values.push_back({training_set[i + offset].i1, training_set[i + offset].i2, training_set[i + offset].i3});
                 }
 
-                set_new_training_batch();
+                training_set.resize(offset);
+                training_set.shrink_to_fit();
 
+                set_new_training_batch();
             } else {
                 throw std::runtime_error("Could not open data file!");
             }

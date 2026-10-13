@@ -202,18 +202,18 @@ TEST_CASE("Test process result 5", "[server]" ) {
     server.nc_process_result(node_id, individual.se_to_vec_u8());
 
     REQUIRE(server.se_get_new_fitness_counter() == 1U);
-    REQUIRE(server.nc_is_job_done() == false);
     REQUIRE(server.se_get_individual(0)->fitness1 < best_fitness);
     REQUIRE(server.se_get_individual(0)->fitness1 == individual.fitness1);
     REQUIRE(server.se_get_individual(1)->fitness1 == best_fitness);
+    REQUIRE(server.nc_is_job_done() == false);
 
     individual.fitness1 = 0.0;
     server.nc_process_result(node_id, individual.se_to_vec_u8());
 
     REQUIRE(server.se_get_new_fitness_counter() == 2U);
-    REQUIRE(server.nc_is_job_done() == true);
     REQUIRE(server.se_get_individual(0)->fitness1 < best_fitness);
     REQUIRE(server.se_get_individual(0)->fitness1 == 0.0);
     REQUIRE(server.se_get_individual(1)->fitness1 > 0.0);
     REQUIRE(server.se_get_individual(2)->fitness1 == best_fitness);
+    REQUIRE(server.nc_is_job_done() == true);
 }

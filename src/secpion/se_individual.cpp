@@ -87,4 +87,10 @@ void SEIndividual::se_reseed_rng([[maybe_unused]] size_t index) {
     // Must only be implemented if using population type 11.
     throw SEIndividualException("se_crossover() must be implemented for population type 11!");
 }
+
+void SEIndividual::se_prepare_individual([[maybe_unused]] size_t index) {
+    // Can be implemented but is not needed.
+    // This will be called every time before the iteration starts.
+    // index is the current index of this individual inside the population.
+}
 }

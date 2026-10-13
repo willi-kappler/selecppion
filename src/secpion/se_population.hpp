@@ -316,6 +316,11 @@ class SEPopulation {
                 }
             }
 
+            // Prepare each individual if needed:
+            for (size_t i = 0; i < population.size(); i++) {
+                population[i]->se_prepare_individual(i);
+            }
+
             se_randomize_or_accept_best(data);
             se_shuffle_mutation_operations();
         }

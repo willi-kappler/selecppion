@@ -80,6 +80,7 @@ class SEPopulationNode8: public NCNodeDataProcessor {
                 }
             }
 
+            population.best_index = 0;
             population.se_sort_population();
             population.se_calculate_fitness2();
             population.se_log_statistics();

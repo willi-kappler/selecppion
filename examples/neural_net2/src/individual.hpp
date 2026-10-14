@@ -42,7 +42,7 @@ class NeuralNet2Individual: public SEIndividual {
         SEIndividual(),
         input_size_local(input_size),
         output_size_local(output_size),
-        new_node_prob(10000),
+        new_node_prob(1000),
         new_connection_prob(100),
         hidden_layer()
         {
@@ -166,7 +166,7 @@ class NeuralNet2Individual: public SEIndividual {
             switch (op) {
                 case 0: {
                     const uint16_t prob = global_rng.get_uint16(new_node_prob);
-                    if ((prob == 0) && (hidden_layer.size() < 7)) {
+                    if ((prob == 0) && (hidden_layer.size() < 10)) {
                         add_neuron();
                     } else {
                         mutate_neuron();
@@ -189,7 +189,12 @@ class NeuralNet2Individual: public SEIndividual {
                 hidden_layer.push_back(Neuron());
             }
 
-            // Start with one neuron:
+            // Start with six neurons (at least one is needed):
+            add_neuron();
+            add_neuron();
+            add_neuron();
+            add_neuron();
+            add_neuron();
             add_neuron();
         }
 

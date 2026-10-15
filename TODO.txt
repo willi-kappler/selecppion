@@ -10,6 +10,8 @@ TODO:
     - add neural net 2 example.
     - compile and test on MacOS.
     - compile and test on Windows.
+    - add config option: start individual, json file.
+    - add virtual method to individual base class: se_set_logger()
 
 
 

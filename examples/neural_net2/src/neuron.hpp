@@ -164,8 +164,13 @@ class Neuron {
                 new_value += weight * hidden_layer[index].current_value;
             }
 
+            new_value = std::clamp(new_value, -20.0f64, 20.0f64);
+
             // ReLU:
-            current_value = std::max<std::float64_t>(0.0, new_value);
+            // current_value = std::max<std::float64_t>(0.0, new_value);
+
+            // Sigmoid:
+            current_value = 1.0 / (1.0 + std::exp(-new_value));
         }
 
         [[nodiscard]] Neuron clone() {

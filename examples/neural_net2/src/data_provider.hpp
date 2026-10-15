@@ -80,6 +80,10 @@ class DataProvider {
                 const std::regex pattern(R"(^([^,]+),([^,]+),([^,]+),([^,]+),([^,]+),([^,]+)$)");
                 std::smatch match;
                 DataPoint dp;
+                std::float64_t sl_min = 100.0, sl_max = 0.0;
+                std::float64_t sw_min = 100.0, sw_max = 0.0;
+                std::float64_t pl_min = 100.0, pl_max = 0.0;
+                std::float64_t pw_min = 100.0, pw_max = 0.0;
 
                 while (std::getline(in_file, line)) {
                     if (std::regex_match(line, match, pattern)) {
@@ -102,10 +106,53 @@ class DataProvider {
                             dp.i3 = 1.0;
                         }
 
+                        if (dp.sl < sl_min) {
+                            sl_min = dp.sl;
+                        } else if (dp.sl > sl_max) {
+                            sl_max = dp.sl;
+                        }
+
+                        if (dp.sw < sw_min) {
+                            sw_min = dp.sw;
+                        } else if (dp.sw > sw_max) {
+                            sw_max = dp.sw;
+                        }
+
+                        if (dp.pl < pl_min) {
+                            pl_min = dp.pl;
+                        } else if (dp.pl > pl_max) {
+                            pl_max = dp.pl;
+                        }
+
+                        if (dp.pw < pw_min) {
+                            pw_min = dp.pw;
+                        } else if (dp.pw > pw_max) {
+                            pw_max = dp.pw;
+                        }
+
                         training_set.push_back(dp);
                     }
                 }
 
+                // Normalize input values, between 0.0 and 1.0:
+                //std::print("sl_min: {}, sl_max: {}\n", sl_min, sl_max);
+                //std::print("sw_min: {}, sw_max: {}\n", sw_min, sw_max);
+                //std::print("pl_min: {}, pl_max: {}\n", pl_min, pl_max);
+                //std::print("pw_min: {}, pw_max: {}\n", pw_min, pw_max);
+
+                const std::float64_t sl_diff = sl_max - sl_min;
+                const std::float64_t sw_diff = sw_max - sw_min;
+                const std::float64_t pl_diff = pl_max - pl_min;
+                const std::float64_t pw_diff = pw_max - pw_min;
+
+                for (uint16_t i = 0; i < training_set.size(); i++) {
+                    training_set[i].sl = (training_set[i].sl - sl_min) / sl_diff;
+                    training_set[i].sw = (training_set[i].sw - sw_min) / sw_diff;
+                    training_set[i].pl = (training_set[i].pl - pl_min) / pl_diff;
+                    training_set[i].pw = (training_set[i].pw - pw_min) / pw_diff;
+                }
+
+                // Define training set:
                 const size_t training_size = training_set.size();
                 std::print("Num of data points: {}\n", training_size);
                 local_rng.shuffle(training_set);

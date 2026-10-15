@@ -174,7 +174,8 @@ class SEPopulation {
             } else if (se_config.accept_new_best) {
                 previous_best = population[0]->fitness1;
                 population[0]->se_from_span_u8(data);
-                if (previous_best == population[0]->fitness1) {
+
+                if ((previous_best > 0.0) && (previous_best == population[0]->fitness1)) {
                     se_logger->debug("Maybe stuck in local minimum, randomize population");
                     se_logger->debug("Previous best: {}", previous_best);
                     se_random_population();

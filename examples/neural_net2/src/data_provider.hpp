@@ -51,7 +51,7 @@ class DataProvider {
         std::vector<std::vector<std::float64_t>> test_input_values;
         std::vector<std::vector<std::float64_t>> test_output_values;
 
-        DataProvider(uint16_t training_batch_size = 20):
+        DataProvider(uint16_t training_batch_size = 30):
             training_set(),
             local_rng(),
             batch_size(training_batch_size),
@@ -110,8 +110,8 @@ class DataProvider {
                 std::print("Num of data points: {}\n", training_size);
                 local_rng.shuffle(training_set);
 
-                // Split all data points into training set (80%) and test set (20%):
-                const size_t test_size = training_size * 20 / 100;
+                // Split all data points into training set (70%) and test set (30%):
+                const size_t test_size = training_size * 30 / 100;
 
                 std::print("Test size: {}\n", test_size);
 
@@ -126,6 +126,20 @@ class DataProvider {
                     test_input_values.push_back({training_set[i + offset].sl, training_set[i + offset].sw, training_set[i + offset].pl, training_set[i + offset].pw});
                     test_output_values.push_back({training_set[i + offset].i1, training_set[i + offset].i2, training_set[i + offset].i3});
                 }
+
+                /*
+                test_input_values.clear();
+                test_input_values.reserve(training_size);
+                test_output_values.clear();
+                test_output_values.reserve(training_size);
+
+                const size_t offset = training_size - test_size;
+
+                for (uint16_t i = 0; i < training_size; i++) {
+                    test_input_values.push_back({training_set[i].sl, training_set[i].sw, training_set[i].pl, training_set[i].pw});
+                    test_output_values.push_back({training_set[i].i1, training_set[i].i2, training_set[i].i3});
+                }
+                */
 
                 training_set.resize(offset);
                 training_set.shrink_to_fit();

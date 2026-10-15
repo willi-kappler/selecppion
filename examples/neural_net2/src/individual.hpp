@@ -37,6 +37,7 @@ class NeuralNet2Individual: public SEIndividual {
         const uint16_t new_node_prob;
         const uint16_t new_connection_prob;
         std::vector<Neuron> hidden_layer;
+        bool use_softmax;
 
         NeuralNet2Individual(size_t input_size, size_t output_size):
         SEIndividual(),
@@ -44,7 +45,8 @@ class NeuralNet2Individual: public SEIndividual {
         output_size_local(output_size),
         new_node_prob(10000),
         new_connection_prob(100),
-        hidden_layer()
+        hidden_layer(),
+        use_softmax(false)
         {
             se_randomize();
         }
@@ -70,9 +72,26 @@ class NeuralNet2Individual: public SEIndividual {
         std::float64_t calculate_error(std::span<const std::float64_t> expected_output) {
             std::float64_t error = 0.0;
 
-            // The first n neurons are output neurons:
-            for (size_t i = 0; i < output_size_local; i++) {
-                error += pow(expected_output[i] - hidden_layer[i].current_value, 2.0);
+            // The first n neurons are output neurons.
+            if (use_softmax) {
+                // Use softmax when training for classification.
+                std::float64_t sum = 0.0;
+                std::float64_t new_value = 0.0;
+                std::vector<std::float64_t> exp_values(output_size_local);
+
+                for (size_t i = 0; i < output_size_local; i++) {
+                    new_value = std::exp(hidden_layer[i].current_value);
+                    sum = sum + new_value;
+                    exp_values[i] = new_value;
+                }
+
+                for (size_t i = 0; i < output_size_local; i++) {
+                    error += std::abs(expected_output[i] - (exp_values[i] / sum));
+                }
+            } else {
+                for (size_t i = 0; i < output_size_local; i++) {
+                    error += std::abs(pow(expected_output[i] - hidden_layer[i].current_value, 2.0));
+                }
             }
 
             return error;
@@ -189,7 +208,7 @@ class NeuralNet2Individual: public SEIndividual {
                 hidden_layer.push_back(Neuron());
             }
 
-            // Start with one neurons (at least one is needed):
+            // Start with one neuron (at least one is needed):
             add_neuron();
         }
 

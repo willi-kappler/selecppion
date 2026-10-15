@@ -73,16 +73,23 @@ class Neuron {
             bias = change_delta(bias);
         }
 
-        void add_input_connection(size_t index) {
+        bool has_input_connection(size_t index) {
             for (auto [index2, weight2]: input_connections) {
                 if (index == index2) {
-                    mutate_input_connection();
-                    return;
+                    return true;
                 }
             }
 
-            std::float64_t weight = global_rng.get_float64_unif1();
-            input_connections.push_back({index, weight});
+            return false;
+        }
+
+        void add_input_connection(size_t index) {
+            if (has_input_connection(index)) {
+                mutate_input_connection();
+            } else {
+                std::float64_t weight = global_rng.get_float64_unif1();
+                input_connections.push_back({index, weight});
+            }
         }
 
         void mutate_input_connection() {
@@ -100,6 +107,15 @@ class Neuron {
             }
         }
 
+        void mutate_all_input_connections() {
+            std::float64_t value;
+
+            for (size_t i = 0; i < input_connections.size(); i++) {
+                value = input_connections[i].second;
+                input_connections[i].second = change_delta(value);
+            }
+        }
+
         void replace_input_connection(size_t new_index) {
             size_t n = input_connections.size();
 
@@ -109,20 +125,31 @@ class Neuron {
                 input_connections[0].first = new_index;
             } else {
                 size_t index = global_rng.get_size_t(n);
-                input_connections[index].first = new_index;
+                if (has_input_connection(new_index)) {
+                    mutate_input_connection();
+                } else {
+                    input_connections[index].first = new_index;
+                }
             }
         }
 
-        void add_hidden_connection(size_t index) {
+        bool has_hidden_connection(size_t index) {
             for (auto [index2, weight2]: hidden_connections) {
                 if (index == index2) {
-                    mutate_hidden_connection();
-                    return;
+                    return true;
                 }
             }
 
-            std::float64_t weight = global_rng.get_float64_unif1();
-            hidden_connections.push_back({index, weight});
+            return false;
+        }
+
+        void add_hidden_connection(size_t index) {
+            if (has_hidden_connection(index)) {
+                mutate_hidden_connection();
+            } else {
+                std::float64_t weight = global_rng.get_float64_unif1();
+                hidden_connections.push_back({index, weight});
+            }
         }
 
         void mutate_hidden_connection() {
@@ -140,6 +167,17 @@ class Neuron {
             }
         }
 
+        void mutate_all_hidden_connections() {
+            mutate_bias();
+
+            std::float64_t value;
+
+            for (size_t i = 0; i < hidden_connections.size(); i++) {
+                value = hidden_connections[i].second;
+                hidden_connections[i].second = change_delta(value);
+            }
+        }
+
         void replace_hidden_connection(size_t new_index) {
             size_t n = hidden_connections.size();
 
@@ -148,8 +186,12 @@ class Neuron {
             } else if (n == 1) {
                 hidden_connections[0].first = new_index;
             } else {
-                size_t index = global_rng.get_size_t(n);
-                hidden_connections[index].first = new_index;
+                if (has_hidden_connection(new_index)) {
+                    mutate_hidden_connection();
+                } else {
+                    size_t index = global_rng.get_size_t(n);
+                    hidden_connections[index].first = new_index;
+                }
             }
         }
 
@@ -164,13 +206,28 @@ class Neuron {
                 new_value += weight * hidden_layer[index].current_value;
             }
 
-            new_value = std::clamp(new_value, -20.0f64, 20.0f64);
+            /*
+            if (new_value <= 0.0) {
+                new_value = 0.0;
+            } else {
+                new_value = new_value / static_cast<std::float64_t>(input_connections.size() + hidden_connections.size() + 1);
+            }
+            */
+
+            /*
+            if (new_value <= 0.0) {
+                new_value = 0.0;
+            } else if (new_value >= 100.0) {
+                new_value = 100.0;
+            }
+            */
 
             // ReLU:
-            // current_value = std::max<std::float64_t>(0.0, new_value);
+            if (new_value <= 0.0) {
+                new_value = 0.01 * new_value;
+            }
 
-            // Sigmoid:
-            current_value = 1.0 / (1.0 + std::exp(-new_value));
+            current_value = new_value;
         }
 
         [[nodiscard]] Neuron clone() {
@@ -217,6 +274,10 @@ class Neuron {
                 hidden_connections.push_back({p[0].get<size_t>(), p[1].get<double>()});
             }
 
+        }
+
+        [[nodiscard]] uint32_t total_connections() {
+            return static_cast<uint32_t>(input_connections.size() + hidden_connections.size());
         }
 
         void print_neuron() {

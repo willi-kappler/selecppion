@@ -180,6 +180,7 @@ class SEServerDP: public NCServerDataProcessor {
                 }
 
                 se_logger->info("Job is done, target fitness2 is met.");
+                se_logger->info("Node ID: {}", node_id.to_string());
                 se_logger->debug("Best fitness1: {}, target fitness1: {}", new_fitness1, se_config.target_fitness1);
                 se_logger->debug("Best fitness2: {}, target fitness2: {}", new_fitness2, se_config.target_fitness2);
                 se_logger->info("Time taken: {} sec.", sw);
@@ -230,6 +231,7 @@ class SEServerDP: public NCServerDataProcessor {
 
                     if (new_fitness1 <= se_config.target_fitness1) {
                         se_logger->info("Job is done, target fitness1 is met.");
+                        se_logger->info("Node ID: {}", node_id.to_string());
                         se_logger->debug("Best fitness1: {}, target fitness1: {}", population[0]->fitness1, se_config.target_fitness1);
                         se_logger->debug("Best fitness2: {}, target fitness2: {}", population[0]->fitness2, se_config.target_fitness2);
                         se_logger->debug("Actual fitness: {}", population[0]->se_actual_fitness());

@@ -82,7 +82,7 @@ class SEServerDP: public NCServerDataProcessor {
             }
 
             se_fill_population(std::move(individual));
-            se_sort_population();
+            se_sort_population1();
         }
 
         void se_set_logger(std::shared_ptr<spdlog::logger> logger) {
@@ -120,10 +120,16 @@ class SEServerDP: public NCServerDataProcessor {
             }
         }
 
-        void se_sort_population() {
+        void se_sort_population1() {
             std::sort(population.begin(), population.end(),
                 [] (const std::unique_ptr<SEIndividual>&ind1, const std::unique_ptr<SEIndividual>&ind2) {
                     return ind1->fitness1 < ind2->fitness1; });
+        }
+
+        void se_sort_population2() {
+            std::sort(population.begin(), population.end(),
+                [] (const std::unique_ptr<SEIndividual>&ind1, const std::unique_ptr<SEIndividual>&ind2) {
+                    return ind1->fitness2 < ind2->fitness2; });
         }
 
         void se_save_data(std::string_view filename) {
@@ -170,29 +176,53 @@ class SEServerDP: public NCServerDataProcessor {
             new_indi->se_from_span_u8(result);
             const std::float64_t new_fitness1 = new_indi->fitness1;
             const std::float64_t new_fitness2 = new_indi->fitness2;
-            std::float64_t current_best_fitness1 = 0.0;
+            std::float64_t current_best_fitness = 0.0;
 
-            if (new_fitness2 <= se_config.target_fitness2) {
-                node_stats[node_id]++;
-                se_logger->debug("Node stats:");
-                for (const auto& [key, val]: node_stats) {
-                    se_logger->debug("{} -> {}", key.to_string(), val);
-                }
+            if (new_fitness2 < SE_FLOAT_MAX) {
+                if (new_fitness2 < population[last]->fitness2) {
+                    if (!se_config.allow_same_fitness) {
+                        for (auto &indi: population) {
+                            if (new_fitness2 == indi->fitness2) {
+                                return;
+                            }
+                        }
+                    }
 
-                se_logger->info("Job is done, target fitness2 is met.");
-                se_logger->info("Node ID: {}", node_id.to_string());
-                se_logger->debug("Best fitness1: {}, target fitness1: {}", new_fitness1, se_config.target_fitness1);
-                se_logger->debug("Best fitness2: {}, target fitness2: {}", new_fitness2, se_config.target_fitness2);
-                se_logger->info("Time taken: {} sec.", sw);
-                best_fitness_found = true;
+                    se_logger->debug("New individual in population: fitness1: {}, actual: {}, fitness2: {}",
+                        new_fitness1, new_indi->se_actual_fitness(), new_indi->fitness2);
 
-                population[0] = std::move(new_indi);
-                population[0]->se_new_best_individual();
+                    population[last] = std::move(new_indi);
+                    current_best_fitness = population[0]->fitness2;
+                    se_sort_population2();
 
-                new_fitness_counter++;
+                    if (new_fitness2 < current_best_fitness) {
+                        new_fitness_counter++;
 
-                if (se_config.save_new_fitness) {
-                    se_save_data(fmt::format("{}_{}", new_fitness_counter, se_config.result_filename));
+                        se_logger->info("New best fitness2: {}, previous: {}", new_fitness2, current_best_fitness);
+                        se_logger->info("From node: {}, new fitness counter: {}", node_id.to_string(), new_fitness_counter);
+                        se_logger->debug("Worst fitness: {}", population[last]->fitness2);
+
+                        node_stats[node_id]++;
+                        se_logger->debug("Node stats:");
+                        for (const auto& [key, val]: node_stats) {
+                            se_logger->debug("{} -> {}", key.to_string(), val);
+                        }
+
+                        population[0]->se_new_best_individual();
+
+                        if (se_config.save_new_fitness) {
+                            se_save_data(fmt::format("{}_{}", new_fitness_counter, se_config.result_filename));
+                        }
+
+                        if (new_fitness2 <= se_config.target_fitness2) {
+                            se_logger->info("Job is done, target fitness2 is met.");
+                            se_logger->info("Node ID: {}", node_id.to_string());
+                            se_logger->debug("Best fitness1: {}, target fitness1: {}", population[0]->fitness1, se_config.target_fitness1);
+                            se_logger->debug("Best fitness2: {}, target fitness2: {}", population[0]->fitness2, se_config.target_fitness2);
+                            se_logger->info("Time taken: {} sec.", sw);
+                            best_fitness_found = true;
+                        }
+                    }
                 }
             } else if (new_fitness1 < population[last]->fitness1) {
                 if (!se_config.allow_same_fitness) {
@@ -207,13 +237,13 @@ class SEServerDP: public NCServerDataProcessor {
                     new_fitness1, new_indi->se_actual_fitness(), new_indi->fitness2);
 
                 population[last] = std::move(new_indi);
-                current_best_fitness1 = population[0]->fitness1;
-                se_sort_population();
+                current_best_fitness = population[0]->fitness1;
+                se_sort_population1();
 
-                if (new_fitness1 < current_best_fitness1) {
+                if (new_fitness1 < current_best_fitness) {
                     new_fitness_counter++;
 
-                    se_logger->info("New best fitness1: {}, previous: {}", new_fitness1, current_best_fitness1);
+                    se_logger->info("New best fitness1: {}, previous: {}", new_fitness1, current_best_fitness);
                     se_logger->info("From node: {}, new fitness counter: {}", node_id.to_string(), new_fitness_counter);
                     se_logger->debug("Worst fitness: {}", population[last]->fitness1);
 

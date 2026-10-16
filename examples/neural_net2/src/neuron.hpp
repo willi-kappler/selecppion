@@ -33,15 +33,15 @@ SE_RNG_L64 global_rng;
 using Connection = std::pair<size_t, std::float64_t>;
 
 [[nodiscard]] std::float64_t change_delta(std::float64_t value) {
-    const uint8_t n = global_rng.get_uint8(100);
+    const uint8_t n = global_rng.get_uint8(10);
 
     if (n == 0) {
-        return global_rng.get_float64_unif1();
+        return 100.0 * global_rng.get_float64_unif1();
     } else {
         const std::float64_t delta = global_rng.get_float64_unif2();
 
         value += delta;
-        return std::clamp<std::float64_t>(value, -1.0, 1.0);
+        return std::clamp<std::float64_t>(value, -100.0, 100.0);
     }
 }
 
@@ -50,6 +50,7 @@ class Neuron {
         std::vector<Connection> input_connections;
         std::vector<Connection> hidden_connections;
         std::float64_t bias;
+        uint8_t activation_method;
 
     public:
         std::float64_t current_value;
@@ -58,6 +59,7 @@ class Neuron {
             input_connections(),
             hidden_connections(),
             bias(global_rng.get_float64_unif1()),
+            activation_method(0),
             current_value(0.0)
         {}
 
@@ -71,6 +73,10 @@ class Neuron {
 
         void mutate_bias() {
             bias = change_delta(bias);
+        }
+
+        void mutate_activation() {
+            activation_method = global_rng.get_uint8(9);
         }
 
         bool has_input_connection(size_t index) {
@@ -168,8 +174,6 @@ class Neuron {
         }
 
         void mutate_all_hidden_connections() {
-            mutate_bias();
-
             std::float64_t value;
 
             for (size_t i = 0; i < hidden_connections.size(); i++) {
@@ -206,25 +210,70 @@ class Neuron {
                 new_value += weight * hidden_layer[index].current_value;
             }
 
-            /*
-            if (new_value <= 0.0) {
-                new_value = 0.0;
-            } else {
-                new_value = new_value / static_cast<std::float64_t>(input_connections.size() + hidden_connections.size() + 1);
-            }
-            */
-
-            /*
-            if (new_value <= 0.0) {
-                new_value = 0.0;
-            } else if (new_value >= 100.0) {
-                new_value = 100.0;
-            }
-            */
-
-            // ReLU:
-            if (new_value <= 0.0) {
-                new_value = 0.01 * new_value;
+            switch (activation_method) {
+                case 0:
+                    // ReLU:
+                    if (new_value < 0.0) {
+                        new_value = 0.0;
+                    }
+                    break;
+                case 1:
+                    // Leaky ReLU:
+                    if (new_value < 0.0) {
+                        new_value = 0.01 * new_value;
+                    }
+                    break;
+                case 2:
+                    // Scale by connections:
+                    if (new_value <= 0.0) {
+                        new_value = 0.0;
+                    } else {
+                        new_value = new_value / static_cast<std::float64_t>(input_connections.size() + hidden_connections.size() + 1);
+                    }
+                    break;
+                case 3:
+                    // Min-Max limit 1:
+                    if (new_value <= -10.0) {
+                        new_value = -10.0;
+                    } else if (new_value >= 10.0) {
+                        new_value = 10.0;
+                    }
+                    break;
+                case 4:
+                    // Min-Max limit 2:
+                    if (new_value < 0.0) {
+                        new_value = 0.0;
+                    } else if (new_value >= 10.0) {
+                        new_value = 10.0;
+                    }
+                    break;
+                case 5:
+                    // Sigmoid (standard logistic function):
+                    new_value = std::clamp<std::float64_t>(new_value, -100.0, 100.0);
+                    new_value = 1.0 / (1.0 + std::exp(-new_value));
+                    break;
+                case 6:
+                    // Hyperbolic tangent:
+                    {
+                        new_value = std::clamp<std::float64_t>(new_value, -100.0, 100.0);
+                        std::float64_t e1 = std::exp(new_value);
+                        std::float64_t e2 = std::exp(-new_value);
+                        new_value = (e1 - e2) / (e1 + e2);
+                    }
+                    break;
+                case 7:
+                    // Exponential linear unit (ELU):
+                    if (new_value < 0.0) {
+                        new_value = std::clamp<std::float64_t>(new_value, -100.0, 100.0);
+                        new_value = std::exp(new_value) - 1.0;
+                    }
+                    break;
+                case 8:
+                    // Algebraic function:
+                    // new_value = std::abs(new_value);
+                    new_value = new_value * new_value;
+                    new_value = new_value / (1.0 + new_value);
+                    break;
             }
 
             current_value = new_value;
@@ -236,6 +285,7 @@ class Neuron {
             result.input_connections = input_connections;
             result.hidden_connections = hidden_connections;
             result.bias = bias;
+            result.activation_method = activation_method;
 
             return result;
         }
@@ -254,6 +304,7 @@ class Neuron {
 
             const nlohmann::json result = {
                 {"bias", double(bias)},
+                {"activation", activation_method},
                 {"input_connections", json_input_con},
                 {"hidden_connections", json_hidden_con}
             };
@@ -263,6 +314,7 @@ class Neuron {
 
         void from_json(nlohmann::json neuron) {
             bias = neuron["bias"].get<double>();
+            activation_method = neuron["activation"].get<uint8_t>();
             input_connections.clear();
             hidden_connections.clear();
 
@@ -273,7 +325,6 @@ class Neuron {
             for (auto p: neuron["hidden_connections"]) {
                 hidden_connections.push_back({p[0].get<size_t>(), p[1].get<double>()});
             }
-
         }
 
         [[nodiscard]] uint32_t total_connections() {
@@ -282,6 +333,7 @@ class Neuron {
 
         void print_neuron() {
             std::print("Bias: {}, value: {}\n", bias, current_value);
+            std::print("Activation method: {}\n", activation_method);
             std::print("Input: {}\n", input_connections);
             std::print("Hidden: {}\n", hidden_connections);
         }

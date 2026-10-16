@@ -42,7 +42,7 @@ class NeuralNet2Individual: public SEIndividual {
         SEIndividual(),
         input_size_local(input_size),
         output_size_local(output_size),
-        new_node_prob(10000),
+        new_node_prob(1000),
         new_connection_prob(100),
         hidden_layer()
         {
@@ -55,7 +55,7 @@ class NeuralNet2Individual: public SEIndividual {
                 neuron.reset_value();
             }
 
-            // Evaluate the network two times:
+            // Evaluate the whole network two times:
             for (uint8_t i = 0; i < 2; i++) {
                 for (Neuron &neuron: hidden_layer) {
                     neuron.evaluate(input_values, hidden_layer);
@@ -71,9 +71,11 @@ class NeuralNet2Individual: public SEIndividual {
             std::float64_t error = 0.0;
             std::float64_t value = 0.0;
 
+            // First n neurons are ouput neurons:
+            // (n = output_size_local)
             for (size_t i = 0; i < output_size_local; i++) {
                 value = expected_output[i] - hidden_layer[i].current_value;
-                error += std::abs(value * value);
+                error += value * value;
             }
 
             return error;
@@ -168,6 +170,12 @@ class NeuralNet2Individual: public SEIndividual {
                         neuron.replace_hidden_connection(index2);
                     }
                     break;
+                case 5:
+                    prob = global_rng.get_uint16(new_connection_prob);
+                    if (prob == 0) {
+                        neuron.mutate_activation();
+                    }
+                    break;
             }
         }
 
@@ -200,6 +208,24 @@ class NeuralNet2Individual: public SEIndividual {
 
             // Start with one neuron (at least one is needed):
             add_neuron();
+
+            /*
+            if (hidden_layer.size() == 0) {
+                for (uint16_t i = 0; i < output_size_local; i++) {
+                    hidden_layer.push_back(Neuron());
+                }
+
+                // Start with one neuron (at least one is needed):
+                add_neuron();
+            } else {
+                for (Neuron &neuron: hidden_layer) {
+                    neuron.mutate_bias();
+                    neuron.mutate_activation();
+                    neuron.mutate_all_input_connections();
+                    neuron.mutate_all_hidden_connections();
+                }
+            }
+            */
         }
 
         void se_calculate_fitness1() override {

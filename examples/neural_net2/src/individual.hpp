@@ -16,6 +16,10 @@
 // STD includes:
 #include <cmath>
 #include <numbers>
+#include <memory>
+
+// External includes:
+#include <spdlog/spdlog.h>
 
 // Local includes:
 #include "secpion/se_config.hpp"
@@ -43,8 +47,8 @@ class NeuralNet2Individual: public SEIndividual {
         SEIndividual(),
         input_size_local(input_size),
         output_size_local(output_size),
-        new_node_prob(100),
-        new_connection_prob(10),
+        new_node_prob(10000),
+        new_connection_prob(1000),
         hidden_layer(),
         batch_counter(0)
         {
@@ -65,6 +69,23 @@ class NeuralNet2Individual: public SEIndividual {
             }
         }
 
+        void evaluate_log(std::span<const std::float64_t> input_values, std::shared_ptr<spdlog::logger> se_logger) {
+            se_logger->debug("NeuralNet2Individual::evaluate_log()");
+
+            // First reset all neurons:
+            for (Neuron &neuron: hidden_layer) {
+                neuron.reset_value();
+            }
+
+            // Evaluate the whole network two times:
+            for (uint8_t i = 0; i < 2; i++) {
+                se_logger->debug("evaluate iteration: {}", i);
+                for (Neuron &neuron: hidden_layer) {
+                    neuron.evaluate_log(input_values, hidden_layer, se_logger);
+                }
+            }
+        }
+
         void evaluate(std::initializer_list<std::float64_t> input_values) {
             evaluate(std::span<const std::float64_t>{input_values.begin(), input_values.end()});
         }
@@ -78,6 +99,25 @@ class NeuralNet2Individual: public SEIndividual {
             for (size_t i = 0; i < output_size_local; i++) {
                 value = expected_output[i] - hidden_layer[i].current_value;
                 error += value * value;
+            }
+
+            return error;
+        }
+
+        std::float64_t calculate_error_log(std::span<const std::float64_t> expected_output, std::shared_ptr<spdlog::logger> se_logger) {
+            se_logger->debug("NeuralNet2Individual::calculate_error_log()");
+            std::float64_t error = 0.0;
+            std::float64_t value = 0.0;
+
+            // First n neurons are ouput neurons:
+            // (n = output_size_local)
+            for (size_t i = 0; i < output_size_local; i++) {
+                se_logger->debug("iteration: {}", i);
+                value = expected_output[i] - hidden_layer[i].current_value;
+                se_logger->debug("value: {}, expected_output: {}, current_value: {}", value, expected_output[i], hidden_layer[i].current_value);
+                se_logger->debug("error: {}", error);
+                error += value * value;
+                se_logger->debug("error: {}", error);
             }
 
             return error;
@@ -119,6 +159,12 @@ class NeuralNet2Individual: public SEIndividual {
         std::float64_t evaluate_with_error(std::span<const std::float64_t> input_values, std::span<const std::float64_t> expected_outputs) {
             evaluate(input_values);
             return calculate_error(expected_outputs);
+        }
+
+        std::float64_t evaluate_with_error_log(std::span<const std::float64_t> input_values, std::span<const std::float64_t> expected_outputs, std::shared_ptr<spdlog::logger> se_logger) {
+            se_logger->debug("NeuralNet2::Individual::evaluate_with_error_log()");
+            evaluate_log(input_values, se_logger);
+            return calculate_error_log(expected_outputs, se_logger);
         }
 
         std::float64_t evaluate_with_error(std::initializer_list<std::float64_t> input_values,
@@ -244,12 +290,29 @@ class NeuralNet2Individual: public SEIndividual {
 
         void se_calculate_fitness1() override {
             fitness1 = 0.0;
+            const uint16_t batch_size = global_data_provider.batch_size;
 
-            for (uint16_t i = 0; i < global_data_provider.batch_size; i++) {
+            for (uint16_t i = 0; i < batch_size; i++) {
                 fitness1 += evaluate_with_error(global_data_provider.train_input_values[i], global_data_provider.train_output_values[i]);
             }
 
-            fitness1 = fitness1 / static_cast<std::float64_t>(global_data_provider.batch_size);
+            fitness1 = fitness1 / static_cast<std::float64_t>(batch_size);
+        }
+
+        void calculate_fitness1_log(std::shared_ptr<spdlog::logger> se_logger) {
+            se_logger->debug("NeuralNet2Individual::calculate_fitness1_log()");
+            fitness1 = 0.0;
+            const uint16_t batch_size = global_data_provider.batch_size;
+
+            for (uint16_t i = 0; i < batch_size; i++) {
+                se_logger->debug("iteration: {}", i);
+                se_logger->debug("fitness1: {}", fitness1);
+                fitness1 += evaluate_with_error_log(global_data_provider.train_input_values[i], global_data_provider.train_output_values[i], se_logger);
+                se_logger->debug("fitness1: {}", fitness1);
+            }
+
+            fitness1 = fitness1 / static_cast<std::float64_t>(batch_size);
+            se_logger->debug("fitness1: {}", fitness1);
         }
 
         void se_calculate_fitness2() override {
@@ -303,6 +366,14 @@ class NeuralNet2Individual: public SEIndividual {
                 n.from_json(item);
                 hidden_layer.push_back(n);
             }
+        }
+
+        void se_new_best_individual(std::shared_ptr<spdlog::logger> se_logger) override {
+            se_logger->debug("----------");
+
+            calculate_fitness1_log(se_logger);
+
+            se_logger->debug("----------");
         }
 
         void se_reseed_rng(size_t index) override {

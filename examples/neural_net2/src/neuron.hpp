@@ -19,9 +19,12 @@
 #include <utility>
 #include <span>
 #include <print>
+#include <memory>
 
 // External includes:
 #include <nlohmann/json.hpp>
+#include <spdlog/spdlog.h>
+
 
 // Local includes:
 #include "secpion/se_random.hpp"
@@ -277,6 +280,35 @@ class Neuron {
             }
 
             current_value = new_value;
+        }
+
+        void evaluate_log(std::span<const std::float64_t> input_values, std::span<const Neuron> hidden_layer, std::shared_ptr<spdlog::logger> se_logger) {
+            std::float64_t new_value = bias;
+
+            se_logger->debug("Neuron::evaluate_log()");
+
+            for (auto [index, weight]: input_connections) {
+                se_logger->debug("input_connection: index: {}, weight: {}, new_value: {}", index, weight, new_value);
+                new_value += weight * input_values[index];
+                se_logger->debug("input_value: {}", input_values[index]);
+                se_logger->debug("new_value: {}", new_value);
+            }
+
+            for (auto [index, weight]: hidden_connections) {
+                se_logger->debug("hidden_connection: index: {}, weight: {}, new_value: {}", index, weight, new_value);
+                new_value += weight * hidden_layer[index].current_value;
+                se_logger->debug("hidden_layer value: {}", hidden_layer[index].current_value);
+                se_logger->debug("new_value: {}", new_value);
+            }
+
+            if (new_value < 0.0) {
+                new_value = 0.0;
+            }
+
+            se_logger->debug("activation: new_value: {}", new_value);
+
+            current_value = new_value;
+            se_logger->flush();
         }
 
         [[nodiscard]] Neuron clone() {

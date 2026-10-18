@@ -178,7 +178,17 @@ class SEServerDP: public NCServerDataProcessor {
             const std::float64_t new_fitness2 = new_indi->fitness2;
             std::float64_t current_best_fitness = 0.0;
 
-            if (new_fitness2 < population[last]->fitness2) {
+            // if (new_fitness2 <= population[last]->fitness2) {
+            if (new_fitness2 <= se_config.target_fitness2) {
+                population[0] = std::move(new_indi);
+                se_logger->info("Job is done, target fitness2 is met.");
+                se_logger->info("Node ID: {}", node_id.to_string());
+                se_logger->debug("Best fitness1: {}, target fitness1: {}", population[0]->fitness1, se_config.target_fitness1);
+                se_logger->debug("Best fitness2: {}, target fitness2: {}", population[0]->fitness2, se_config.target_fitness2);
+                se_logger->info("Time taken: {} sec.", sw);
+                best_fitness_found = true;
+
+                /*
                 if (!se_config.allow_same_fitness) {
                     for (auto &indi: population) {
                         if (new_fitness2 == indi->fitness2) {
@@ -222,6 +232,7 @@ class SEServerDP: public NCServerDataProcessor {
                         best_fitness_found = true;
                     }
                 }
+                */
             } else if (new_fitness1 < population[last]->fitness1) {
                 if (!se_config.allow_same_fitness) {
                     for (auto &indi: population) {

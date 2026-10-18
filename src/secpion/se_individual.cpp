@@ -70,7 +70,7 @@ void SEIndividual::se_from_span_u8(std::span<const uint8_t>) {
     return fitness1;
 }
 
-void SEIndividual::se_new_best_individual() {
+void SEIndividual::se_new_best_individual([[maybe_unused]] std::shared_ptr<spdlog::logger> se_logger) {
     // Can be implemented but is not needed.
     // This method will be called whenever there is a new
     // best individual on the server or in a population.

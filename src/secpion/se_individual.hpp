@@ -19,6 +19,9 @@
 #include <vector>
 #include <span>
 
+// External includes:
+#include <spdlog/spdlog.h>
+
 namespace secpion {
 const std::float64_t SE_FLOAT_MAX = std::numeric_limits<std::float64_t>::max();
 
@@ -46,7 +49,7 @@ class SEIndividual {
         [[nodiscard]] virtual std::vector<uint8_t> se_to_vec_u8();
         virtual void se_from_span_u8(std::span<const uint8_t>);
         [[nodiscard]] virtual std::float64_t se_actual_fitness();
-        virtual void se_new_best_individual();
+        virtual void se_new_best_individual(std::shared_ptr<spdlog::logger>);
         virtual void se_reseed_rng(size_t);
         [[nodiscard]] virtual std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const);
         virtual void se_prepare_individual(size_t);

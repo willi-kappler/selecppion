@@ -207,7 +207,7 @@ class SEServerDP: public NCServerDataProcessor {
                         se_logger->debug("{} -> {}", key.to_string(), val);
                     }
 
-                    population[0]->se_new_best_individual();
+                    population[0]->se_new_best_individual(se_logger);
 
                     if (se_config.save_new_fitness) {
                         se_save_data(fmt::format("{}_{}", new_fitness_counter, se_config.result_filename));
@@ -251,7 +251,7 @@ class SEServerDP: public NCServerDataProcessor {
                         se_logger->debug("{} -> {}", key.to_string(), val);
                     }
 
-                    population[0]->se_new_best_individual();
+                    population[0]->se_new_best_individual(se_logger);
 
                     if (se_config.save_new_fitness) {
                         se_save_data(fmt::format("{}_{}", new_fitness_counter, se_config.result_filename));

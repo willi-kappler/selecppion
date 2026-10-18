@@ -58,6 +58,7 @@ class SEPopulationNode4: public NCNodeDataProcessor {
             uint32_t all_above_global_fitness = 0;
 
             for (size_t i = 0; i < population.se_config.num_of_iterations; i++) {
+                population.population[0]->se_current_iteration(i);
                 indi_below_global_fitness = 0;
 
                 for (size_t j = 0; j < population.se_config.node_population_size; j++) {

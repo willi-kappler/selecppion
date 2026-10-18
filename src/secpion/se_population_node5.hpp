@@ -54,6 +54,8 @@ class SEPopulationNode5: public NCNodeDataProcessor {
             population.se_logger->debug("Fitness limit: {}", fitness_limit);
 
             for (uint32_t i = 0; i < population.se_config.num_of_iterations; i++) {
+                population.population[0]->se_current_iteration(i);
+
                 for (size_t j = 0; j < population.se_config.node_population_size; j++) {
                     cloned_indi = population.population[j]->se_clone_internal();
 

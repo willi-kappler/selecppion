@@ -54,39 +54,49 @@ class SEPopulationNode11: public NCNodeDataProcessor {
             population.se_find_worst_individual();
 
             std::unique_ptr<SEIndividual> new_indi;
-            size_t j1 = 0;
-            size_t j2 = 0;
+            size_t k1 = 0;
+            size_t k2 = 0;
+            bool exit_iteration = false;
 
-            for (uint32_t i = 0; i < population.se_config.num_of_iterations * population.se_config.node_population_size; i++) {
-                j1 = population.rng.get_size_t(population.se_config.node_population_size);
+            for (size_t i = 0; i < population.se_config.num_of_iterations; i++) {
+                population.population[0]->se_current_iteration(i);
 
-                if (population.population[j1]->fitness1 <= population.se_config.target_fitness1) {
+                for (size_t j = 0; j < population.se_config.node_population_size; j++) {
+                    k1 = population.rng.get_size_t(population.se_config.node_population_size);
+
+                    if (population.population[k1]->fitness1 <= population.se_config.target_fitness1) {
+                        exit_iteration = true;
+                        break;
+                    }
+
+                    if (population.rng.get_float64() <= population.se_config.mutation_probability) {
+                        for (uint32_t l = 0; l < population.se_config.num_of_mutations; l++) {
+                            population.population[k1]->se_mutate_internal(population.se_get_mut_op());
+                        }
+
+                        population.population[k1]->se_calculate_fitness1();
+                    }
+
+                    if (population.rng.get_float64() <= population.se_config.crossover_probability) {
+                        k2 = population.rng.get_size_t(population.se_config.node_population_size);
+
+                        while (k1 == k2) {
+                            k2 = population.rng.get_size_t(population.se_config.node_population_size);
+                        }
+
+                        new_indi = population.population[k1]->se_crossover(population.population[k2].get());
+                        new_indi->se_calculate_fitness1();
+
+                        if (new_indi->fitness1 < population.se_get_worst_fitness()) {
+                            population.se_replace_worst(std::move(new_indi));
+                            population.se_find_worst_individual();
+                        }
+                    }
+                }
+
+                if (exit_iteration) {
                     population.se_early_exit(i);
                     break;
-                }
-
-                if (population.rng.get_float64() <= population.se_config.mutation_probability) {
-                    for (uint32_t k = 0; k < population.se_config.num_of_mutations; k++) {
-                        population.population[j1]->se_mutate_internal(population.se_get_mut_op());
-                    }
-
-                    population.population[j1]->se_calculate_fitness1();
-                }
-
-                if (population.rng.get_float64() <= population.se_config.crossover_probability) {
-                    j2 = population.rng.get_size_t(population.se_config.node_population_size);
-
-                    while (j1 == j2) {
-                        j2 = population.rng.get_size_t(population.se_config.node_population_size);
-                    }
-
-                    new_indi = population.population[j1]->se_crossover(population.population[j2].get());
-                    new_indi->se_calculate_fitness1();
-
-                    if (new_indi->fitness1 < population.se_get_worst_fitness()) {
-                        population.se_replace_worst(std::move(new_indi));
-                        population.se_find_worst_individual();
-                    }
                 }
             }
 

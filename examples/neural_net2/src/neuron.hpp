@@ -36,12 +36,12 @@ using Connection = std::pair<size_t, std::float64_t>;
     const uint8_t n = global_rng.get_uint8(10);
 
     if (n == 0) {
-        return 100.0 * global_rng.get_float64_unif1();
+        return global_rng.get_float64_unif1();
     } else {
         const std::float64_t delta = global_rng.get_float64_unif2();
 
         value += delta;
-        return std::clamp<std::float64_t>(value, -100.0, 100.0);
+        return std::clamp<std::float64_t>(value, -1.0, 1.0);
     }
 }
 

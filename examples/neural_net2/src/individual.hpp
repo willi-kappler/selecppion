@@ -37,14 +37,16 @@ class NeuralNet2Individual: public SEIndividual {
         const uint16_t new_node_prob;
         const uint16_t new_connection_prob;
         std::vector<Neuron> hidden_layer;
+        uint32_t batch_counter;
 
         NeuralNet2Individual(size_t input_size, size_t output_size):
         SEIndividual(),
         input_size_local(input_size),
         output_size_local(output_size),
-        new_node_prob(1000),
-        new_connection_prob(100),
-        hidden_layer()
+        new_node_prob(100),
+        new_connection_prob(10),
+        hidden_layer(),
+        batch_counter(0)
         {
             se_randomize();
         }
@@ -75,6 +77,35 @@ class NeuralNet2Individual: public SEIndividual {
             // (n = output_size_local)
             for (size_t i = 0; i < output_size_local; i++) {
                 value = expected_output[i] - hidden_layer[i].current_value;
+                error += value * value;
+            }
+
+            return error;
+        }
+
+        std::float64_t calculate_error2(std::span<const std::float64_t> expected_output) {
+            std::float64_t error = 0.0;
+            std::float64_t value = 0.0;
+            std::float64_t max_value = 0.0;
+
+            // First n neurons are ouput neurons:
+            // (n = output_size_local)
+            for (size_t i = 0; i < output_size_local; i++) {
+                value = hidden_layer[i].current_value;
+                if (value > max_value) {
+                    max_value = value;
+                }
+            }
+
+            if (max_value == 0.0) {
+                // Do not divide by zero!
+                max_value = 1.0;
+            }
+
+            for (size_t i = 0; i < output_size_local; i++) {
+                // Scale values between 0.0 and 1.0:
+                value = hidden_layer[i].current_value / max_value;
+                value = expected_output[i] - value;
                 error += value * value;
             }
 
@@ -202,30 +233,13 @@ class NeuralNet2Individual: public SEIndividual {
         void se_randomize() override {
             hidden_layer.clear();
 
+            // Add the output neurons to the network:
             for (uint16_t i = 0; i < output_size_local; i++) {
                 hidden_layer.push_back(Neuron());
             }
 
-            // Start with one neuron (at least one is needed):
+            // Start with one normal neuron (at least one is needed):
             add_neuron();
-
-            /*
-            if (hidden_layer.size() == 0) {
-                for (uint16_t i = 0; i < output_size_local; i++) {
-                    hidden_layer.push_back(Neuron());
-                }
-
-                // Start with one neuron (at least one is needed):
-                add_neuron();
-            } else {
-                for (Neuron &neuron: hidden_layer) {
-                    neuron.mutate_bias();
-                    neuron.mutate_activation();
-                    neuron.mutate_all_input_connections();
-                    neuron.mutate_all_hidden_connections();
-                }
-            }
-            */
         }
 
         void se_calculate_fitness1() override {
@@ -303,6 +317,16 @@ class NeuralNet2Individual: public SEIndividual {
                 // This needs to be done only once, for the individual at index 0.
                 // They all share the same global data provider.
                 // This will create a new batch of training data:
+                global_data_provider.set_new_training_batch();
+            }
+        }
+
+        void se_current_iteration([[maybe_unused]] size_t iteration) override {
+            batch_counter++;
+
+            // Avoid overfitting by randomly changeing the training batch:
+            if (batch_counter > 5000) {
+                batch_counter = 0;
                 global_data_provider.set_new_training_batch();
             }
         }

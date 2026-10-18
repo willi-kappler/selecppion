@@ -13,6 +13,8 @@ run_type() {
     $EXECUTABLE -i 40000 -m 1 -t $1 &
     sleep 1
     $EXECUTABLE -i 80000 -m 1 -t $1 &
+    sleep 1
+    $EXECUTABLE -i 16000 -m 1 -t $1 &
 }
 
 run_all_types() {

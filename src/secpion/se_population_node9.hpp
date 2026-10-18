@@ -53,6 +53,8 @@ class SEPopulationNode9: public NCNodeDataProcessor {
             std::float64_t current_limit;
 
             for (uint32_t i = 0; i < population.se_config.num_of_iterations; i++) {
+                population.population[0]->se_current_iteration(i);
+
                 current_limit = population.se_config.sine_base + (population.se_config.sine_amplitude *
                     sin(population.se_config.sine_frequency * static_cast<std::float64_t>(i)));
                 for (size_t j = 0; j < population.se_config.node_population_size; j++) {

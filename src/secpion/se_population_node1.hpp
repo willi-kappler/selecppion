@@ -55,6 +55,8 @@ class SEPopulationNode1: public NCNodeDataProcessor {
             std::unique_ptr<SEIndividual> cloned_indi;
 
             for (size_t i = 0; i < population.se_config.num_of_iterations; i++) {
+                population.population[0]->se_current_iteration(i);
+
                 for (size_t j = 0; j < offset; j++) {
                     // Create a copy of each individual before mutating it (lower half):
                     cloned_indi = population.population[j]->se_clone_internal();

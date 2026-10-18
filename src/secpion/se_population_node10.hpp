@@ -50,27 +50,37 @@ class SEPopulationNode10: public NCNodeDataProcessor {
             population.se_find_worst_individual();
 
             std::unique_ptr<SEIndividual> cloned_indi;
-            size_t j = 0;
+            size_t k = 0;
+            bool exit_iteration = false;
 
-            for (uint32_t i = 0; i < population.se_config.num_of_iterations * population.se_config.node_population_size; i++) {
-                j = population.rng.get_size_t(population.se_config.node_population_size);
+            for (size_t i = 0; i < population.se_config.num_of_iterations; i++) {
+                population.population[0]->se_current_iteration(i);
 
-                if (population.population[j]->fitness1 <= population.se_config.target_fitness1) {
+                for (size_t j = 0; j < population.se_config.node_population_size; j++) {
+                    k = population.rng.get_size_t(population.se_config.node_population_size);
+
+                    if (population.population[k]->fitness1 <= population.se_config.target_fitness1) {
+                        exit_iteration = true;
+                        break;
+                    }
+
+                    cloned_indi = population.population[k]->se_clone_internal();
+
+                    for (uint32_t l = 0; l < population.se_config.num_of_mutations; l++) {
+                        cloned_indi->se_mutate_internal(population.se_get_mut_op());
+                    }
+
+                    cloned_indi->se_calculate_fitness1();
+
+                    if (cloned_indi->fitness1 < population.se_get_worst_fitness()) {
+                        population.se_replace_worst(std::move(cloned_indi));
+                        population.se_find_worst_individual();
+                    }
+                }
+
+                if (exit_iteration) {
                     population.se_early_exit(i);
                     break;
-                }
-
-                cloned_indi = population.population[j]->se_clone_internal();
-
-                for (uint32_t k = 0; k < population.se_config.num_of_mutations; k++) {
-                    cloned_indi->se_mutate_internal(population.se_get_mut_op());
-                }
-
-                cloned_indi->se_calculate_fitness1();
-
-                if (cloned_indi->fitness1 < population.se_get_worst_fitness()) {
-                    population.se_replace_worst(std::move(cloned_indi));
-                    population.se_find_worst_individual();
                 }
             }
 

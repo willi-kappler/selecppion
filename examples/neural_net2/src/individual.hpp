@@ -33,6 +33,7 @@
 using namespace secpion;
 
 DataProvider global_data_provider;
+uint32_t global_batch_counter;
 
 class NeuralNet2Individual: public SEIndividual {
     public:
@@ -41,16 +42,14 @@ class NeuralNet2Individual: public SEIndividual {
         const uint16_t new_node_prob;
         const uint16_t new_connection_prob;
         std::vector<Neuron> hidden_layer;
-        uint32_t batch_counter;
 
         NeuralNet2Individual(size_t input_size, size_t output_size):
         SEIndividual(),
         input_size_local(input_size),
         output_size_local(output_size),
-        new_node_prob(10000),
-        new_connection_prob(1000),
-        hidden_layer(),
-        batch_counter(0)
+        new_node_prob(1000),
+        new_connection_prob(100),
+        hidden_layer()
         {
             se_randomize();
         }
@@ -163,7 +162,8 @@ class NeuralNet2Individual: public SEIndividual {
 
         std::float64_t evaluate_with_error_log(std::span<const std::float64_t> input_values, std::span<const std::float64_t> expected_outputs, std::shared_ptr<spdlog::logger> se_logger) {
             se_logger->debug("NeuralNet2::Individual::evaluate_with_error_log()");
-            evaluate_log(input_values, se_logger);
+            // evaluate_log(input_values, se_logger);
+            evaluate(input_values);
             return calculate_error_log(expected_outputs, se_logger);
         }
 
@@ -301,18 +301,18 @@ class NeuralNet2Individual: public SEIndividual {
 
         void calculate_fitness1_log(std::shared_ptr<spdlog::logger> se_logger) {
             se_logger->debug("NeuralNet2Individual::calculate_fitness1_log()");
-            fitness1 = 0.0;
+            std::float64_t log_fitness1 = 0.0;
             const uint16_t batch_size = global_data_provider.batch_size;
 
             for (uint16_t i = 0; i < batch_size; i++) {
                 se_logger->debug("iteration: {}", i);
-                se_logger->debug("fitness1: {}", fitness1);
-                fitness1 += evaluate_with_error_log(global_data_provider.train_input_values[i], global_data_provider.train_output_values[i], se_logger);
-                se_logger->debug("fitness1: {}", fitness1);
+                se_logger->debug("fitness1: {}", log_fitness1);
+                log_fitness1 += evaluate_with_error_log(global_data_provider.train_input_values[i], global_data_provider.train_output_values[i], se_logger);
+                se_logger->debug("fitness1: {}",log_fitness1);
             }
 
-            fitness1 = fitness1 / static_cast<std::float64_t>(batch_size);
-            se_logger->debug("fitness1: {}", fitness1);
+            log_fitness1 = log_fitness1 / static_cast<std::float64_t>(batch_size);
+            se_logger->debug("fitness1: {}", log_fitness1);
         }
 
         void se_calculate_fitness2() override {
@@ -368,14 +368,6 @@ class NeuralNet2Individual: public SEIndividual {
             }
         }
 
-        void se_new_best_individual(std::shared_ptr<spdlog::logger> se_logger) override {
-            se_logger->debug("----------");
-
-            calculate_fitness1_log(se_logger);
-
-            se_logger->debug("----------");
-        }
-
         void se_reseed_rng(size_t index) override {
             if (index == 0) {
                 global_rng.seed();
@@ -392,15 +384,18 @@ class NeuralNet2Individual: public SEIndividual {
             }
         }
 
+        /*
         void se_current_iteration([[maybe_unused]] size_t iteration) override {
-            batch_counter++;
+            // This method is only called for the individual at index 0.
+            global_batch_counter++;
 
             // Avoid overfitting by randomly changeing the training batch:
-            if (batch_counter > 5000) {
-                batch_counter = 0;
+            if (global_batch_counter > 5000) {
+                global_batch_counter = 0;
                 global_data_provider.set_new_training_batch();
             }
         }
+        */
 
         std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) override {
             [[maybe_unused]] const NeuralNet2Individual* const other_individual = dynamic_cast<const NeuralNet2Individual* const>(individual);

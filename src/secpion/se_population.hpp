@@ -256,14 +256,12 @@ class SEPopulation {
             size_t best_fitness2_index = 0;
 
             for (size_t i = 0; i < population.size(); i++) {
-                if (population[i]->fitness1 < 0.01) {
-                    population[i]->se_calculate_fitness2();
-                    fitness2 = population[i]->fitness2;
+                population[i]->se_calculate_fitness2();
+                fitness2 = population[i]->fitness2;
 
-                    if (fitness2 < best_fitness2) {
-                        best_fitness2 = fitness2;
-                        best_fitness2_index = i;
-                    }
+                if (fitness2 < best_fitness2) {
+                    best_fitness2 = fitness2;
+                    best_fitness2_index = i;
                 }
             }
 

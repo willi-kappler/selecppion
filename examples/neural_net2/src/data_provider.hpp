@@ -60,7 +60,7 @@ class DataProvider {
             test_input_values(),
             test_output_values()
         {
-            local_rng.seed();
+            local_rng.seed(19725);
 
             for (uint16_t i = 0; i < batch_size; i++) {
                 train_input_values.push_back({0.0, 0.0, 0.0, 0.0});
@@ -135,11 +135,6 @@ class DataProvider {
                 }
 
                 // Normalize input values, between 0.0 and 1.0:
-                //std::print("sl_min: {}, sl_max: {}\n", sl_min, sl_max);
-                //std::print("sw_min: {}, sw_max: {}\n", sw_min, sw_max);
-                //std::print("pl_min: {}, pl_max: {}\n", pl_min, pl_max);
-                //std::print("pw_min: {}, pw_max: {}\n", pw_min, pw_max);
-
                 const std::float64_t sl_diff = sl_max - sl_min;
                 const std::float64_t sw_diff = sw_max - sw_min;
                 const std::float64_t pl_diff = pl_max - pl_min;
@@ -173,20 +168,6 @@ class DataProvider {
                     test_input_values.push_back({training_set[i + offset].sl, training_set[i + offset].sw, training_set[i + offset].pl, training_set[i + offset].pw});
                     test_output_values.push_back({training_set[i + offset].i1, training_set[i + offset].i2, training_set[i + offset].i3});
                 }
-
-                /*
-                test_input_values.clear();
-                test_input_values.reserve(training_size);
-                test_output_values.clear();
-                test_output_values.reserve(training_size);
-
-                const size_t offset = training_size - test_size;
-
-                for (uint16_t i = 0; i < training_size; i++) {
-                    test_input_values.push_back({training_set[i].sl, training_set[i].sw, training_set[i].pl, training_set[i].pw});
-                    test_output_values.push_back({training_set[i].i1, training_set[i].i2, training_set[i].i3});
-                }
-                */
 
                 training_set.resize(offset);
                 training_set.shrink_to_fit();

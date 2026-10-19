@@ -380,11 +380,11 @@ class NeuralNet2Individual: public SEIndividual {
                 // This needs to be done only once, for the individual at index 0.
                 // They all share the same global data provider.
                 // This will create a new batch of training data:
+                global_batch_counter = 0;
                 global_data_provider.set_new_training_batch();
             }
         }
 
-        /*
         void se_current_iteration([[maybe_unused]] size_t iteration) override {
             // This method is only called for the individual at index 0.
             global_batch_counter++;
@@ -395,7 +395,6 @@ class NeuralNet2Individual: public SEIndividual {
                 global_data_provider.set_new_training_batch();
             }
         }
-        */
 
         std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) override {
             [[maybe_unused]] const NeuralNet2Individual* const other_individual = dynamic_cast<const NeuralNet2Individual* const>(individual);

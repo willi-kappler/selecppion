@@ -324,6 +324,7 @@ class NeuralNet2Individual: public SEIndividual {
             }
 
             fitness2 = fitness2 / static_cast<std::float64_t>(test_size);
+            fitness2 = (fitness1 + fitness2) / 2.0;
         }
 
         [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() override {

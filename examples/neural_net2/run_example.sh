@@ -5,16 +5,16 @@ EXECUTABLE="../../builddir/neural_net2_example"
 run_type() {
     echo "Run type $1."
 
-    # Start 4 nodes:
-    $EXECUTABLE -i 1000 -m 1 -t $1 &
+    # Start 6 nodes:
+    $EXECUTABLE -i 1000 -m 1 -t 1 &
     sleep 1
     $EXECUTABLE -i 1000 -m 1 -t 8 &
     sleep 1
-    $EXECUTABLE -i 2000 -m 1 -t $1 &
+    $EXECUTABLE -i 2000 -m 1 -t 1 &
     sleep 1
     $EXECUTABLE -i 2000 -m 1 -t 8 &
     sleep 1
-    $EXECUTABLE -i 3000 -m 1 -t $1 &
+    $EXECUTABLE -i 3000 -m 1 -t 1 &
     sleep 1
     $EXECUTABLE -i 3000 -m 1 -t 8 &
 }

@@ -82,7 +82,7 @@ class SEPopulationNode1: public NCNodeDataProcessor {
             population.se_calculate_fitness2();
             population.se_log_statistics();
 
-            return population.population[0]->se_to_vec_u8();
+            return population.se_get_best()->se_to_vec_u8();
         }
 
         // These two methods are used for the test cases:

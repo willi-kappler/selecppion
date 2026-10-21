@@ -47,8 +47,8 @@ class NeuralNet2Individual: public SEIndividual {
         SEIndividual(),
         input_size_local(input_size),
         output_size_local(output_size),
-        new_node_prob(1000),
-        new_connection_prob(100),
+        new_node_prob(10),
+        new_connection_prob(10),
         hidden_layer()
         {
             se_randomize();
@@ -385,16 +385,18 @@ class NeuralNet2Individual: public SEIndividual {
             }
         }
 
+        /*
         void se_current_iteration([[maybe_unused]] size_t iteration) override {
             // This method is only called for the individual at index 0.
             global_batch_counter++;
 
             // Avoid overfitting by randomly changeing the training batch:
-            if (global_batch_counter > 5000) {
+            if (global_batch_counter > 1000) {
                 global_batch_counter = 0;
                 global_data_provider.set_new_training_batch();
             }
         }
+        */
 
         std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) override {
             [[maybe_unused]] const NeuralNet2Individual* const other_individual = dynamic_cast<const NeuralNet2Individual* const>(individual);

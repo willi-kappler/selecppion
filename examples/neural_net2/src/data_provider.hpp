@@ -152,8 +152,8 @@ class DataProvider {
                 std::print("Num of data points: {}\n", training_size);
                 local_rng.shuffle(training_set);
 
-                // Split all data points into training set (70%) and test set (30%):
-                const size_t test_size = training_size * 30 / 100;
+                // Split all data points into training set (80%) and test set (20%):
+                const size_t test_size = training_size * 20 / 100;
 
                 std::print("Test size: {}\n", test_size);
 

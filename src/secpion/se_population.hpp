@@ -249,6 +249,14 @@ class SEPopulation {
             }
         }
 
+        void se_calculate_fitness2_old() {
+            se_logger->debug("Calculate fitness 2.");
+
+            for (size_t i = 0; i < population.size(); i++) {
+                population[i]->se_calculate_fitness2();
+            }
+        }
+
         void se_calculate_fitness2() {
             se_logger->debug("Calculate fitness 2.");
             std::float64_t best_fitness2 = SE_FLOAT_MAX;

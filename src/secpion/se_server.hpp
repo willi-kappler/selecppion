@@ -176,85 +176,57 @@ class SEServerDP: public NCServerDataProcessor {
             new_indi->se_from_span_u8(result);
             const std::float64_t new_fitness1 = new_indi->fitness1;
             const std::float64_t new_fitness2 = new_indi->fitness2;
-            std::float64_t current_best_fitness = 0.0;
+            std::float64_t new_fitness = new_fitness1;
+            std::float64_t target_fitness = se_config.target_fitness1;
+            std::float64_t current_best_fitness = population[0]->fitness1;
+            std::float64_t current_worst_fitness = population[last]->fitness1;
+            bool use_fitness2 = new_fitness2 < SE_FLOAT_MAX;
 
-            if (new_fitness2 <= population[last]->fitness2) {
-            // if (new_fitness2 <= se_config.target_fitness2) {
-                /*
-                population[0] = std::move(new_indi);
-                se_logger->info("Job is done, target fitness2 is met.");
-                se_logger->info("Node ID: {}", node_id.to_string());
-                se_logger->debug("Best fitness1: {}, target fitness1: {}", population[0]->fitness1, se_config.target_fitness1);
-                se_logger->debug("Best fitness2: {}, target fitness2: {}", population[0]->fitness2, se_config.target_fitness2);
-                se_logger->info("Time taken: {} sec.", sw);
-                best_fitness_found = true;
-                */
-
-                if (!se_config.allow_same_fitness) {
-                    for (auto &indi: population) {
-                        if (new_fitness2 == indi->fitness2) {
-                            return;
-                        }
-                    }
-                }
-
-                se_logger->debug("New individual in population: fitness1: {}, actual: {}, *fitness2*: {}",
-                    new_fitness1, new_indi->se_actual_fitness(), new_indi->fitness2);
-
-                population[last] = std::move(new_indi);
+            if (use_fitness2) {
+                new_fitness = new_fitness2;
+                target_fitness = se_config.target_fitness2;
                 current_best_fitness = population[0]->fitness2;
-                se_sort_population2();
+                current_worst_fitness = population[last]->fitness2;
+            }
 
-                if (new_fitness2 < current_best_fitness) {
-                    new_fitness_counter++;
-
-                    se_logger->info("New best fitness2: {}, previous: {}", new_fitness2, current_best_fitness);
-                    se_logger->info("From node: {}, new fitness counter: {}", node_id.to_string(), new_fitness_counter);
-                    se_logger->debug("Worst fitness: {}", population[last]->fitness2);
-
-                    node_stats[node_id]++;
-                    se_logger->debug("Node stats:");
-                    for (const auto& [key, val]: node_stats) {
-                        se_logger->debug("{} -> {}", key.to_string(), val);
-                    }
-
-                    population[0]->se_new_best_individual(se_logger);
-
-                    if (se_config.save_new_fitness) {
-                        se_save_data(fmt::format("{}_{}", new_fitness_counter, se_config.result_filename));
-                    }
-
-                    if (new_fitness2 <= se_config.target_fitness2) {
-                        se_logger->info("Job is done, target fitness2 is met.");
-                        se_logger->info("Node ID: {}", node_id.to_string());
-                        se_logger->debug("Best fitness1: {}, target fitness1: {}", population[0]->fitness1, se_config.target_fitness1);
-                        se_logger->debug("Best fitness2: {}, target fitness2: {}", population[0]->fitness2, se_config.target_fitness2);
-                        se_logger->info("Time taken: {} sec.", sw);
-                        best_fitness_found = true;
-                    }
-                }
-            } else if (new_fitness1 < population[last]->fitness1) {
+            if (new_fitness < current_worst_fitness) {
                 if (!se_config.allow_same_fitness) {
                     for (auto &indi: population) {
-                        if (new_fitness1 == indi->fitness1) {
-                            return;
+                        if (use_fitness2) {
+                            if (new_fitness == indi->fitness2) {
+                                return;
+                            }
+                        } else {
+                            if (new_fitness == indi->fitness1) {
+                                return;
+                            }
                         }
                     }
                 }
 
-                se_logger->debug("New individual in population: *fitness1*: {}, actual: {}, fitness2: {}",
-                    new_fitness1, new_indi->se_actual_fitness(), new_indi->fitness2);
+                if (use_fitness2) {
+                    se_logger->debug("New individual in population: fitness1: {}, actual: {}, *fitness2*: {}",
+                        new_fitness1, new_indi->se_actual_fitness(), new_fitness2);
+                    population[last] = std::move(new_indi);
+                    se_sort_population2();
+                } else {
+                    se_logger->debug("New individual in population: *fitness1*: {}, actual: {}, fitness2: {}",
+                        new_fitness1, new_indi->se_actual_fitness(), new_fitness2);
+                    population[last] = std::move(new_indi);
+                    se_sort_population1();
+                }
 
-                population[last] = std::move(new_indi);
-                current_best_fitness = population[0]->fitness1;
-                se_sort_population1();
-
-                if (new_fitness1 < current_best_fitness) {
+                if (new_fitness < current_best_fitness) {
                     new_fitness_counter++;
 
-                    se_logger->info("New best fitness1: {}, previous: {}", new_fitness1, current_best_fitness);
-                    se_logger->info("From node: {}, new fitness counter: {}", node_id.to_string(), new_fitness_counter);
-                    se_logger->debug("Worst fitness: {}", population[last]->fitness1);
+                    if (use_fitness2) {
+                        se_logger->info("New best fitness2: {}, previous: {}", new_fitness, current_best_fitness);
+                        se_logger->debug("New worst fitness: {}", population[last]->fitness2);
+                    } else {
+                        se_logger->info("New best fitness1: {}, previous: {}", new_fitness, current_best_fitness);
+                        se_logger->debug("New worst fitness: {}", population[last]->fitness1);
+                    }
+                    se_logger->info("Best from node: {}, new fitness counter: {}", node_id.to_string(), new_fitness_counter);
 
                     node_stats[node_id]++;
                     se_logger->debug("Node stats:");
@@ -268,12 +240,15 @@ class SEServerDP: public NCServerDataProcessor {
                         se_save_data(fmt::format("{}_{}", new_fitness_counter, se_config.result_filename));
                     }
 
-                    if (new_fitness1 <= se_config.target_fitness1) {
-                        se_logger->info("Job is done, target fitness1 is met.");
+                    if (new_fitness <= target_fitness) {
+                        if (use_fitness2) {
+                            se_logger->info("Job is done, target fitness2 is met.");
+                        } else {
+                            se_logger->info("Job is done, target fitness1 is met.");
+                        }
                         se_logger->info("Node ID: {}", node_id.to_string());
                         se_logger->debug("Best fitness1: {}, target fitness1: {}", population[0]->fitness1, se_config.target_fitness1);
                         se_logger->debug("Best fitness2: {}, target fitness2: {}", population[0]->fitness2, se_config.target_fitness2);
-                        se_logger->debug("Actual fitness: {}", population[0]->se_actual_fitness());
                         se_logger->info("Time taken: {} sec.", sw);
                         best_fitness_found = true;
                     }

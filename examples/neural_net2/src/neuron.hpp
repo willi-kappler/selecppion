@@ -44,7 +44,7 @@ using Connection = std::pair<size_t, std::float64_t>;
         const std::float64_t delta = global_rng.get_float64_unif2();
 
         value += delta;
-        return std::clamp<std::float64_t>(value, -1.0, 1.0);
+        return std::clamp<std::float64_t>(value, -10.0, 10.0);
     }
 }
 

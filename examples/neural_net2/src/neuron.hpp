@@ -202,6 +202,30 @@ class Neuron {
             }
         }
 
+        Neuron split_neuron() {
+            Neuron new_neuron;
+
+            new_neuron.bias = bias;
+            new_neuron.activation_method = activation_method;
+
+            const size_t input_size = input_connections.size();
+            const size_t input_size_2 = input_size / 2;
+            const size_t hidden_size = hidden_connections.size();
+            const size_t hidden_size_2 = hidden_size / 2;
+
+            if ((input_size > 1) && (hidden_size > 1)) {
+                // Move half of the input connections into the new neuron:
+                new_neuron.input_connections.assign(input_connections.begin() + input_size_2, input_connections.end());
+                input_connections.erase(input_connections.begin() + input_size_2, input_connections.end());
+
+                // Move half of the hidden connections into the new neuron:
+                new_neuron.hidden_connections.assign(hidden_connections.begin() + hidden_size_2, hidden_connections.end());
+                hidden_connections.erase(hidden_connections.begin() + hidden_size_2, hidden_connections.end());
+            }
+
+            return new_neuron;
+        }
+
         void evaluate(std::span<const std::float64_t> input_values, std::span<const Neuron> hidden_layer) {
             std::float64_t new_value = bias;
 

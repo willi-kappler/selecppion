@@ -41,6 +41,7 @@ class NeuralNet2Individual: public SEIndividual {
         size_t output_size_local;
         const uint16_t new_node_prob;
         const uint16_t new_connection_prob;
+        const uint16_t max_network_size;
         std::vector<Neuron> hidden_layer;
 
         NeuralNet2Individual(size_t input_size, size_t output_size):
@@ -49,6 +50,7 @@ class NeuralNet2Individual: public SEIndividual {
         output_size_local(output_size),
         new_node_prob(10),
         new_connection_prob(10),
+        max_network_size(10),
         hidden_layer()
         {
             se_randomize();
@@ -206,7 +208,7 @@ class NeuralNet2Individual: public SEIndividual {
             const size_t index1 = global_rng.get_size_t(current_size);
             size_t index2 = 0;
             Neuron &neuron = hidden_layer[index1];
-            const uint8_t mut_op = global_rng.get_uint8(5);
+            const uint8_t mut_op = global_rng.get_uint8(6);
             uint16_t prob = 0;
 
             switch (mut_op) {
@@ -248,6 +250,21 @@ class NeuralNet2Individual: public SEIndividual {
                     }
                     break;
                 case 5:
+                    if (current_size < max_network_size) {
+                        // Split neuron:
+                        Neuron new_neuron = neuron.split_neuron();
+                        // Add new neuron to the network:
+                        hidden_layer.push_back(new_neuron);
+
+                        // Add one connection from a random neuron to the new neuron:
+                        index2 = global_rng.get_size_t(current_size);
+                        // The new neuon will be placed at the last index:
+                        hidden_layer[index2].add_hidden_connection(current_size);
+                    } else {
+                        neuron.mutate_hidden_connection();
+                    }
+                    break;
+                case 6:
                     prob = global_rng.get_uint16(new_connection_prob);
                     if (prob == 0) {
                         neuron.mutate_activation();
@@ -260,7 +277,7 @@ class NeuralNet2Individual: public SEIndividual {
             switch (op) {
                 case 0: {
                     const uint16_t prob = global_rng.get_uint16(new_node_prob);
-                    if ((prob == 0) && (hidden_layer.size() < 10)) {
+                    if ((prob == 0) && (hidden_layer.size() < max_network_size)) {
                         add_neuron();
                     } else {
                         mutate_neuron();

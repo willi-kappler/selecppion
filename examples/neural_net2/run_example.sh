@@ -10,13 +10,13 @@ run_type() {
     sleep 1
     $EXECUTABLE -i 1000 -m 1 -t 8 &
     sleep 1
-    $EXECUTABLE -i 2000 -m 1 -t 1 &
+    $EXECUTABLE -i 1100 -m 1 -t 8 &
     sleep 1
-    $EXECUTABLE -i 2000 -m 1 -t 8 &
+    $EXECUTABLE -i 1200 -m 1 -t 8 &
     sleep 1
-    $EXECUTABLE -i 3000 -m 1 -t 1 &
+    $EXECUTABLE -i 1300 -m 1 -t 8 &
     sleep 1
-    $EXECUTABLE -i 3000 -m 1 -t 8 &
+    $EXECUTABLE -i 1400 -m 1 -t 8 &
 }
 
 run_all_types() {

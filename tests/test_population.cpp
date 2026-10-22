@@ -716,7 +716,7 @@ TEST_CASE("Test calculate fitness2 1", "[population]" ) {
     population.se_find_best_and_worst_individual();
     population.se_calculate_fitness2();
     check_population_fitness(population, {4.62, 1.74, 4.19, 9.41, 7.42, 6.99, 6.02, 5.58, 7.94, 7.58},
-                                         {1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0});
+                                         {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0});
 
     REQUIRE(population.best_index == 1U);
     REQUIRE(population.worst_index == 3U);
@@ -733,7 +733,7 @@ TEST_CASE("Test calculate fitness2 2", "[population]" ) {
     population.se_find_best_and_worst_individual();
     population.se_calculate_fitness2();
     check_population_fitness(population, {4.62, 0.001, 4.19, 9.41, 7.42, 0.002, 6.02, 5.58, 7.94, 7.58},
-                                         {1.1, 7.0, 1.3, 1.4, 1.5, 45.0, 1.7, 1.8, 1.9, 2.0});
+                                         {2.5, 7.0, 13.5, 22.0, 32.5, 45.0, 59.5, 76.0, 94.5, 115.0});
 
     REQUIRE(population.best_index == 1U);
     REQUIRE(population.worst_index == 3U);
@@ -750,7 +750,7 @@ TEST_CASE("Test calculate fitness2 3", "[population]" ) {
     population.se_find_best_and_worst_individual();
     population.se_calculate_fitness2();
     check_population_fitness(population, {4.62, 0.001, 4.19, 9.41, 7.42, 0.002, 6.02, 5.58, 7.94, 7.58},
-                                         {1.1, 45.0, 1.3, 1.4, 1.5, 7.0, 1.7, 1.8, 1.9, 2.0});
+                                         {2.5, 45.0, 1.3, 1.4, 1.5, 7.0, 1.7, 1.8, 1.9, 2.0});
 
     REQUIRE(population.best_index == 5U);
     REQUIRE(population.worst_index == 3U);

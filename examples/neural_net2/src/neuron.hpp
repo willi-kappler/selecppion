@@ -70,7 +70,7 @@ class Neuron {
             current_value = 0.0;
         }
 
-        bool is_empty() {
+        [[nodiscard]] bool is_empty() {
             return (input_connections.empty()) && (hidden_connections.empty());
         }
 
@@ -82,7 +82,7 @@ class Neuron {
             activation_method = global_rng.get_uint8(9);
         }
 
-        bool has_input_connection(size_t index) {
+        [[nodiscard]] bool has_input_connection(size_t index) {
             for (auto [index2, weight2]: input_connections) {
                 if (index == index2) {
                     return true;
@@ -142,7 +142,7 @@ class Neuron {
             }
         }
 
-        bool has_hidden_connection(size_t index) {
+        [[nodiscard]] bool has_hidden_connection(size_t index) {
             for (auto [index2, weight2]: hidden_connections) {
                 if (index == index2) {
                     return true;
@@ -202,7 +202,7 @@ class Neuron {
             }
         }
 
-        Neuron split_neuron() {
+        [[nodiscard]] Neuron split_neuron() {
             Neuron new_neuron;
 
             new_neuron.bias = bias;

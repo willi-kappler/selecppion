@@ -226,6 +226,28 @@ class Neuron {
             return new_neuron;
         }
 
+        void prune_connections() {
+            const std::float64_t threshold = 0.01;
+
+            std::erase_if(input_connections, [threshold](Connection c) {
+                return std::abs(c.second) < threshold;
+            });
+
+            std::erase_if(hidden_connections, [threshold](Connection c) {
+                return std::abs(c.second) < threshold;
+            });
+        }
+
+        void enhance_connections() {
+            for (auto &[index, weight]: input_connections) {
+                if ((weight > 0.5) || (weight < -0.5)) {
+                    weight *= 1.01;
+                } else {
+                    weight *= 0.99;
+                }
+            }
+        }
+
         void evaluate(std::span<const std::float64_t> input_values, std::span<const Neuron> hidden_layer) {
             std::float64_t new_value = bias;
 

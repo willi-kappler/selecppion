@@ -220,10 +220,12 @@ class SEServerDP: public NCServerDataProcessor {
                     new_fitness_counter++;
 
                     if (use_fitness2) {
-                        se_logger->info("New best fitness2: {}, previous: {}", new_fitness, current_best_fitness);
+                        se_logger->info("New best fitness2: {}, previous: {}, factor: {}",
+                            new_fitness, current_best_fitness, current_best_fitness / new_fitness);
                         se_logger->debug("New worst fitness: {}", population[last]->fitness2);
                     } else {
-                        se_logger->info("New best fitness1: {}, previous: {}", new_fitness, current_best_fitness);
+                        se_logger->info("New best fitness1: {}, previous: {}, factor: {}",
+                            new_fitness, current_best_fitness, current_best_fitness / new_fitness);
                         se_logger->debug("New worst fitness: {}", population[last]->fitness1);
                     }
                     se_logger->info("Best from node: {}, new fitness counter: {}", node_id.to_string(), new_fitness_counter);

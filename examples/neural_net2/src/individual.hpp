@@ -208,7 +208,7 @@ class NeuralNet2Individual: public SEIndividual {
             const size_t index1 = global_rng.get_size_t(current_size);
             size_t index2 = 0;
             Neuron &neuron = hidden_layer[index1];
-            const uint8_t mut_op = global_rng.get_uint8(8);
+            const uint8_t mut_op = global_rng.get_uint8(10);
             uint16_t prob = 0;
 
             switch (mut_op) {
@@ -265,12 +265,26 @@ class NeuralNet2Individual: public SEIndividual {
                     }
                     break;
                 case 6:
+                    // Prune one random neuron:
                     neuron.prune_connections();
                     break;
                 case 7:
-                    neuron.enhance_connections();
+                    // Prune all neurons:
+                    for (Neuron &n: hidden_layer) {
+                        n.prune_connections();
+                    }
                     break;
                 case 8:
+                    // Enhance one random neuron:
+                    neuron.enhance_connections();
+                    break;
+                case 9:
+                    // Enhance all neurons:
+                    for (Neuron &n: hidden_layer) {
+                        n.enhance_connections();
+                    }
+                    break;
+                case 10:
                     prob = global_rng.get_uint16(new_connection_prob);
                     if (prob == 0) {
                         neuron.mutate_activation();

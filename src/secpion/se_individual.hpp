@@ -53,7 +53,7 @@ class SEIndividual {
         virtual void se_reseed_rng(size_t);
         [[nodiscard]] virtual std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const);
         virtual void se_prepare_individual(size_t);
-        virtual void se_current_iteration(size_t);
+        virtual void se_current_iteration(size_t, uint32_t);
 };
 }
 

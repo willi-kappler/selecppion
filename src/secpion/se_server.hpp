@@ -17,6 +17,8 @@
 #include <memory>
 #include <fstream>
 #include <unordered_map>
+#include <ranges>
+#include <algorithm>
 
 // External includes:
 #include <spdlog/spdlog.h>
@@ -181,6 +183,7 @@ class SEServerDP: public NCServerDataProcessor {
             std::float64_t current_best_fitness = population[0]->fitness1;
             std::float64_t current_worst_fitness = population[last]->fitness1;
             bool use_fitness2 = new_fitness2 < SE_FLOAT_MAX;
+            std::float64_t improvement_factor = 0.0;
 
             if (use_fitness2) {
                 new_fitness = new_fitness2;
@@ -220,19 +223,31 @@ class SEServerDP: public NCServerDataProcessor {
                     new_fitness_counter++;
 
                     if (use_fitness2) {
-                        se_logger->info("New best fitness2: {}, previous: {}, factor: {}",
-                            new_fitness, current_best_fitness, current_best_fitness / new_fitness);
+                        se_logger->info("New best fitness2: {}, previous: {}",
+                            new_fitness, current_best_fitness);
                         se_logger->debug("New worst fitness: {}", population[last]->fitness2);
                     } else {
-                        se_logger->info("New best fitness1: {}, previous: {}, factor: {}",
-                            new_fitness, current_best_fitness, current_best_fitness / new_fitness);
+                        se_logger->info("New best fitness1: {}, previous: {}",
+                            new_fitness, current_best_fitness);
                         se_logger->debug("New worst fitness: {}", population[last]->fitness1);
                     }
+
+                    improvement_factor = current_best_fitness / new_fitness;
+
+                    if (improvement_factor > 2.0) {
+                        se_logger->debug("Big improvement factor: {}, counter: {} -> {} !", improvement_factor, new_fitness_counter - 1, new_fitness_counter);
+                    } else {
+                        se_logger->debug("Improvement factor: {}", improvement_factor);
+                    }
+
                     se_logger->info("Best from node: {}, new fitness counter: {}", node_id.to_string(), new_fitness_counter);
 
                     node_stats[node_id]++;
+                    std::vector<std::pair<NCNodeID, uint32_t>> node_stats2(node_stats.begin(), node_stats.end());
+                    std::ranges::sort(node_stats2, [](const auto& a, const auto& b) { return a.second > b.second; });
+
                     se_logger->debug("Node stats:");
-                    for (const auto& [key, val]: node_stats) {
+                    for (const auto& [key, val]: node_stats2) {
                         se_logger->debug("{} -> {}", key.to_string(), val);
                     }
 

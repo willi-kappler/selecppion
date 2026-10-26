@@ -53,12 +53,13 @@ class SEPopulationNode4: public NCNodeDataProcessor {
             population.se_find_worst_individual();
 
             std::unique_ptr<SEIndividual> cloned_indi;
+            const uint32_t num_of_iterations = population.se_config.num_of_iterations;
             std::float64_t global_fitness = population.se_get_worst_fitness();
             uint32_t indi_below_global_fitness;
             uint32_t all_above_global_fitness = 0;
 
-            for (size_t i = 0; i < population.se_config.num_of_iterations; i++) {
-                population.population[0]->se_current_iteration(i);
+            for (size_t i = 0; i < num_of_iterations; i++) {
+                population.population[0]->se_current_iteration(i, num_of_iterations);
                 indi_below_global_fitness = 0;
 
                 for (size_t j = 0; j < population.se_config.node_population_size; j++) {

@@ -52,9 +52,10 @@ class SEPopulationNode8: public NCNodeDataProcessor {
             population.se_prepare_iteration("PN8: Process data.", data);
             population.se_sort_population();
             std::unique_ptr<SEIndividual> cloned_indi;
+            const uint32_t num_of_iterations = population.se_config.num_of_iterations;
 
-            for (uint32_t i = 0; i < population.se_config.num_of_iterations; i++) {
-                population.population[0]->se_current_iteration(i);
+            for (uint32_t i = 0; i < num_of_iterations; i++) {
+                population.population[0]->se_current_iteration(i, num_of_iterations);
 
                 // Overwrite all other individuals from population with the best one:
                 for (size_t j = 1; j < population.se_config.node_population_size; j++) {

@@ -94,11 +94,10 @@ void SEIndividual::se_prepare_individual([[maybe_unused]] size_t index) {
     // index is the current index of this individual inside the population.
 }
 
-void SEIndividual::se_current_iteration([[maybe_unused]] size_t iteration) {
+void SEIndividual::se_current_iteration([[maybe_unused]] size_t iteration, [[maybe_unused]] uint32_t num_of_iterations) {
     // Can be implemented but is not needed.
     // This method is called only for the individual at index 0.
     // It can be used to change the internal state based on the
     // current iteration.
 }
-
 }

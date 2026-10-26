@@ -54,12 +54,13 @@ class SEPopulationNode11: public NCNodeDataProcessor {
             population.se_find_worst_individual();
 
             std::unique_ptr<SEIndividual> new_indi;
+            const uint32_t num_of_iterations = population.se_config.num_of_iterations;
             size_t k1 = 0;
             size_t k2 = 0;
             bool exit_iteration = false;
 
-            for (size_t i = 0; i < population.se_config.num_of_iterations; i++) {
-                population.population[0]->se_current_iteration(i);
+            for (size_t i = 0; i < num_of_iterations; i++) {
+                population.population[0]->se_current_iteration(i, num_of_iterations);
 
                 for (size_t j = 0; j < population.se_config.node_population_size; j++) {
                     k1 = population.rng.get_size_t(population.se_config.node_population_size);

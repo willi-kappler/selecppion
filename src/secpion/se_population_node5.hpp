@@ -50,11 +50,12 @@ class SEPopulationNode5: public NCNodeDataProcessor {
             population.se_prepare_iteration("PN5: Process data.", data);
 
             std::unique_ptr<SEIndividual> cloned_indi;
+            const uint32_t num_of_iterations = population.se_config.num_of_iterations;
             std::float64_t fitness_limit = population.se_get_average_fitness1();
             population.se_logger->debug("Fitness limit: {}", fitness_limit);
 
-            for (uint32_t i = 0; i < population.se_config.num_of_iterations; i++) {
-                population.population[0]->se_current_iteration(i);
+            for (uint32_t i = 0; i < num_of_iterations; i++) {
+                population.population[0]->se_current_iteration(i, num_of_iterations);
 
                 for (size_t j = 0; j < population.se_config.node_population_size; j++) {
                     cloned_indi = population.population[j]->se_clone_internal();

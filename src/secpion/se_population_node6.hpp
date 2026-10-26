@@ -53,9 +53,10 @@ class SEPopulationNode6: public NCNodeDataProcessor {
             std::unique_ptr<SEIndividual> cloned_indi1;
             std::unique_ptr<SEIndividual> cloned_indi2;
             std::unique_ptr<SEIndividual> cloned_indi3;
+            const uint32_t num_of_iterations = population.se_config.num_of_iterations;
 
-            for (uint32_t i = 0; i < population.se_config.num_of_iterations; i++) {
-                population.population[0]->se_current_iteration(i);
+            for (uint32_t i = 0; i < num_of_iterations; i++) {
+                population.population[0]->se_current_iteration(i, num_of_iterations);
 
                 for (size_t j = 0; j < population.se_config.node_population_size; j++) {
                     cloned_indi1 = population.population[j]->se_clone_internal();

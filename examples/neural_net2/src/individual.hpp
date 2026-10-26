@@ -17,6 +17,7 @@
 #include <cmath>
 #include <numbers>
 #include <memory>
+#include <stdexcept>
 
 // External includes:
 #include <spdlog/spdlog.h>
@@ -191,6 +192,7 @@ class NeuralNet2Individual: public SEIndividual {
             hidden_layer.push_back(new_neuron);
         }
 
+        /*
         void swap_neurons() {
             size_t current_size = hidden_layer.size();
             const auto [i1, i2] = global_rng.get_two_size_t(current_size);
@@ -202,13 +204,14 @@ class NeuralNet2Individual: public SEIndividual {
             }
 
         }
-
+*/
+        /*
         void mutate_neuron() {
             const size_t current_size = hidden_layer.size();
             const size_t index1 = global_rng.get_size_t(current_size);
             size_t index2 = 0;
             Neuron &neuron = hidden_layer[index1];
-            const uint8_t mut_op = global_rng.get_uint8(10);
+            const uint8_t mut_op = global_rng.get_uint8(8);
             uint16_t prob = 0;
 
             switch (mut_op) {
@@ -269,14 +272,14 @@ class NeuralNet2Individual: public SEIndividual {
                     neuron.prune_connections();
                     break;
                 case 7:
+                    // Enhance one random neuron:
+                    neuron.enhance_connections();
+                    break;
+                case 8:
                     // Prune all neurons:
                     for (Neuron &n: hidden_layer) {
                         n.prune_connections();
                     }
-                    break;
-                case 8:
-                    // Enhance one random neuron:
-                    neuron.enhance_connections();
                     break;
                 case 9:
                     // Enhance all neurons:
@@ -292,8 +295,10 @@ class NeuralNet2Individual: public SEIndividual {
                     break;
             }
         }
+*/
 
-        void se_mutate(uint8_t op) override {
+        /*
+        void se_mutate_old(uint8_t op) override {
             switch (op) {
                 case 0: {
                     const uint16_t prob = global_rng.get_uint16(new_node_prob);
@@ -309,6 +314,114 @@ class NeuralNet2Individual: public SEIndividual {
                     break;
                 default:
                     mutate_neuron();
+                    break;
+            }
+        }
+*/
+
+        void se_mutate(uint8_t op) override {
+            const size_t current_size = hidden_layer.size();
+            const size_t index1 = global_rng.get_size_t(current_size);
+            size_t index2 = 0;
+            Neuron &neuron = hidden_layer[index1];
+            uint16_t prob = 0;
+
+            switch (op) {
+                case 0:
+                    neuron.mutate_bias();
+                    break;
+                case 1:
+                    prob = global_rng.get_uint16(new_connection_prob);
+                    if (prob == 0) {
+                        index2 = global_rng.get_size_t(input_size_local);
+                        neuron.add_input_connection(index2);
+                    } else {
+                        neuron.mutate_input_connection();
+                    }
+                    break;
+                case 2:
+                    prob = global_rng.get_uint16(new_connection_prob);
+                    if (prob == 0) {
+                        index2 = global_rng.get_size_t(current_size);
+                        if (index2 == index1) {
+                            neuron.mutate_hidden_connection();
+                        } else {
+                            neuron.add_hidden_connection(index2);
+                        }
+                    } else {
+                        neuron.mutate_hidden_connection();
+                    }
+                    break;
+                case 3:
+                    index2 = global_rng.get_size_t(input_size_local);
+                    neuron.replace_input_connection(index2);
+                    break;
+                case 4:
+                    index2 = global_rng.get_size_t(current_size);
+                    if (index2 == index1) {
+                        neuron.mutate_hidden_connection();
+                    } else {
+                        neuron.replace_hidden_connection(index2);
+                    }
+                    break;
+                case 5:
+                    // Split neuron:
+                    if (current_size < max_network_size) {
+                        Neuron new_neuron = neuron.split_neuron();
+                        // Add new neuron to the network:
+                        hidden_layer.push_back(new_neuron);
+
+                        // Add one connection from a random neuron to the new neuron:
+                        index2 = global_rng.get_size_t(current_size);
+                        // The new neuon will be placed at the last index:
+                        hidden_layer[index2].add_hidden_connection(current_size);
+                    } else {
+                        neuron.mutate_hidden_connection();
+                    }
+                    break;
+                case 6:
+                    // Prune one random neuron:
+                    neuron.prune_connections();
+                    break;
+                case 7:
+                    // Enhance one random neuron:
+                    neuron.enhance_connections();
+                    break;
+                case 8:
+                    // Prune all neurons:
+                    for (Neuron &n: hidden_layer) {
+                        n.prune_connections();
+                    }
+                    break;
+                case 9:
+                    // Enhance all neurons:
+                    for (Neuron &n: hidden_layer) {
+                        n.enhance_connections();
+                    }
+                    break;
+                case 10:
+                    // Add neuron:
+                    prob = global_rng.get_uint16(new_node_prob);
+                    if ((prob == 0) && (hidden_layer.size() < max_network_size)) {
+                        add_neuron();
+                    } else {
+                        neuron.mutate_hidden_connection();
+                    }
+                    break;
+                case 11:
+                    {
+                        // Swap neurons:
+                        const auto [i1, i2] = global_rng.get_two_size_t(current_size);
+
+                        if (hidden_layer[i1].is_empty() || hidden_layer[i2].is_empty()) {
+                            neuron.mutate_hidden_connection();
+                        } else {
+                            std::swap(hidden_layer[i1], hidden_layer[i2]);
+                        }
+                    }
+                    break;
+                default:
+                    throw std::runtime_error(fmt::format("Unknown mutation operation: {}", op));
                     break;
             }
         }

@@ -96,8 +96,8 @@ class Neuron {
             if (has_input_connection(index)) {
                 mutate_input_connection();
             } else {
-                std::float64_t weight = global_rng.get_float64_unif1();
-                input_connections.push_back({index, weight});
+                // std::float64_t weight = global_rng.get_float64_unif1();
+                input_connections.push_back({index, 0.01});
             }
         }
 
@@ -156,8 +156,8 @@ class Neuron {
             if (has_hidden_connection(index)) {
                 mutate_hidden_connection();
             } else {
-                std::float64_t weight = global_rng.get_float64_unif1();
-                hidden_connections.push_back({index, weight});
+                // std::float64_t weight = global_rng.get_float64_unif1();
+                hidden_connections.push_back({index, 0.01});
             }
         }
 

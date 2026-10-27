@@ -176,7 +176,7 @@ class NeuralNet2Individual: public SEIndividual {
                 std::span<const std::float64_t>{expected_outputs.begin(), expected_outputs.end()});
         }
 
-        void add_neuron() {
+        void add_neuron1() {
             size_t current_size = hidden_layer.size();
             Neuron new_neuron = Neuron();
 
@@ -187,6 +187,25 @@ class NeuralNet2Individual: public SEIndividual {
             // Add a connection from this new neuron to a random existing neuron:
             index = global_rng.get_size_t(current_size);
             hidden_layer[index].add_hidden_connection(current_size);
+
+            // Finally add the neuron to the hidden layer:
+            hidden_layer.push_back(new_neuron);
+        }
+
+        void add_neuron2() {
+            size_t current_size = hidden_layer.size();
+            Neuron new_neuron = Neuron();
+
+            for (size_t i = 0; i < current_size; i++) {
+                // Add all hidden connections:
+                new_neuron.add_hidden_connection(i);
+                hidden_layer[i].add_hidden_connection(current_size);
+            }
+
+            for (size_t i = 0; i < input_size_local; i++) {
+                // Add all input connections:
+                new_neuron.add_input_connection(i);
+            }
 
             // Finally add the neuron to the hidden layer:
             hidden_layer.push_back(new_neuron);
@@ -403,7 +422,7 @@ class NeuralNet2Individual: public SEIndividual {
                     // Add neuron:
                     prob = global_rng.get_uint16(new_node_prob);
                     if ((prob == 0) && (hidden_layer.size() < max_network_size)) {
-                        add_neuron();
+                        add_neuron2();
                     } else {
                         neuron.mutate_hidden_connection();
                     }
@@ -435,7 +454,7 @@ class NeuralNet2Individual: public SEIndividual {
             }
 
             // Start with one normal neuron (at least one is needed):
-            add_neuron();
+            add_neuron2();
         }
 
         void se_calculate_fitness1() override {
@@ -535,20 +554,21 @@ class NeuralNet2Individual: public SEIndividual {
                 global_data_provider.set_new_training_batch();
             }
         }
-
-        /*
-        void se_current_iteration([[maybe_unused]] size_t iteration) override {
+/*
+        void se_current_iteration(size_t iteration, uint32_t num_of_iterations) override {
             // This method is only called for the individual at index 0.
-            global_batch_counter++;
 
             // Avoid overfitting by randomly changeing the training batch:
-            if (global_batch_counter > 1000) {
-                global_batch_counter = 0;
-                global_data_provider.set_new_training_batch();
+            if (num_of_iterations - iteration > 2000) {
+                global_batch_counter++;
+
+                if (global_batch_counter > 1000) {
+                    global_batch_counter = 0;
+                    global_data_provider.set_new_training_batch();
+                }
             }
         }
-        */
-
+*/
         std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) override {
             [[maybe_unused]] const NeuralNet2Individual* const other_individual = dynamic_cast<const NeuralNet2Individual* const>(individual);
             std::unique_ptr<NeuralNet2Individual> result = std::make_unique<NeuralNet2Individual>(input_size_local, output_size_local);

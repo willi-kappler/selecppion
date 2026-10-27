@@ -15,6 +15,8 @@
 #include <string_view>
 #include <stdfloat>
 #include <memory>
+#include <ranges>
+#include <algorithm>
 
 // External includes:
 #include <spdlog/spdlog.h>
@@ -177,11 +179,12 @@ class SEPopulation {
 
                 if (previous_best == population[0]->fitness1) {
                     se_logger->debug("Maybe stuck in local minimum, randomize population");
-                    se_logger->debug("Previous best: {}", previous_best);
+                    se_logger->debug("Previous best fitness1: {}", previous_best);
                     se_random_population();
                 } else {
                     se_logger->debug("Accept new best from server.");
-                    se_logger->debug("Fitness from server: {}", population[0]->fitness1);
+                    se_logger->debug("Fitness1 from server: {}", population[0]->fitness1);
+                    se_logger->debug("Fitness2 from server: {}", population[0]->fitness2);
                 }
             }
         }
@@ -249,14 +252,6 @@ class SEPopulation {
             }
         }
 
-        void se_calculate_fitness2_old() {
-            se_logger->debug("Calculate fitness 2.");
-
-            for (size_t i = 0; i < population.size(); i++) {
-                population[i]->se_calculate_fitness2();
-            }
-        }
-
         void se_calculate_fitness2() {
             se_logger->debug("Calculate fitness 2.");
             std::float64_t best_fitness2 = SE_FLOAT_MAX;
@@ -293,8 +288,24 @@ class SEPopulation {
                 population[worst_index]->fitness1, population[worst_index]->fitness2);
             se_logger->debug("Actual best: {}, actual worst: {}",
                 population[best_index]->se_actual_fitness(), population[worst_index]->se_actual_fitness());
-            se_logger->debug("Best mutations: {}", population[best_index]->mut_op_counter);
-            se_logger->debug("Worst mutations: {}", population[worst_index]->mut_op_counter);
+
+            se_logger->debug("Best mutations:");
+            std::vector<std::pair<uint8_t, uint32_t>> mut_op_counter(
+                population[best_index]->mut_op_counter.begin(), population[best_index]->mut_op_counter.end());
+            std::ranges::sort(mut_op_counter, [](const auto& a, const auto& b) { return a.second > b.second; });
+
+            for (const auto& [key, val]: mut_op_counter) {
+                se_logger->debug("{} -> {}", key, val);
+            }
+
+            se_logger->debug("Worst mutations:");
+            mut_op_counter.assign_range(population[worst_index]->mut_op_counter);
+            std::ranges::sort(mut_op_counter, [](const auto& a, const auto& b) { return a.second > b.second; });
+
+            for (const auto& [key, val]: mut_op_counter) {
+                se_logger->debug("{} -> {}", key, val);
+            }
+
             se_logger->flush();
         }
 

@@ -422,7 +422,7 @@ class NeuralNet2Individual: public SEIndividual {
                     // Add neuron:
                     prob = global_rng.get_uint16(new_node_prob);
                     if ((prob == 0) && (hidden_layer.size() < max_network_size)) {
-                        add_neuron2();
+                        add_neuron1();
                     } else {
                         neuron.mutate_hidden_connection();
                     }
@@ -454,7 +454,7 @@ class NeuralNet2Individual: public SEIndividual {
             }
 
             // Start with one normal neuron (at least one is needed):
-            add_neuron2();
+            add_neuron1();
         }
 
         void se_calculate_fitness1() override {

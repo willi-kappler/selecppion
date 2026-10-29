@@ -234,7 +234,7 @@ class SEServerDP: public NCServerDataProcessor {
 
                     improvement_factor = current_best_fitness / new_fitness;
 
-                    if (improvement_factor > 2.0) {
+                    if (improvement_factor > 1.5) {
                         se_logger->debug("Big improvement factor: {}, counter: {} -> {} !", improvement_factor, new_fitness_counter - 1, new_fitness_counter);
                     } else {
                         se_logger->debug("Improvement factor: {}", improvement_factor);

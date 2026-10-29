@@ -71,7 +71,7 @@ class Neuron {
         }
 
         [[nodiscard]] bool is_empty() {
-            return (input_connections.empty()) && (hidden_connections.empty());
+            return (input_connections.empty()) || (hidden_connections.empty());
         }
 
         void mutate_bias() {
@@ -326,6 +326,38 @@ class Neuron {
             }
 
             current_value = new_value;
+        }
+
+        size_t get_random_input_index() {
+            return global_rng.get_size_t(input_connections.size());
+        }
+
+        std::float64_t get_input_weight(size_t index) {
+            return input_connections[index].second;
+        }
+
+        void set_input_weight(size_t index, std::float64_t weight) {
+            input_connections[index].second = weight;
+        }
+
+        size_t get_random_hidden_index() {
+            return global_rng.get_size_t(hidden_connections.size());
+        }
+
+        std::float64_t get_hidden_weight(size_t index) {
+            return hidden_connections[index].second;
+        }
+
+        void set_hidden_weight(size_t index, std::float64_t weight) {
+            hidden_connections[index].second = weight;
+        }
+
+        std::float64_t get_bias() {
+            return bias;
+        }
+
+        void set_bias(std::float64_t new_bias) {
+            bias = new_bias;
         }
 
         void evaluate_log(std::span<const std::float64_t> input_values, std::span<const Neuron> hidden_layer, std::shared_ptr<spdlog::logger> se_logger) {

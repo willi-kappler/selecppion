@@ -225,11 +225,11 @@ class SEServerDP: public NCServerDataProcessor {
                     if (use_fitness2) {
                         se_logger->info("New best fitness2: {}, previous: {}",
                             new_fitness, current_best_fitness);
-                        se_logger->debug("New worst fitness: {}", population[last]->fitness2);
+                        se_logger->debug("New worst fitness2: {}", population[last]->fitness2);
                     } else {
                         se_logger->info("New best fitness1: {}, previous: {}",
                             new_fitness, current_best_fitness);
-                        se_logger->debug("New worst fitness: {}", population[last]->fitness1);
+                        se_logger->debug("New worst fitness1: {}", population[last]->fitness1);
                     }
 
                     improvement_factor = current_best_fitness / new_fitness;

@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+
+EXECUTABLE="../../builddir/neural_net3_example"
+
+run_type() {
+    echo "Run type $1."
+
+    # Start 6 nodes:
+    $EXECUTABLE -i 1000 -m 1 -t 1 &
+    sleep 1
+    $EXECUTABLE -i 1000 -m 1 -t 8 &
+    sleep 1
+    $EXECUTABLE -i 1100 -m 1 -t 8 &
+    sleep 1
+    $EXECUTABLE -i 1200 -m 1 -t 8 &
+    sleep 1
+    $EXECUTABLE -i 1300 -m 1 -t 8 &
+    sleep 1
+    $EXECUTABLE -i 1400 -m 1 -t 8 &
+}
+
+run_all_types() {
+    echo "Run all types."
+
+    $EXECUTABLE -i 20000 -m 1 -t 1 &
+    sleep 1
+    $EXECUTABLE -i 20000 -m 1 -t 2 &
+    sleep 1
+    $EXECUTABLE -i 20000 -m 1 -t 3 &
+    sleep 1
+    $EXECUTABLE -i 20000 -m 1 -t 4 &
+    sleep 1
+    $EXECUTABLE -i 20000 -m 1 -t 5 &
+    sleep 1
+    $EXECUTABLE -i 2000 -m 10 -t 6 &
+    sleep 1
+    $EXECUTABLE -i 20000 -m 1 -t 7 &
+    sleep 1
+    $EXECUTABLE -i 20000 -m 1 -t 8 &
+    sleep 1
+    $EXECUTABLE -i 20000 -m 1 -t 9 &
+    sleep 1
+    $EXECUTABLE -i 20000 -m 1 -t 10 &
+    sleep 1
+    $EXECUTABLE -i 20000 -m 1 -t 11 &
+}
+
+# Start the server:
+$EXECUTABLE --server &
+sleep 1
+
+run_type 1
+# run_all_types
+sleep 1
+echo ""

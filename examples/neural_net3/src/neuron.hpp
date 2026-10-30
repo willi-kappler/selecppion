@@ -213,6 +213,7 @@ class Neuron {
 
             new_neuron.bias = bias;
             new_neuron.activation_method = activation_method;
+            new_neuron.neuron_type = neuron_type;
 
             const size_t input_size = input_connections.size();
             const size_t input_size_2 = input_size / 2;

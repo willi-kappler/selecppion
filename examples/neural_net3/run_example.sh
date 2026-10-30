@@ -6,17 +6,17 @@ run_type() {
     echo "Run type $1."
 
     # Start 6 nodes:
-    $EXECUTABLE -i 1000 -m 1 -t 1 &
+    $EXECUTABLE -i 10000 -m 1 -t 1 &
     sleep 1
-    $EXECUTABLE -i 1000 -m 1 -t 8 &
+    $EXECUTABLE -i 10000 -m 1 -t 8 &
     sleep 1
-    $EXECUTABLE -i 1100 -m 1 -t 8 &
+    $EXECUTABLE -i 11000 -m 1 -t 8 &
     sleep 1
-    $EXECUTABLE -i 1200 -m 1 -t 8 &
+    $EXECUTABLE -i 12000 -m 1 -t 8 &
     sleep 1
-    $EXECUTABLE -i 1300 -m 1 -t 8 &
+    $EXECUTABLE -i 13000 -m 1 -t 8 &
     sleep 1
-    $EXECUTABLE -i 1400 -m 1 -t 8 &
+    $EXECUTABLE -i 14000 -m 1 -t 8 &
 }
 
 run_all_types() {

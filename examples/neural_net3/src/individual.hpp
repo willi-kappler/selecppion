@@ -43,6 +43,7 @@ class NeuralNet3Individual: public SEIndividual {
         const uint16_t new_neuron_prob;
         const uint16_t new_connection_prob;
         const uint16_t mutate_neuron_type_prob;
+        const uint16_t mutate_activation_method_prob;
         const uint16_t max_network_size;
         std::vector<Neuron> hidden_layer;
 
@@ -50,9 +51,10 @@ class NeuralNet3Individual: public SEIndividual {
         SEIndividual(),
         input_size_local(input_size),
         output_size_local(output_size),
-        new_neuron_prob(10),
-        new_connection_prob(10),
-        mutate_neuron_type_prob(10),
+        new_neuron_prob(100),
+        new_connection_prob(100),
+        mutate_neuron_type_prob(100),
+        mutate_activation_method_prob(100),
         max_network_size(10),
         hidden_layer()
         {
@@ -260,7 +262,8 @@ class NeuralNet3Individual: public SEIndividual {
                     break;
                 case 5:
                     // Split neuron:
-                    if (current_size < max_network_size) {
+                    prob = global_rng.get_uint16(new_neuron_prob);
+                    if ((prob == 0) && (current_size < max_network_size)) {
                         Neuron new_neuron = neuron.split_neuron();
                         // Add new neuron to the network:
                         hidden_layer.push_back(new_neuron);
@@ -296,7 +299,7 @@ class NeuralNet3Individual: public SEIndividual {
                 case 10:
                     // Add neuron:
                     prob = global_rng.get_uint16(new_neuron_prob);
-                    if ((prob == 0) && (hidden_layer.size() < max_network_size)) {
+                    if ((prob == 0) && (current_size < max_network_size)) {
                         add_neuron1();
                     } else {
                         neuron.mutate_hidden_connection();
@@ -395,6 +398,15 @@ class NeuralNet3Individual: public SEIndividual {
                     prob = global_rng.get_uint16(mutate_neuron_type_prob);
                     if (prob == 0) {
                         neuron.mutate_neuron_type();
+                    } else {
+                        neuron.mutate_hidden_connection();
+                    }
+                    break;
+                case 16:
+                    // Mutate neuron activation method:
+                    prob = global_rng.get_uint16(mutate_activation_method_prob);
+                    if (prob == 0) {
+                        neuron.mutate_activation();
                     } else {
                         neuron.mutate_hidden_connection();
                     }

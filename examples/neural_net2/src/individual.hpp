@@ -258,7 +258,8 @@ class NeuralNet2Individual: public SEIndividual {
                     break;
                 case 5:
                     // Split neuron:
-                    if (current_size < max_network_size) {
+                    prob = global_rng.get_uint16(new_node_prob);
+                    if ((prob == 0) && (hidden_layer.size() < max_network_size)) {
                         Neuron new_neuron = neuron.split_neuron();
                         // Add new neuron to the network:
                         hidden_layer.push_back(new_neuron);

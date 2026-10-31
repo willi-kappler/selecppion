@@ -32,10 +32,10 @@ class SEPopulationNode11: public NCNodeDataProcessor {
         SEPopulation<T> population;
 
     public:
-        SEPopulationNode11(SEConfiguration se_config, std::unique_ptr<SEIndividual> individual):
+        SEPopulationNode11(SEConfiguration se_config, const SEIndividual &individual):
             NCNodeDataProcessor(),
             population(se_config) {
-            population.se_fill_population(std::move(individual));
+            population.se_fill_population(individual);
 
             population.se_logger->info("Population type 11.");
             population.se_logger->info("Randomly select one individual to maybe mutate.");
@@ -85,11 +85,11 @@ class SEPopulationNode11: public NCNodeDataProcessor {
                             k2 = population.rng.get_size_t(population.se_config.node_population_size);
                         }
 
-                        new_indi = population.population[k1]->se_crossover(population.population[k2].get());
+                        new_indi = population.population[k1]->se_crossover(*population.population[k2]);
                         new_indi->se_calculate_fitness1();
 
                         if (new_indi->fitness1 < population.se_get_worst_fitness()) {
-                            population.se_replace_worst(new_indi->se_clone_internal());
+                            population.se_replace_worst(*new_indi);
                             population.se_find_worst_individual();
                         }
                     }

@@ -446,12 +446,18 @@ class NeuralNet2Individual: public SEIndividual {
             fitness2 = (fitness1 + fitness2) / 2.0;
         }
 
-        [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() override {
+        [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() const override {
             std::unique_ptr<NeuralNet2Individual> result = std::make_unique<NeuralNet2Individual>(input_size_local, output_size_local);
             result->hidden_layer = hidden_layer;
 
             return result;
         }
+
+        void se_copy_from(const SEIndividual &individual) override {
+            const NeuralNet2Individual& neural_individual = dynamic_cast<const NeuralNet2Individual&>(individual);
+            hidden_layer = neural_individual.hidden_layer;
+        }
+
 
         [[nodiscard]] std::vector<uint8_t> se_to_vec_u8() override {
             nlohmann::json json_array = nlohmann::json::array();
@@ -519,14 +525,6 @@ class NeuralNet2Individual: public SEIndividual {
             }
         }
 */
-        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) override {
-            [[maybe_unused]] const NeuralNet2Individual* const other_individual = dynamic_cast<const NeuralNet2Individual* const>(individual);
-            std::unique_ptr<NeuralNet2Individual> result = std::make_unique<NeuralNet2Individual>(input_size_local, output_size_local);
-
-            // TODO
-
-            return result;
-        }
 
         void print_network() {
             for (Neuron n: hidden_layer) {

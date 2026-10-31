@@ -51,7 +51,7 @@ class SEServerDP: public NCServerDataProcessor {
         bool best_fitness_found;
 
     public:
-        SEServerDP(SEConfiguration config, std::unique_ptr<SEIndividual> individual):
+        SEServerDP(SEConfiguration config, const SEIndividual &individual):
             se_config(config),
             se_logger(),
             population(),
@@ -83,7 +83,7 @@ class SEServerDP: public NCServerDataProcessor {
                 throw SEConfigurationException(fmt::format("Unknown log level: {}", se_config.se_server_log_level).c_str());
             }
 
-            se_fill_population(std::move(individual));
+            se_fill_population(individual);
             se_sort_population1();
         }
 
@@ -109,16 +109,15 @@ class SEServerDP: public NCServerDataProcessor {
             se_set_logger(file_logger);
         }
 
-        void se_fill_population(std::unique_ptr<SEIndividual> individual) {
+        void se_fill_population(const SEIndividual &individual) {
             size_t size = se_config.server_population_size;
             population.reserve(size);
-            std::unique_ptr<SEIndividual> new_indi;
+            std::unique_ptr<SEIndividual> new_indi = individual.se_clone_internal();
 
             for (size_t i = 0; i < size; i++) {
-                new_indi = individual->se_clone();
+                population.push_back(new_indi->se_clone_internal());
                 new_indi->se_randomize();
                 new_indi->se_calculate_fitness1();
-                population.push_back(std::move(new_indi));
             }
         }
 
@@ -172,8 +171,7 @@ class SEServerDP: public NCServerDataProcessor {
 
             const size_t last = se_config.server_population_size - 1;
 
-            // se_clone_internal() not needed here since all the values will be overwritten anyways!
-            std::unique_ptr<SEIndividual> new_indi = population[0]->se_clone();
+            std::unique_ptr<SEIndividual> new_indi = population[0]->se_clone_internal();
             // Overwrite all values from result:
             new_indi->se_from_span_u8(result);
             const std::float64_t new_fitness1 = new_indi->fitness1;
@@ -207,7 +205,7 @@ class SEServerDP: public NCServerDataProcessor {
                     }
                 }
 
-                population[last] = new_indi->se_clone_internal();
+                population[last]->se_copy_from_internal(*new_indi);
 
                 if (use_fitness2) {
                     se_logger->debug("New individual in population: fitness1: {}, actual: {}, *fitness2*: {}",

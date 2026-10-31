@@ -24,7 +24,7 @@
 
 using namespace secpion;
 
-void make_and_run_example(int argc, char *argv[], std::unique_ptr<SEIndividual> individual) {
+void make_and_run_example(int argc, char *argv[], const SEIndividual &individual) {
     argparse::ArgumentParser program(argv[0]);
 
     program.add_argument("--server")
@@ -98,7 +98,7 @@ void make_and_run_example(int argc, char *argv[], std::unique_ptr<SEIndividual> 
         std::cout << "Server mode" << std::endl;
 
         std::shared_ptr<SEServerDP_L64> tsp_server =
-            std::make_shared<SEServerDP_L64>(se_config, std::move(individual));
+            std::make_shared<SEServerDP_L64>(se_config, individual);
         NCServer nc_server(nc_config, tsp_server);
         nc_server.nc_run();
     } else {
@@ -111,7 +111,7 @@ void make_and_run_example(int argc, char *argv[], std::unique_ptr<SEIndividual> 
 
         uint8_t population_type = program.get<uint8_t>("-t");
         std::shared_ptr<NCNodeDataProcessor> tsp_node =
-            se_select_population(se_config, std::move(individual), population_type);
+            se_select_population(se_config, individual, population_type);
         NCNode nc_node(nc_config, tsp_node);
         nc_node.nc_run();
     }

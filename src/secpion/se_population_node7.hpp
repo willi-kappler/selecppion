@@ -32,10 +32,10 @@ class SEPopulationNode7: public NCNodeDataProcessor {
         SEPopulation<T> population;
 
     public:
-        SEPopulationNode7(SEConfiguration se_config, std::unique_ptr<SEIndividual> individual):
+        SEPopulationNode7(SEConfiguration se_config, const SEIndividual &individual):
             NCNodeDataProcessor(),
             population(se_config) {
-            population.se_fill_population(std::move(individual));
+            population.se_fill_population(individual);
             population.best_index = 0;
             population.worst_index = population.se_config.node_population_size - 1;
 
@@ -53,14 +53,14 @@ class SEPopulationNode7: public NCNodeDataProcessor {
             population.se_prepare_iteration("PN7: Process data.", data);
             std::float64_t current_best_fitness = population.population[0]->fitness1;
             std::float64_t fitness_limit = 0.0;
-            std::unique_ptr<SEIndividual> cloned_indi;
+            std::unique_ptr<SEIndividual> cloned_indi = population.population[0]->se_clone_internal();
             const uint32_t num_of_iterations = population.se_config.num_of_iterations;
 
             for (uint32_t i = 0; i < num_of_iterations; i++) {
                 population.population[0]->se_current_iteration(i, num_of_iterations);
 
                 for (size_t j = 0; j < population.se_config.node_population_size; j++) {
-                    cloned_indi = population.population[j]->se_clone_internal();
+                    cloned_indi->se_copy_from_internal(*population.population[j]);
 
                     for (uint32_t k = 0; k < population.se_config.num_of_mutations; k++) {
                         cloned_indi->se_mutate_internal(population.se_get_mut_op());
@@ -69,12 +69,12 @@ class SEPopulationNode7: public NCNodeDataProcessor {
 
                     if (cloned_indi->fitness1 < current_best_fitness) {
                         current_best_fitness = cloned_indi->fitness1;
-                        population.population[0] = cloned_indi->se_clone_internal();
+                        population.population[0]->se_copy_from_internal(*cloned_indi);
                     } else {
                         if (j > 0) {
                             fitness_limit = current_best_fitness *
                                 (pow(population.se_config.limit_factor, static_cast<std::float64_t>(j)));
-                            population.se_check_limit(cloned_indi->se_clone_internal(), fitness_limit, j);
+                            population.se_check_limit(*cloned_indi, fitness_limit, j);
                         }
                     }
 

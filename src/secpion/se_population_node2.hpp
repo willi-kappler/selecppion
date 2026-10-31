@@ -31,10 +31,10 @@ class SEPopulationNode2: public NCNodeDataProcessor {
         SEPopulation<T> population;
 
     public:
-        SEPopulationNode2(SEConfiguration se_config, std::unique_ptr<SEIndividual> individual):
+        SEPopulationNode2(SEConfiguration se_config, const SEIndividual &individual):
             NCNodeDataProcessor(),
             population(se_config) {
-            population.se_fill_population(std::move(individual));
+            population.se_fill_population(individual);
             population.se_sort_population();
 
             population.se_logger->info("Population type 2.");
@@ -47,14 +47,14 @@ class SEPopulationNode2: public NCNodeDataProcessor {
 
         [[nodiscard]] std::vector<uint8_t> nc_process_data(std::vector<uint8_t> data) override {
             population.se_prepare_iteration("PN2: Process data.", data);
-            std::unique_ptr<SEIndividual> cloned_indi;
+            std::unique_ptr<SEIndividual> cloned_indi = population.population[0]->se_clone_internal();
             const uint32_t num_of_iterations = population.se_config.num_of_iterations;
 
             for (size_t i = 0; i < num_of_iterations; i++) {
                 population.population[0]->se_current_iteration(i, num_of_iterations);
 
                 for (size_t j = 0; j < population.se_config.node_population_size; j++) {
-                    cloned_indi = population.population[j]->se_clone_internal();
+                    cloned_indi->se_copy_from_internal(*population.population[j]);
 
                     for (uint32_t k = 0; k < population.se_config.num_of_mutations; k++) {
                         cloned_indi->se_mutate_internal(population.se_get_mut_op());
@@ -64,7 +64,7 @@ class SEPopulationNode2: public NCNodeDataProcessor {
 
                     // Only replace with clone if better then original:
                     if (cloned_indi->fitness1 < population.population[j]->fitness1) {
-                        population.population[j] = cloned_indi->se_clone_internal();
+                        population.population[j]->se_copy_from_internal(*cloned_indi);
                     }
 
                     if (population.population[j]->fitness1 <= population.se_config.target_fitness1) {

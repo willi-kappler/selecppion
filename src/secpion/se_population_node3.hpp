@@ -31,10 +31,10 @@ class SEPopulationNode3: public NCNodeDataProcessor {
         SEPopulation<T> population;
 
     public:
-        SEPopulationNode3(SEConfiguration se_config, std::unique_ptr<SEIndividual> individual):
+        SEPopulationNode3(SEConfiguration se_config, const SEIndividual &individual):
             NCNodeDataProcessor(),
             population(se_config) {
-            population.se_fill_population(std::move(individual));
+            population.se_fill_population(individual);
 
             population.se_logger->info("Population type 3.");
             population.se_logger->info("Randomly pick an individual and mutate it.");
@@ -50,7 +50,7 @@ class SEPopulationNode3: public NCNodeDataProcessor {
             population.se_prepare_iteration("PN3: Process data.", data);
             population.se_find_best_and_worst_individual();
 
-            std::unique_ptr<SEIndividual> cloned_indi;
+            std::unique_ptr<SEIndividual> cloned_indi = population.population[0]->se_clone_internal();
             const uint32_t num_of_iterations = population.se_config.num_of_iterations;
             size_t k = 0;
             bool exit_iteration = false;
@@ -60,7 +60,7 @@ class SEPopulationNode3: public NCNodeDataProcessor {
 
                 for (size_t j = 0; j < population.se_config.node_population_size; j++) {
                     k = population.rng.get_size_t(population.se_config.node_population_size);
-                    cloned_indi = population.population[k]->se_clone_internal();
+                    cloned_indi->se_copy_from_internal(*population.population[k]);
 
                     for (uint32_t l = 0; l < population.se_config.num_of_mutations; l++) {
                         cloned_indi->se_mutate_internal(population.se_get_mut_op());
@@ -69,9 +69,9 @@ class SEPopulationNode3: public NCNodeDataProcessor {
                     cloned_indi->se_calculate_fitness1();
 
                     if (cloned_indi->fitness1 < population.se_get_best_fitness()) {
-                        population.se_replace_best(cloned_indi->se_clone_internal());
+                        population.se_replace_best(*cloned_indi);
                     } else if (cloned_indi->fitness1 < population.se_get_worst_fitness()) {
-                        population.se_replace_worst(cloned_indi->se_clone_internal());
+                        population.se_replace_worst(*cloned_indi);
                         population.se_find_worst_individual();
                     }
 

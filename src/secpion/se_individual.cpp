@@ -44,7 +44,7 @@ void SEIndividual::se_calculate_fitness2() {
     // Can be implemented but is not needed.
 }
 
-[[nodiscard]] std::unique_ptr<SEIndividual> SEIndividual::se_clone_internal() {
+[[nodiscard]] std::unique_ptr<SEIndividual> SEIndividual::se_clone_internal() const {
     std::unique_ptr<SEIndividual> clone = se_clone();
     clone->mut_op_counter = mut_op_counter;
     clone->fitness1 = fitness1;
@@ -53,8 +53,19 @@ void SEIndividual::se_calculate_fitness2() {
     return clone;
 }
 
-[[nodiscard]] std::unique_ptr<SEIndividual> SEIndividual::se_clone() {
+[[nodiscard]] std::unique_ptr<SEIndividual> SEIndividual::se_clone() const {
     throw SEIndividualException("se_clone() must be implemented!");
+}
+
+void SEIndividual::se_copy_from_internal(const SEIndividual &individual) {
+    se_copy_from(individual);
+    mut_op_counter = individual.mut_op_counter;
+    fitness1 = individual.fitness1;
+    fitness2 = individual.fitness2;
+}
+
+void SEIndividual::se_copy_from([[maybe_unused]] const SEIndividual &individual) {
+    throw SEIndividualException("se_copy_from() must be implemented!");
 }
 
 [[nodiscard]] std::vector<uint8_t> SEIndividual::se_to_vec_u8() {
@@ -83,7 +94,7 @@ void SEIndividual::se_reseed_rng([[maybe_unused]] size_t index) {
     // index is the current index of this individual inside the population.
 }
 
-[[nodiscard]] std::unique_ptr<SEIndividual> SEIndividual::se_crossover([[maybe_unused]] const SEIndividual* const individual) {
+[[nodiscard]] std::unique_ptr<SEIndividual> SEIndividual::se_crossover([[maybe_unused]] const SEIndividual &individual) {
     // Must only be implemented if using population type 11.
     throw SEIndividualException("se_crossover() must be implemented for population type 11!");
 }

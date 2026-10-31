@@ -102,17 +102,15 @@ class SEPopulation {
             se_logger = logger;
         }
 
-        void se_fill_population(std::unique_ptr<SEIndividual> individual) {
+        void se_fill_population(const SEIndividual &individual) {
             size_t size = se_config.node_population_size;
             population.reserve(size);
-            std::unique_ptr<SEIndividual> new_indi;
+            std::unique_ptr<SEIndividual> new_indi = individual.se_clone_internal();
 
             for (size_t i = 0; i < size; i++) {
-                // se_clone_internal() not needed here
-                new_indi = individual->se_clone();
+                population.push_back(new_indi->se_clone_internal());
                 new_indi->se_randomize();
                 new_indi->se_calculate_fitness1();
-                population.push_back(std::move(new_indi));
             }
         }
 
@@ -200,17 +198,17 @@ class SEPopulation {
             // Now it may not be the worst anymore!
         }
 
-        void se_replace_best(std::unique_ptr<SEIndividual> individual) {
-            population[best_index] = individual->se_clone_internal();
+        void se_replace_best(const SEIndividual &individual) {
+            population[best_index]->se_copy_from_internal(individual);
         }
 
-        void se_replace_worst(std::unique_ptr<SEIndividual> individual) {
-            population[worst_index] = individual->se_clone_internal();
+        void se_replace_worst(const SEIndividual &individual) {
+            population[worst_index]->se_copy_from_internal(individual);
             // No it may no longer be the worst anymore!
         }
 
         void se_clone_best_to_worst() {
-            population[worst_index] = population[best_index]->se_clone_internal();
+            population[worst_index]->se_copy_from_internal(*population[best_index]);
         }
 
         [[nodiscard]] SEIndividual* se_get_best() {
@@ -235,9 +233,9 @@ class SEPopulation {
             return se_config.mutation_operations[mut_op_index];
         }
 
-        void se_check_limit(std::unique_ptr<SEIndividual> individual, std::float64_t limit, size_t i) {
-            if ((individual->fitness1 < limit) || (individual->fitness1 < population[i]->fitness1)) {
-                population[i] = individual->se_clone_internal();
+        void se_check_limit(const SEIndividual &individual, std::float64_t limit, size_t i) {
+            if ((individual.fitness1 < limit) || (individual.fitness1 < population[i]->fitness1)) {
+                population[i]->se_copy_from_internal(individual);
             }
         }
 

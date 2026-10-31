@@ -32,10 +32,10 @@ class SEPopulationNode10: public NCNodeDataProcessor {
         SEPopulation<T> population;
 
     public:
-        SEPopulationNode10(SEConfiguration se_config, std::unique_ptr<SEIndividual> individual):
+        SEPopulationNode10(SEConfiguration se_config, const SEIndividual &individual):
             NCNodeDataProcessor(),
             population(se_config) {
-            population.se_fill_population(std::move(individual));
+            population.se_fill_population(individual);
 
             population.se_logger->info("Population type 10.");
             population.se_logger->info("Always replace the worst individual if better fitness1.");
@@ -49,7 +49,7 @@ class SEPopulationNode10: public NCNodeDataProcessor {
             population.se_prepare_iteration("PN10: Process data.", data);
             population.se_find_worst_individual();
 
-            std::unique_ptr<SEIndividual> cloned_indi;
+            std::unique_ptr<SEIndividual> cloned_indi = population.population[0]->se_clone_internal();
             const uint32_t num_of_iterations = population.se_config.num_of_iterations;
             size_t k = 0;
             bool exit_iteration = false;
@@ -65,7 +65,7 @@ class SEPopulationNode10: public NCNodeDataProcessor {
                         break;
                     }
 
-                    cloned_indi = population.population[k]->se_clone_internal();
+                    cloned_indi->se_copy_from_internal(*population.population[k]);
 
                     for (uint32_t l = 0; l < population.se_config.num_of_mutations; l++) {
                         cloned_indi->se_mutate_internal(population.se_get_mut_op());
@@ -74,7 +74,7 @@ class SEPopulationNode10: public NCNodeDataProcessor {
                     cloned_indi->se_calculate_fitness1();
 
                     if (cloned_indi->fitness1 < population.se_get_worst_fitness()) {
-                        population.se_replace_worst(cloned_indi->se_clone_internal());
+                        population.se_replace_worst(*cloned_indi);
                         population.se_find_worst_individual();
                     }
                 }

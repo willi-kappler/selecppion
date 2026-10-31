@@ -32,11 +32,11 @@ class SEPopulationNode1: public NCNodeDataProcessor {
         uint32_t offset;
 
     public:
-        SEPopulationNode1(SEConfiguration se_config, std::unique_ptr<SEIndividual> individual):
+        SEPopulationNode1(SEConfiguration se_config, const SEIndividual &individual):
             NCNodeDataProcessor(),
             population(se_config),
             offset(se_config.node_population_size / 2) {
-            population.se_fill_population(std::move(individual));
+            population.se_fill_population(individual);
             population.se_sort_population();
             population.best_index = 0;
             population.worst_index = population.se_config.node_population_size - 1;
@@ -52,7 +52,7 @@ class SEPopulationNode1: public NCNodeDataProcessor {
 
         [[nodiscard]] std::vector<uint8_t> nc_process_data(std::vector<uint8_t> data) override {
             population.se_prepare_iteration("PN1: Process data.", data);
-            std::unique_ptr<SEIndividual> cloned_indi;
+            std::unique_ptr<SEIndividual> cloned_indi = population.population[0]->se_clone_internal();
             const uint32_t num_of_iterations = population.se_config.num_of_iterations;
 
             for (size_t i = 0; i < num_of_iterations; i++) {
@@ -60,7 +60,7 @@ class SEPopulationNode1: public NCNodeDataProcessor {
 
                 for (size_t j = 0; j < offset; j++) {
                     // Create a copy of each individual before mutating it (lower half):
-                    cloned_indi = population.population[j]->se_clone_internal();
+                    cloned_indi->se_copy_from_internal(*population.population[j]);
 
                     for (uint32_t k = 0; k < population.se_config.num_of_mutations; k++) {
                         cloned_indi->se_mutate_internal(population.se_get_mut_op());
@@ -68,7 +68,7 @@ class SEPopulationNode1: public NCNodeDataProcessor {
 
                     cloned_indi->se_calculate_fitness1();
                     // Overwrite upper half (the bad ones):
-                    population.population[j + offset] = cloned_indi->se_clone_internal();
+                    population.population[j + offset]->se_copy_from_internal(*cloned_indi);
                 }
 
                 population.se_sort_population();

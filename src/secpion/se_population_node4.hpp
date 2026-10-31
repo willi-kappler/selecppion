@@ -31,10 +31,10 @@ class SEPopulationNode4: public NCNodeDataProcessor {
         SEPopulation<T> population;
 
     public:
-        SEPopulationNode4(SEConfiguration se_config, std::unique_ptr<SEIndividual> individual):
+        SEPopulationNode4(SEConfiguration se_config, const SEIndividual &individual):
             NCNodeDataProcessor(),
             population(se_config) {
-            population.se_fill_population(std::move(individual));
+            population.se_fill_population(individual);
 
             population.se_logger->info("Population type 4.");
             population.se_logger->info("Use a global fitness that is the same for all individuals.");
@@ -52,7 +52,7 @@ class SEPopulationNode4: public NCNodeDataProcessor {
             population.se_prepare_iteration("PN4: Process data.", data);
             population.se_find_worst_individual();
 
-            std::unique_ptr<SEIndividual> cloned_indi;
+            std::unique_ptr<SEIndividual> cloned_indi = population.population[0]->se_clone_internal();
             const uint32_t num_of_iterations = population.se_config.num_of_iterations;
             std::float64_t global_fitness = population.se_get_worst_fitness();
             uint32_t indi_below_global_fitness;
@@ -63,14 +63,14 @@ class SEPopulationNode4: public NCNodeDataProcessor {
                 indi_below_global_fitness = 0;
 
                 for (size_t j = 0; j < population.se_config.node_population_size; j++) {
-                    cloned_indi = population.population[j]->se_clone_internal();
+                    cloned_indi->se_copy_from_internal(*population.population[j]);
 
                     for (uint32_t k = 0; k < population.se_config.num_of_mutations; k++) {
                         cloned_indi->se_mutate_internal(population.se_get_mut_op());
                     }
 
                     cloned_indi->se_calculate_fitness1();
-                    population.se_check_limit(cloned_indi->se_clone_internal(), global_fitness, j);
+                    population.se_check_limit(*cloned_indi, global_fitness, j);
 
                     if (population.population[j]->fitness1 <= population.se_config.target_fitness1) {
                         population.se_early_exit(i);

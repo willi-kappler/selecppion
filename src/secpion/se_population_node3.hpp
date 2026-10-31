@@ -69,9 +69,9 @@ class SEPopulationNode3: public NCNodeDataProcessor {
                     cloned_indi->se_calculate_fitness1();
 
                     if (cloned_indi->fitness1 < population.se_get_best_fitness()) {
-                        population.se_replace_best(std::move(cloned_indi));
+                        population.se_replace_best(cloned_indi->se_clone_internal());
                     } else if (cloned_indi->fitness1 < population.se_get_worst_fitness()) {
-                        population.se_replace_worst(std::move(cloned_indi));
+                        population.se_replace_worst(cloned_indi->se_clone_internal());
                         population.se_find_worst_individual();
                     }
 

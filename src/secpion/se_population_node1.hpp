@@ -68,7 +68,7 @@ class SEPopulationNode1: public NCNodeDataProcessor {
 
                     cloned_indi->se_calculate_fitness1();
                     // Overwrite upper half (the bad ones):
-                    population.population[j + offset] = std::move(cloned_indi);
+                    population.population[j + offset] = cloned_indi->se_clone_internal();
                 }
 
                 population.se_sort_population();

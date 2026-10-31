@@ -207,15 +207,15 @@ class SEServerDP: public NCServerDataProcessor {
                     }
                 }
 
+                population[last] = new_indi->se_clone_internal();
+
                 if (use_fitness2) {
                     se_logger->debug("New individual in population: fitness1: {}, actual: {}, *fitness2*: {}",
                         new_fitness1, new_indi->se_actual_fitness(), new_fitness2);
-                    population[last] = std::move(new_indi);
                     se_sort_population2();
                 } else {
                     se_logger->debug("New individual in population: *fitness1*: {}, actual: {}, fitness2: {}",
                         new_fitness1, new_indi->se_actual_fitness(), new_fitness2);
-                    population[last] = std::move(new_indi);
                     se_sort_population1();
                 }
 

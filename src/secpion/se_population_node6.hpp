@@ -82,7 +82,7 @@ class SEPopulationNode6: public NCNodeDataProcessor {
                     }
 
                     if (cloned_indi3->fitness1 < population.population[j]->fitness1) {
-                        population.population[j] = std::move(cloned_indi3);
+                        population.population[j] = cloned_indi3->se_clone_internal();
                     }
 
                     if (population.population[j]->fitness1 <= population.se_config.target_fitness1) {

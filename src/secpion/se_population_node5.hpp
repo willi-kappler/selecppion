@@ -67,9 +67,9 @@ class SEPopulationNode5: public NCNodeDataProcessor {
                     cloned_indi->se_calculate_fitness1();
                     if (cloned_indi->fitness1 < fitness_limit) {
                         fitness_limit = (fitness_limit + cloned_indi->fitness1) / 2.0;
-                        population.population[j] = std::move(cloned_indi);
+                        population.population[j] = cloned_indi->se_clone_internal();
                     } else if (cloned_indi->fitness1 < population.population[j]->fitness1) {
-                        population.population[j] = std::move(cloned_indi);
+                        population.population[j] = cloned_indi->se_clone_internal();
                     }
 
                     if (population.population[j]->fitness1 <= population.se_config.target_fitness1) {

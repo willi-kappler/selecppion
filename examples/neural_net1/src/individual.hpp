@@ -216,11 +216,16 @@ class NeuralNet1Individual: public SEIndividual {
             fitness1 = fitness1 / 4.0;
         }
 
-        [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() override {
+        [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() const override {
             std::unique_ptr<NeuralNet1Individual> result = std::make_unique<NeuralNet1Individual>(input_size_local, output_size_local);
             result->hidden_layer = hidden_layer;
 
             return result;
+        }
+
+        void se_copy_from(const SEIndividual &individual) override {
+            const NeuralNet1Individual &other_individual = dynamic_cast<const NeuralNet1Individual &>(individual);
+            hidden_layer = other_individual.hidden_layer;
         }
 
         [[nodiscard]] std::vector<uint8_t> se_to_vec_u8() override {
@@ -257,8 +262,8 @@ class NeuralNet1Individual: public SEIndividual {
             }
         }
 
-        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) override {
-            [[maybe_unused]] const NeuralNet1Individual* const other_individual = dynamic_cast<const NeuralNet1Individual* const>(individual);
+        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual &individual) override {
+            [[maybe_unused]] const NeuralNet1Individual &other_individual = dynamic_cast<const NeuralNet1Individual&>(individual);
             std::unique_ptr<NeuralNet1Individual> result = std::make_unique<NeuralNet1Individual>(input_size_local, output_size_local);
 
             // TODO

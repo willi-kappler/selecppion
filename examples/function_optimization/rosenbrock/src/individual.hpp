@@ -118,12 +118,17 @@ class RosenbrockIndividual: public SEIndividual {
             }
         }
 
-        [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() override {
+        [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() const override {
             std::unique_ptr<RosenbrockIndividual> result = std::make_unique<RosenbrockIndividual>(local_dimensions, local_lower_bound, local_upper_bound);
 
             result->values = values;
 
             return result;
+        }
+
+        void se_copy_from(const SEIndividual &individual) override {
+            const RosenbrockIndividual&other_individual = dynamic_cast<const RosenbrockIndividual &>(individual);
+            values = other_individual.values;
         }
 
         [[nodiscard]] std::vector<uint8_t> se_to_vec_u8() override {
@@ -147,8 +152,8 @@ class RosenbrockIndividual: public SEIndividual {
             }
         }
 
-        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) override {
-            const RosenbrockIndividual* const other_individual = dynamic_cast<const RosenbrockIndividual* const>(individual);
+        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual &individual) override {
+            const RosenbrockIndividual &other_individual = dynamic_cast<const RosenbrockIndividual &>(individual);
             std::unique_ptr<RosenbrockIndividual> result = std::make_unique<RosenbrockIndividual>(local_dimensions, local_lower_bound, local_upper_bound);
 
             auto [i1, i2] = global_rng.get_two_size_t(local_dimensions);
@@ -157,7 +162,7 @@ class RosenbrockIndividual: public SEIndividual {
                 if ((i >= i1) && (i <= i2)) {
                     result->values[i] = values[i];
                 } else {
-                    result->values[i] = other_individual->values[i];
+                    result->values[i] = other_individual.values[i];
                 }
             }
 

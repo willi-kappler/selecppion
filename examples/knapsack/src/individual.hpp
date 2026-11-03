@@ -109,12 +109,17 @@ class KnapSackIndividual: public SEIndividual {
             }
         }
 
-        [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() override {
+        [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() const override {
             std::unique_ptr<KnapSackIndividual> result = std::make_unique<KnapSackIndividual>(items, total_capacity);
 
             result->selection = selection;
 
             return result;
+        }
+
+        void se_copy_from(const SEIndividual &individual) override {
+            const KnapSackIndividual &other_individual = dynamic_cast<const KnapSackIndividual &>(individual);
+            selection = other_individual.selection;
         }
 
         [[nodiscard]] std::vector<uint8_t> se_to_vec_u8() override {
@@ -138,8 +143,8 @@ class KnapSackIndividual: public SEIndividual {
             }
         }
 
-        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) override {
-            const KnapSackIndividual* const other_individual = dynamic_cast<const KnapSackIndividual* const>(individual);
+        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual &individual) override {
+            const KnapSackIndividual &other_individual = dynamic_cast<const KnapSackIndividual &>(individual);
             std::unique_ptr<KnapSackIndividual> result = std::make_unique<KnapSackIndividual>(items, total_capacity);
 
             const size_t num_of_items = items.size();
@@ -149,7 +154,7 @@ class KnapSackIndividual: public SEIndividual {
                 if ((i >= i1) && (i < i2)) {
                     result->selection[i] = selection[i];
                 } else {
-                    result->selection[i] = other_individual->selection[i];
+                    result->selection[i] = other_individual.selection[i];
                 }
             }
 

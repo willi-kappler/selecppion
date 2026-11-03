@@ -30,5 +30,5 @@ int main(int argc, char *argv[]) {
     bin_packing_individual->se_randomize();
     global_rng.seed();
 
-    make_and_run_example(argc, argv, std::move(bin_packing_individual));
+    make_and_run_example(argc, argv, *bin_packing_individual);
 }

@@ -188,11 +188,16 @@ class TSPIndividual: public SEIndividual {
             }
         }
 
-        [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() override {
+        [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() const override {
             std::unique_ptr<TSPIndividual> result = std::make_unique<TSPIndividual>();
             result->position_indices = position_indices;
 
             return result;
+        }
+
+        void se_copy_from(const SEIndividual &individual) override {
+            const TSPIndividual &other_individual = dynamic_cast<const TSPIndividual &>(individual);
+            position_indices = other_individual.position_indices;
         }
 
         [[nodiscard]] std::vector<uint8_t> se_to_vec_u8() override {
@@ -216,10 +221,10 @@ class TSPIndividual: public SEIndividual {
             }
         }
 
-        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) override {
+        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual &individual) override {
             std::unique_ptr<TSPIndividual> result = std::make_unique<TSPIndividual>();
             result->init_positions();
-            const TSPIndividual* const other_individual = dynamic_cast<const TSPIndividual* const>(individual);
+            const TSPIndividual &other_individual = dynamic_cast<const TSPIndividual &>(individual);
             auto [i1, i2] = get_two_indices();
 
             if (i1 > i2) {
@@ -243,7 +248,7 @@ class TSPIndividual: public SEIndividual {
             j = i2;
 
             for (i = 0; i < positions_size; i++) {
-                new_index = other_individual->position_indices[i];
+                new_index = other_individual.position_indices[i];
 
                 if (!used[new_index]) {
                     // Now only copy from the other individual if index is not already used:

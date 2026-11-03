@@ -189,12 +189,17 @@ class SudokuIndividual: public SEIndividual {
             }
         }
 
-        [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() override {
+        [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() const override {
             std::unique_ptr<SudokuIndividual> result = std::make_unique<SudokuIndividual>(fixed_numbers);
 
             result->solution = solution;
 
             return result;
+        }
+
+        void se_copy_from(const SEIndividual &individual) override {
+            const SudokuIndividual &other_individual = dynamic_cast<const SudokuIndividual &>(individual);
+            solution = other_individual.solution;
         }
 
         [[nodiscard]] std::vector<uint8_t> se_to_vec_u8() override {
@@ -218,8 +223,8 @@ class SudokuIndividual: public SEIndividual {
             }
         }
 
-        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) override {
-            const SudokuIndividual* const other_individual = dynamic_cast<const SudokuIndividual* const>(individual);
+        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual &individual) override {
+            const SudokuIndividual &other_individual = dynamic_cast<const SudokuIndividual &>(individual);
             std::unique_ptr<SudokuIndividual> result = std::make_unique<SudokuIndividual>(fixed_numbers);
 
             auto [i1, i2] = global_rng.get_two_size_t(81);
@@ -228,7 +233,7 @@ class SudokuIndividual: public SEIndividual {
                 if ((i >= i1) && (i < i2)) {
                     result->solution[i] = solution[i];
                 } else {
-                    result->solution[i] = other_individual->solution[i];
+                    result->solution[i] = other_individual.solution[i];
                 }
             }
 

@@ -39,5 +39,5 @@ int main(int argc, char *argv[]) {
     sudoku1_individual->se_randomize();
     global_rng.seed();
 
-    make_and_run_example(argc, argv, std::move(sudoku1_individual));
+    make_and_run_example(argc, argv, *sudoku1_individual);
 }

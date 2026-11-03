@@ -30,5 +30,5 @@ int main(int argc, char *argv[]) {
     global_rng.seed();
     rosenbrock_individual->se_randomize();
 
-    make_and_run_example(argc, argv, std::move(rosenbrock_individual));
+    make_and_run_example(argc, argv, *rosenbrock_individual);
 }

@@ -26,5 +26,5 @@ int main(int argc, char *argv[]) {
     queens_individual->se_randomize();
     global_rng.seed();
 
-    make_and_run_example(argc, argv, std::move(queens_individual));
+    make_and_run_example(argc, argv, *queens_individual);
 }

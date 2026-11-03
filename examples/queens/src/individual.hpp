@@ -76,12 +76,17 @@ class QueensIndividual: public SEIndividual {
             }
         }
 
-        [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() override {
+        [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() const override {
             std::unique_ptr<QueensIndividual> result = std::make_unique<QueensIndividual>();
 
             result->columns = columns;
 
             return result;
+        }
+
+        void se_copy_from(const SEIndividual &individual) override {
+            const QueensIndividual &other_individual = dynamic_cast<const QueensIndividual &>(individual);
+            columns = other_individual.columns;
         }
 
         [[nodiscard]] std::vector<uint8_t> se_to_vec_u8() override {
@@ -105,8 +110,8 @@ class QueensIndividual: public SEIndividual {
             }
         }
 
-        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) override {
-            const QueensIndividual* const other_individual = dynamic_cast<const QueensIndividual* const>(individual);
+        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual &individual) override {
+            const QueensIndividual &other_individual = dynamic_cast<const QueensIndividual &>(individual);
             std::unique_ptr<QueensIndividual> result = std::make_unique<QueensIndividual>();
 
             auto [i1, i2] = global_rng.get_two_size_t(BOARD_SIZE);
@@ -115,7 +120,7 @@ class QueensIndividual: public SEIndividual {
                 if ((i >= i1) && (i < i2)) {
                     result->columns[i] = columns[i];
                 } else {
-                    result->columns[i] = other_individual->columns[i];
+                    result->columns[i] = other_individual.columns[i];
                 }
             }
 

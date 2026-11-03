@@ -232,13 +232,14 @@ class SEServerDP: public NCServerDataProcessor {
 
                     improvement_factor = current_best_fitness / new_fitness;
 
-                    if (improvement_factor > 1.5) {
+                    if (improvement_factor >= 1.5) {
                         se_logger->debug("Big improvement factor: {}, counter: {} -> {} !", improvement_factor, new_fitness_counter - 1, new_fitness_counter);
                     } else {
                         se_logger->debug("Improvement factor: {}", improvement_factor);
                     }
 
-                    se_logger->info("Best from node: {}, new fitness counter: {}", node_id.to_string(), new_fitness_counter);
+                    se_logger->info("Best from node: {}", node_id.to_string());
+                    se_logger->info("New fitness counter: {}", new_fitness_counter);
 
                     node_stats[node_id]++;
                     std::vector<std::pair<NCNodeID, uint32_t>> node_stats2(node_stats.begin(), node_stats.end());

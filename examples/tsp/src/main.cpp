@@ -35,5 +35,5 @@ int main(int argc, char *argv[]) {
     tsp_individual->init_positions();
     global_rng.seed();
 
-    make_and_run_example(argc, argv, std::move(tsp_individual));
+    make_and_run_example(argc, argv, *tsp_individual);
 }

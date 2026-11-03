@@ -29,5 +29,5 @@ int main(int argc, char *argv[]) {
     global_rng.seed();
     neuralnet3_individual->se_randomize();
 
-    make_and_run_example(argc, argv, std::move(neuralnet3_individual));
+    make_and_run_example(argc, argv, *neuralnet3_individual);
 }

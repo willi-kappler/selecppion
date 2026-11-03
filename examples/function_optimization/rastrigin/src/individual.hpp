@@ -117,12 +117,17 @@ class RastriginIndividual: public SEIndividual {
             fitness1 = fitness;
         }
 
-        [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() override {
+        [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() const override {
             std::unique_ptr<RastriginIndividual> result = std::make_unique<RastriginIndividual>(local_dimensions, local_lower_bound, local_upper_bound);
 
             result->values = values;
 
             return result;
+        }
+
+        void se_copy_from(const SEIndividual &individual) override {
+            const RastriginIndividual &other_individual = dynamic_cast<const RastriginIndividual &>(individual);
+            values = other_individual.values;
         }
 
         [[nodiscard]] std::vector<uint8_t> se_to_vec_u8() override {
@@ -146,8 +151,8 @@ class RastriginIndividual: public SEIndividual {
             }
         }
 
-        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual* const individual) override {
-            const RastriginIndividual* const other_individual = dynamic_cast<const RastriginIndividual* const>(individual);
+        std::unique_ptr<SEIndividual> se_crossover(const SEIndividual &individual) override {
+            const RastriginIndividual &other_individual = dynamic_cast<const RastriginIndividual&>(individual);
             std::unique_ptr<RastriginIndividual> result = std::make_unique<RastriginIndividual>(local_dimensions, local_lower_bound, local_upper_bound);
 
             auto [i1, i2] = global_rng.get_two_size_t(local_dimensions);
@@ -156,7 +161,7 @@ class RastriginIndividual: public SEIndividual {
                 if ((i >= i1) && (i <= i2)) {
                     result->values[i] = values[i];
                 } else {
-                    result->values[i] = other_individual->values[i];
+                    result->values[i] = other_individual.values[i];
                 }
             }
 

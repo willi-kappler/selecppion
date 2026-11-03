@@ -30,5 +30,5 @@ int main(int argc, char *argv[]) {
     knapsack_individual->se_randomize();
     global_rng.seed();
 
-    make_and_run_example(argc, argv, std::move(knapsack_individual));
+    make_and_run_example(argc, argv, *knapsack_individual);
 }

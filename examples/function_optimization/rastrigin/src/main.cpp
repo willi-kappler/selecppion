@@ -30,5 +30,5 @@ int main(int argc, char *argv[]) {
     global_rng.seed();
     rastrigin_individual->se_randomize();
 
-    make_and_run_example(argc, argv, std::move(rastrigin_individual));
+    make_and_run_example(argc, argv, *rastrigin_individual);
 }

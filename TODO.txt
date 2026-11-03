@@ -7,11 +7,13 @@ TODO:
     - use constexpr when possible.
     - use std::initializer_list overload when possible.
     - use final instead of override when possible.
-    - add neural net 2 example.
+    ** add neural net 2 example: ongoing
     - compile and test on MacOS.
     - compile and test on Windows.
     - add config option: start individual, json file.
     - add virtual method to individual base class: se_set_logger()
+    - se_calculate_fitness1_internal()
+    - se_calculate_fitness2_internal()
 
 
 

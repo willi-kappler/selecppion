@@ -142,6 +142,49 @@ class Neuron {
             }
         }
 
+        void swap_input_connection() {
+            const size_t n = input_connections.size();
+
+            if (n > 1) {
+                const auto [index1, index2] = global_rng.get_two_size_t(n);
+                std::swap(input_connections[index1], input_connections[index2]);
+            } else {
+                mutate_input_connection();
+            }
+        }
+
+        void rotate_right_input_connection() {
+            const size_t n = input_connections.size();
+
+            if (n > 1) {
+                const size_t last_index = input_connections[n - 1].first;
+
+                for (size_t i = n - 1; i >= 1; i--) {
+                    input_connections[i].first = input_connections[i - 1].first;
+                }
+
+                input_connections[0].first = last_index;
+            } else {
+                mutate_input_connection();
+            }
+        }
+
+        void rotate_left_input_connection() {
+            const size_t n = input_connections.size();
+
+            if (n > 1) {
+                const size_t first_index = input_connections[0].first;
+
+                for (size_t i = 0; i < n - 1; i++) {
+                    input_connections[i].first = input_connections[i + 1].first;
+                }
+
+                input_connections[n - 1].first = first_index;
+            } else {
+                mutate_input_connection();
+            }
+        }
+
         [[nodiscard]] bool has_hidden_connection(size_t index) {
             for (auto [index2, weight2]: hidden_connections) {
                 if (index == index2) {
@@ -199,6 +242,49 @@ class Neuron {
                     size_t index = global_rng.get_size_t(n);
                     hidden_connections[index].first = new_index;
                 }
+            }
+        }
+
+        void swap_hidden_connection() {
+            const size_t n = hidden_connections.size();
+
+            if (n > 1) {
+                const auto [index1, index2] = global_rng.get_two_size_t(n);
+                std::swap(hidden_connections[index1], hidden_connections[index2]);
+            } else {
+                mutate_hidden_connection();
+            }
+        }
+
+        void rotate_right_hidden_connection() {
+            const size_t n = hidden_connections.size();
+
+            if (n > 1) {
+                const size_t last_index = hidden_connections[n - 1].first;
+
+                for (size_t i = n - 1; i >= 1; i--) {
+                    hidden_connections[i].first = hidden_connections[i - 1].first;
+                }
+
+                hidden_connections[0].first = last_index;
+            } else {
+                mutate_hidden_connection();
+            }
+        }
+
+        void rotate_left_hidden_connection() {
+            const size_t n = hidden_connections.size();
+
+            if (n > 1) {
+                const size_t first_index = hidden_connections[0].first;
+
+                for (size_t i = 0; i < n - 1; i++) {
+                    hidden_connections[i].first = hidden_connections[i + 1].first;
+                }
+
+                hidden_connections[n - 1].first = first_index;
+            } else {
+                mutate_input_connection();
             }
         }
 
@@ -326,38 +412,6 @@ class Neuron {
             }
 
             current_value = new_value;
-        }
-
-        size_t get_random_input_index() {
-            return global_rng.get_size_t(input_connections.size());
-        }
-
-        std::float64_t get_input_weight(size_t index) {
-            return input_connections[index].second;
-        }
-
-        void set_input_weight(size_t index, std::float64_t weight) {
-            input_connections[index].second = weight;
-        }
-
-        size_t get_random_hidden_index() {
-            return global_rng.get_size_t(hidden_connections.size());
-        }
-
-        std::float64_t get_hidden_weight(size_t index) {
-            return hidden_connections[index].second;
-        }
-
-        void set_hidden_weight(size_t index, std::float64_t weight) {
-            hidden_connections[index].second = weight;
-        }
-
-        std::float64_t get_bias() {
-            return bias;
-        }
-
-        void set_bias(std::float64_t new_bias) {
-            bias = new_bias;
         }
 
         void evaluate_log(std::span<const std::float64_t> input_values, std::span<const Neuron> hidden_layer, std::shared_ptr<spdlog::logger> se_logger) {

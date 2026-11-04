@@ -314,82 +314,37 @@ class NeuralNet2Individual: public SEIndividual {
                     }
                     break;
                 case 12:
-                    {
-                        // Optimize bias:
-                        std::float64_t current_bias = neuron.get_bias();
-                        std::float64_t current_fitness1 = fitness1;
-                        std::float64_t new_bias = current_bias - 0.1;
-                        const std::float64_t upper_bound = current_bias + 0.1;
-
-                        while (new_bias <= upper_bound) {
-                            neuron.set_bias(new_bias);
-                            se_calculate_fitness1();
-
-                            if (fitness1 < current_fitness1) {
-                                current_fitness1 = fitness1;
-                                current_bias = new_bias;
-                            }
-
-                            new_bias += 0.01;
-                        }
-
-                        neuron.set_bias(current_bias);
-                    }
+                    neuron.swap_input_connection();
                     break;
                 case 13:
-                    {
-                        // Optimize one input connection:
-                        if (neuron.is_empty()) {
-                            neuron.mutate_input_connection();
-                        } else {
-                            const size_t index = neuron.get_random_input_index();
-                            std::float64_t current_weight = neuron.get_input_weight(index);
-                            std::float64_t current_fitness1 = fitness1;
-                            std::float64_t new_weight = current_weight - 0.1;
-                            const std::float64_t upper_bound = current_weight + 0.1;
-
-                            while (new_weight <= upper_bound) {
-                                neuron.set_input_weight(index, new_weight);
-                                se_calculate_fitness1();
-
-                                if (fitness1 < current_fitness1) {
-                                    current_fitness1 = fitness1;
-                                    current_weight = new_weight;
-                                }
-
-                                new_weight += 0.01;
-                            }
-
-                            neuron.set_input_weight(index, current_weight);
-                        }
-                    }
+                    neuron.swap_hidden_connection();
                     break;
                 case 14:
-                    {
-                        // Optimize one hidden connection:
-                        if (neuron.is_empty()) {
-                            neuron.mutate_hidden_connection();
-                        } else {
-                            const size_t index = neuron.get_random_hidden_index();
-                            std::float64_t current_weight = neuron.get_hidden_weight(index);
-                            std::float64_t current_fitness1 = fitness1;
-                            std::float64_t new_weight = current_weight - 0.1;
-                            const std::float64_t upper_bound = current_weight + 0.1;
-
-                            while (new_weight <= upper_bound) {
-                                neuron.set_hidden_weight(index, new_weight);
-                                se_calculate_fitness1();
-
-                                if (fitness1 < current_fitness1) {
-                                    current_fitness1 = fitness1;
-                                    current_weight = new_weight;
-                                }
-
-                                new_weight += 0.01;
-                            }
-
-                            neuron.set_hidden_weight(index, current_weight);
-                        }
+                    neuron.rotate_right_input_connection();
+                    break;
+                case 15:
+                    neuron.rotate_left_input_connection();
+                    break;
+                case 16:
+                    neuron.rotate_right_hidden_connection();
+                    break;
+                case 17:
+                    neuron.rotate_left_hidden_connection();
+                    break;
+                case 18:
+                    // Rotate neurons right:
+                    if (current_size > 1) {
+                        std::ranges::rotate(hidden_layer, hidden_layer.end() - 1);
+                    } else {
+                        neuron.mutate_hidden_connection();
+                    }
+                    break;
+                case 19:
+                    // Rotate neurons left:
+                    if (current_size > 1) {
+                        std::ranges::rotate(hidden_layer, hidden_layer.begin() + 1);
+                    } else {
+                        neuron.mutate_hidden_connection();
                     }
                     break;
                 default:

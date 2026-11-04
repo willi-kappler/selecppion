@@ -15,6 +15,7 @@ TODO:
     - se_calculate_fitness1_internal()
     - se_calculate_fitness2_internal()
     - add neural net example 4, using persistent data structure (shared vector)
+    - allow user defined command line arguments
 
 
 Done:

@@ -304,12 +304,16 @@ class NeuralNet2Individual: public SEIndividual {
                 case 11:
                     {
                         // Swap neurons:
-                        const auto [i1, i2] = global_rng.get_two_size_t(current_size);
+                        if (current_size > 1) {
+                            const auto [i1, i2] = global_rng.get_two_size_t(current_size);
 
-                        if (hidden_layer[i1].is_empty() || hidden_layer[i2].is_empty()) {
-                            neuron.mutate_hidden_connection();
+                            if (hidden_layer[i1].is_empty() || hidden_layer[i2].is_empty()) {
+                                neuron.mutate_hidden_connection();
+                            } else {
+                                std::swap(hidden_layer[i1], hidden_layer[i2]);
+                            }
                         } else {
-                            std::swap(hidden_layer[i1], hidden_layer[i2]);
+                            neuron.mutate_hidden_connection();
                         }
                     }
                     break;
@@ -354,15 +358,19 @@ class NeuralNet2Individual: public SEIndividual {
         }
 
         void se_randomize() override {
-            hidden_layer.clear();
+            if (hidden_layer.size() == 0) {
+                // Add the output neurons to the network:
+                for (uint16_t i = 0; i < output_size_local; i++) {
+                    hidden_layer.push_back(Neuron());
+                }
 
-            // Add the output neurons to the network:
-            for (uint16_t i = 0; i < output_size_local; i++) {
-                hidden_layer.push_back(Neuron());
+                // Start with one normal neuron (at least one is needed):
+                add_neuron1();
+            } else {
+                for (Neuron &neuron: hidden_layer) {
+                    neuron.randomize_all_connections();
+                }
             }
-
-            // Start with one normal neuron (at least one is needed):
-            add_neuron1();
         }
 
         void se_calculate_fitness1() override {

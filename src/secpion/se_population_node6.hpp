@@ -30,6 +30,22 @@ class SEPopulationNode6: public NCNodeDataProcessor {
     private:
         SEPopulation<T> population;
 
+        /*
+        void log_fitness3(size_t i, size_t j, const char block, std::float64_t indi1_fitness, std::float64_t indi2_fitness, std::float64_t indi3_fitness) {
+            if (j == 0) {
+                if (i < 5) {
+                    population.se_logger->debug("{}: {}, {}, {}", block, indi1_fitness, indi2_fitness, indi3_fitness);
+                }
+            }
+        }
+
+        void log_fitness2(size_t i, size_t j, const char block, std::float64_t indi1_fitness, std::float64_t indi2_fitness) {
+            if ((i == 0) && (j == 0)) {
+                population.se_logger->debug("{}: {}, {}", block, indi1_fitness, indi2_fitness);
+            }
+        }
+        */
+
     public:
         SEPopulationNode6(SEConfiguration se_config, const SEIndividual &individual):
             NCNodeDataProcessor(),
@@ -63,6 +79,8 @@ class SEPopulationNode6: public NCNodeDataProcessor {
                     cloned_indi2->se_copy_from_internal(*population.population[j]);
                     cloned_indi3->se_copy_from_internal(*population.population[j]);
 
+                    // log_fitness3(i, j, 'A', cloned_indi1->fitness1, cloned_indi2->fitness1, cloned_indi3->fitness1);
+
                     for (uint32_t k = 0; k < population.se_config.num_of_mutations; k++) {
                         cloned_indi1->se_mutate_internal(population.se_get_mut_op());
                         cloned_indi1->se_calculate_fitness1();
@@ -80,6 +98,8 @@ class SEPopulationNode6: public NCNodeDataProcessor {
 
                         cloned_indi2->se_copy_from_internal(*population.population[j]);
                     }
+
+                    // log_fitness3(i, j, 'B', cloned_indi1->fitness1, cloned_indi2->fitness1, cloned_indi3->fitness1);
 
                     if (cloned_indi3->fitness1 < population.population[j]->fitness1) {
                         population.population[j]->se_copy_from_internal(*cloned_indi3);
@@ -99,6 +119,7 @@ class SEPopulationNode6: public NCNodeDataProcessor {
             population.se_find_best_and_worst_individual();
             population.se_calculate_fitness2();
             population.se_log_statistics();
+            population.se_fill_with_best();
 
             return population.se_get_best()->se_to_vec_u8();
         }

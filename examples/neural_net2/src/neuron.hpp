@@ -147,7 +147,9 @@ class Neuron {
 
             if (n > 1) {
                 const auto [index1, index2] = global_rng.get_two_size_t(n);
-                std::swap(input_connections[index1], input_connections[index2]);
+                size_t connection_index = input_connections[index1].first;
+                input_connections[index1].first = input_connections[index2].first;
+                input_connections[index2].first = connection_index;
             } else {
                 mutate_input_connection();
             }
@@ -250,7 +252,9 @@ class Neuron {
 
             if (n > 1) {
                 const auto [index1, index2] = global_rng.get_two_size_t(n);
-                std::swap(hidden_connections[index1], hidden_connections[index2]);
+                size_t connection_index = hidden_connections[index1].first;
+                hidden_connections[index1].first = hidden_connections[index2].first;
+                hidden_connections[index2].first = connection_index;
             } else {
                 mutate_hidden_connection();
             }
@@ -331,6 +335,18 @@ class Neuron {
                 } else {
                     weight *= 0.99;
                 }
+            }
+        }
+
+        void randomize_all_connections() {
+            bias = global_rng.get_float64_unif1();
+
+            for (auto &[index, weight]: input_connections) {
+                weight = global_rng.get_float64_unif1();
+            }
+
+            for (auto &[index, weight]: hidden_connections) {
+                weight = global_rng.get_float64_unif1();
             }
         }
 

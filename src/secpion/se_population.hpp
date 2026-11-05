@@ -190,6 +190,7 @@ class SEPopulation {
         void se_shuffle_mutation_operations() {
             se_logger->debug("Shuffle mutation operations.");
             rng.shuffle(se_config.mutation_operations);
+            // se_logger->debug("Mutation operations after shuffle: {}", se_config.mutation_operations);
         }
 
         void se_randomize_worst() {
@@ -339,6 +340,14 @@ class SEPopulation {
 
             se_randomize_or_accept_best(data);
             se_shuffle_mutation_operations();
+        }
+
+        void se_fill_with_best() {
+            for (size_t i = 0; i < population.size(); i++) {
+                if (i != best_index) {
+                    population[i]->se_copy_from_internal(*population[best_index]);
+                }
+            }
         }
 };
 }

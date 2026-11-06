@@ -250,7 +250,7 @@ class NeuralNet2Individual: public SEIndividual {
                     // Add neuron:
                     prob = global_rng.get_uint16(new_node_prob);
                     if ((prob == 0) && (hidden_layer.size() < max_network_size)) {
-                        add_neuron1();
+                        add_neuron2();
                     } else {
                         neuron.mutate_hidden_connection();
                     }
@@ -360,8 +360,8 @@ class NeuralNet2Individual: public SEIndividual {
                         // Optimize bias:
                         std::float64_t current_bias = neuron.get_bias();
                         std::float64_t current_fitness1 = fitness1;
-                        std::float64_t new_bias = current_bias - 0.1;
-                        const std::float64_t upper_bound = current_bias + 0.1;
+                        std::float64_t new_bias = -2.0;
+                        const std::float64_t upper_bound = 2.0;
 
                         while (new_bias <= upper_bound) {
                             neuron.set_bias(new_bias);
@@ -372,7 +372,7 @@ class NeuralNet2Individual: public SEIndividual {
                                 current_bias = new_bias;
                             }
 
-                            new_bias += 0.01;
+                            new_bias += 0.1;
                         }
 
                         neuron.set_bias(current_bias);
@@ -387,8 +387,8 @@ class NeuralNet2Individual: public SEIndividual {
                             const size_t index = neuron.get_random_input_index();
                             std::float64_t current_weight = neuron.get_input_weight(index);
                             std::float64_t current_fitness1 = fitness1;
-                            std::float64_t new_weight = current_weight - 0.1;
-                            const std::float64_t upper_bound = current_weight + 0.1;
+                            std::float64_t new_weight = -2.0;
+                            const std::float64_t upper_bound = 2.0;
 
                             while (new_weight <= upper_bound) {
                                 neuron.set_input_weight(index, new_weight);
@@ -399,7 +399,7 @@ class NeuralNet2Individual: public SEIndividual {
                                     current_weight = new_weight;
                                 }
 
-                                new_weight += 0.01;
+                                new_weight += 0.1;
                             }
 
                             neuron.set_input_weight(index, current_weight);
@@ -415,8 +415,8 @@ class NeuralNet2Individual: public SEIndividual {
                             const size_t index = neuron.get_random_hidden_index();
                             std::float64_t current_weight = neuron.get_hidden_weight(index);
                             std::float64_t current_fitness1 = fitness1;
-                            std::float64_t new_weight = current_weight - 0.1;
-                            const std::float64_t upper_bound = current_weight + 0.1;
+                            std::float64_t new_weight = -2.0;
+                            const std::float64_t upper_bound = 2.0;
 
                             while (new_weight <= upper_bound) {
                                 neuron.set_hidden_weight(index, new_weight);
@@ -427,7 +427,7 @@ class NeuralNet2Individual: public SEIndividual {
                                     current_weight = new_weight;
                                 }
 
-                                new_weight += 0.01;
+                                new_weight += 0.1;
                             }
 
                             neuron.set_hidden_weight(index, current_weight);
@@ -448,7 +448,7 @@ class NeuralNet2Individual: public SEIndividual {
             }
 
             // Start with one normal neuron (at least one is needed):
-            add_neuron1();
+            add_neuron2();
         }
 
         void se_calculate_fitness1() override {

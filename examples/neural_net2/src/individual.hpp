@@ -358,19 +358,14 @@ class NeuralNet2Individual: public SEIndividual {
         }
 
         void se_randomize() override {
-            if (hidden_layer.size() == 0) {
-                // Add the output neurons to the network:
-                for (uint16_t i = 0; i < output_size_local; i++) {
-                    hidden_layer.push_back(Neuron());
-                }
-
-                // Start with one normal neuron (at least one is needed):
-                add_neuron1();
-            } else {
-                for (Neuron &neuron: hidden_layer) {
-                    neuron.randomize_all_connections();
-                }
+            hidden_layer.clear();
+            // Add the output neurons to the network:
+            for (uint16_t i = 0; i < output_size_local; i++) {
+                hidden_layer.push_back(Neuron());
             }
+
+            // Start with one normal neuron (at least one is needed):
+            add_neuron1();
         }
 
         void se_calculate_fitness1() override {
@@ -475,6 +470,10 @@ class NeuralNet2Individual: public SEIndividual {
                 global_batch_counter = 0;
                 global_data_provider.set_new_training_batch();
             }
+
+            // New batch means the old fitness value is no longer valid,
+            // so it needs to be re-calculated!
+            se_calculate_fitness1();
         }
 /*
         void se_current_iteration(size_t iteration, uint32_t num_of_iterations) override {

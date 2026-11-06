@@ -166,6 +166,7 @@ class SEPopulation {
         void se_randomize_or_accept_best(std::span<const uint8_t> data) {
             if (se_config.randomize_population) {
                 randomize_iteration++;
+                se_logger->debug("Randomize iteration: {}", randomize_iteration);
                 if (randomize_iteration >= se_config.randomize_count) {
                     randomize_iteration = 0;
                     se_logger->debug("Randomize population.");
@@ -333,12 +334,13 @@ class SEPopulation {
                 }
             }
 
+            se_randomize_or_accept_best(data);
+
             // Prepare each individual if needed:
             for (size_t i = 0; i < population.size(); i++) {
                 population[i]->se_prepare_individual(i);
             }
 
-            se_randomize_or_accept_best(data);
             se_shuffle_mutation_operations();
         }
 

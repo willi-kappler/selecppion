@@ -38,7 +38,6 @@ struct DataPoint {
     std::float_t i3;
 };
 
-
 class DataProvider {
     private:
         std::vector<DataPoint> training_set;

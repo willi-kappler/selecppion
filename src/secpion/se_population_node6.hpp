@@ -119,7 +119,7 @@ class SEPopulationNode6: public NCNodeDataProcessor {
             population.se_find_best_and_worst_individual();
             population.se_calculate_fitness2();
             population.se_log_statistics();
-            population.se_fill_with_best();
+            // population.se_fill_with_best();
 
             return population.se_get_best()->se_to_vec_u8();
         }

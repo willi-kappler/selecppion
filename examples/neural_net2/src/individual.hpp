@@ -223,6 +223,7 @@ class NeuralNet2Individual: public SEIndividual {
                     neuron.mutate_bias();
                     break;
                 case 1:
+                    // Add input connection:
                     prob = global_rng.get_uint16(new_connection_prob);
                     if (prob == 0) {
                         index2 = global_rng.get_size_t(input_size_local);
@@ -232,6 +233,7 @@ class NeuralNet2Individual: public SEIndividual {
                     }
                     break;
                 case 2:
+                    // Add hidden connection:
                     prob = global_rng.get_uint16(new_connection_prob);
                     if (prob == 0) {
                         index2 = global_rng.get_size_t(current_size);
@@ -245,10 +247,21 @@ class NeuralNet2Individual: public SEIndividual {
                     }
                     break;
                 case 3:
+                    // Add neuron:
+                    prob = global_rng.get_uint16(new_node_prob);
+                    if ((prob == 0) && (hidden_layer.size() < max_network_size)) {
+                        add_neuron1();
+                    } else {
+                        neuron.mutate_hidden_connection();
+                    }
+                    break;
+                case 4:
+                    // Replace input connection:
                     index2 = global_rng.get_size_t(input_size_local);
                     neuron.replace_input_connection(index2);
                     break;
-                case 4:
+                case 5:
+                    // Replace hidden connection:
                     index2 = global_rng.get_size_t(current_size);
                     if (index2 == index1) {
                         neuron.mutate_hidden_connection();
@@ -256,7 +269,7 @@ class NeuralNet2Individual: public SEIndividual {
                         neuron.replace_hidden_connection(index2);
                     }
                     break;
-                case 5:
+                case 6:
                     // Split neuron:
                     prob = global_rng.get_uint16(new_node_prob);
                     if ((prob == 0) && (hidden_layer.size() < max_network_size)) {
@@ -272,33 +285,24 @@ class NeuralNet2Individual: public SEIndividual {
                         neuron.mutate_hidden_connection();
                     }
                     break;
-                case 6:
+                case 7:
                     // Prune one random neuron:
                     neuron.prune_connections();
                     break;
-                case 7:
+                case 8:
                     // Enhance one random neuron:
                     neuron.enhance_connections();
                     break;
-                case 8:
+                case 9:
                     // Prune all neurons:
                     for (Neuron &n: hidden_layer) {
                         n.prune_connections();
                     }
                     break;
-                case 9:
+                case 10:
                     // Enhance all neurons:
                     for (Neuron &n: hidden_layer) {
                         n.enhance_connections();
-                    }
-                    break;
-                case 10:
-                    // Add neuron:
-                    prob = global_rng.get_uint16(new_node_prob);
-                    if ((prob == 0) && (hidden_layer.size() < max_network_size)) {
-                        add_neuron1();
-                    } else {
-                        neuron.mutate_hidden_connection();
                     }
                     break;
                 case 11:
@@ -349,6 +353,85 @@ class NeuralNet2Individual: public SEIndividual {
                         std::ranges::rotate(hidden_layer, hidden_layer.begin() + 1);
                     } else {
                         neuron.mutate_hidden_connection();
+                    }
+                    break;
+                case 20:
+                    {
+                        // Optimize bias:
+                        std::float64_t current_bias = neuron.get_bias();
+                        std::float64_t current_fitness1 = fitness1;
+                        std::float64_t new_bias = current_bias - 0.1;
+                        const std::float64_t upper_bound = current_bias + 0.1;
+
+                        while (new_bias <= upper_bound) {
+                            neuron.set_bias(new_bias);
+                            se_calculate_fitness1();
+
+                            if (fitness1 < current_fitness1) {
+                                current_fitness1 = fitness1;
+                                current_bias = new_bias;
+                            }
+
+                            new_bias += 0.01;
+                        }
+
+                        neuron.set_bias(current_bias);
+                    }
+                    break;
+                case 21:
+                    {
+                        // Optimize one input connection:
+                        if (neuron.is_empty()) {
+                            neuron.mutate_input_connection();
+                        } else {
+                            const size_t index = neuron.get_random_input_index();
+                            std::float64_t current_weight = neuron.get_input_weight(index);
+                            std::float64_t current_fitness1 = fitness1;
+                            std::float64_t new_weight = current_weight - 0.1;
+                            const std::float64_t upper_bound = current_weight + 0.1;
+
+                            while (new_weight <= upper_bound) {
+                                neuron.set_input_weight(index, new_weight);
+                                se_calculate_fitness1();
+
+                                if (fitness1 < current_fitness1) {
+                                    current_fitness1 = fitness1;
+                                    current_weight = new_weight;
+                                }
+
+                                new_weight += 0.01;
+                            }
+
+                            neuron.set_input_weight(index, current_weight);
+                        }
+                    }
+                    break;
+                case 22:
+                    {
+                        // Optimize one hidden connection:
+                        if (neuron.is_empty()) {
+                            neuron.mutate_hidden_connection();
+                        } else {
+                            const size_t index = neuron.get_random_hidden_index();
+                            std::float64_t current_weight = neuron.get_hidden_weight(index);
+                            std::float64_t current_fitness1 = fitness1;
+                            std::float64_t new_weight = current_weight - 0.1;
+                            const std::float64_t upper_bound = current_weight + 0.1;
+
+                            while (new_weight <= upper_bound) {
+                                neuron.set_hidden_weight(index, new_weight);
+                                se_calculate_fitness1();
+
+                                if (fitness1 < current_fitness1) {
+                                    current_fitness1 = fitness1;
+                                    current_weight = new_weight;
+                                }
+
+                                new_weight += 0.01;
+                            }
+
+                            neuron.set_hidden_weight(index, current_weight);
+                        }
                     }
                     break;
                 default:

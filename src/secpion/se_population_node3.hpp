@@ -56,7 +56,7 @@ class SEPopulationNode3: public NCNodeDataProcessor {
             bool exit_iteration = false;
 
             for (size_t i = 0; i < num_of_iterations; i++) {
-                population.population[0]->se_current_iteration(i, num_of_iterations);
+                population.se_sub_iteration(i);
 
                 for (size_t j = 0; j < population.se_config.node_population_size; j++) {
                     k = population.rng.get_size_t(population.se_config.node_population_size);
@@ -89,6 +89,9 @@ class SEPopulationNode3: public NCNodeDataProcessor {
 
             population.se_calculate_fitness2();
             population.se_log_statistics();
+
+            population.se_get_best()->se_set_metadata(std::format("PN3, max_iter: {}, mut: {}",
+                population.se_config.num_of_iterations, population.se_config.num_of_mutations));
 
             return population.se_get_best()->se_to_vec_u8();
         }

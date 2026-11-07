@@ -172,6 +172,7 @@ class DataProvider {
                 training_set.shrink_to_fit();
 
                 set_new_training_batch();
+                local_rng.seed();
             } else {
                 throw std::runtime_error("Could not open data file!");
             }
@@ -186,5 +187,9 @@ class DataProvider {
                 train_input_values[i] = {training_set[pos].sl, training_set[pos].sw, training_set[pos].pl, training_set[pos].pw};
                 train_output_values[i] = {training_set[pos].i1, training_set[pos].i2, training_set[pos].i3};
             }
+        }
+
+        void reseed_rng() {
+            local_rng.seed();
         }
 };

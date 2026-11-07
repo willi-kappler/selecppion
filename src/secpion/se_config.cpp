@@ -41,6 +41,7 @@ SEConfiguration::SEConfiguration():
     se_node_log_file(""),
     se_node_log_level(""),
     seed_count(10),
+    sub_iteration_max(0),
 
     min_num_of_individuals(2),
     sine_base(100.0),
@@ -169,6 +170,10 @@ SEConfiguration::SEConfiguration():
 
     if (json_config.contains("seed_count")) {
         se_config.seed_count = json_config["seed_count"].get<uint32_t>();
+    }
+
+    if (json_config.contains("sub_iteration_max")) {
+        se_config.sub_iteration_max = json_config["sub_iteration_max"].get<uint32_t>();
     }
 
     if (json_config.contains("min_num_of_individuals")) {

@@ -105,10 +105,24 @@ void SEIndividual::se_prepare_individual([[maybe_unused]] size_t index) {
     // index is the current index of this individual inside the population.
 }
 
-void SEIndividual::se_current_iteration([[maybe_unused]] size_t iteration, [[maybe_unused]] uint32_t num_of_iterations) {
+void SEIndividual::se_sub_iteration([[maybe_unused]] size_t index, [[maybe_unused]] size_t iteration, [[maybe_unused]] uint32_t num_of_iterations) {
     // Can be implemented but is not needed.
-    // This method is called only for the individual at index 0.
-    // It can be used to change the internal state based on the
-    // current iteration.
+    // This method is called for each individual
+    // when the sub iteration is finished.
+}
+
+void SEIndividual::se_set_metadata([[maybe_unused]] std::string metadata) {
+    // Can be implemented but is not needed.
+    // This method allows the user to add some more information to the individual.
+    // It will be logged on the server if this individual is a new best one.
+    // The metadata will be set by the population node.
+}
+
+std::string SEIndividual::se_get_metadata() {
+    // Can be implemented but is not needed.
+    // This method allows the user to add some more information to the individual.
+    // It will be logged on the server if this individual is a new best one.
+    // The metadata will be set by the population node.
+    return std::string();
 }
 }

@@ -59,7 +59,7 @@ class SEPopulationNode4: public NCNodeDataProcessor {
             uint32_t all_above_global_fitness = 0;
 
             for (size_t i = 0; i < num_of_iterations; i++) {
-                population.population[0]->se_current_iteration(i, num_of_iterations);
+                population.se_sub_iteration(i);
                 indi_below_global_fitness = 0;
 
                 for (size_t j = 0; j < population.se_config.node_population_size; j++) {
@@ -100,6 +100,9 @@ class SEPopulationNode4: public NCNodeDataProcessor {
             population.se_calculate_fitness2();
             population.se_log_statistics();
             //population.se_clone_best_to_worst();
+
+            population.se_get_best()->se_set_metadata(std::format("PN4, max_iter: {}, mut: {}",
+                population.se_config.num_of_iterations, population.se_config.num_of_mutations));
 
             return population.se_get_best()->se_to_vec_u8();
         }

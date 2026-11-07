@@ -19,10 +19,11 @@
     "nc_server_log_level": "debug",
     "nc_node_log_file": "nc_node",
     "nc_node_log_level": "debug",
-    "randomize_count": 20,
+    "randomize_count": 1,
     "mutation_operations": [
         0, 1, 2, 3
     ],
+    "sub_iteration_max": 0,
     "sine_base": 22.0,
     "sine_amplitude": 5.0,
     "sine_frequency": 0.001,

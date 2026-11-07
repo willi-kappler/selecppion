@@ -49,6 +49,7 @@ class SEPopulation {
         uint64_t randomize_iteration;
         std::float64_t previous_best;
         uint32_t current_seed_counter;
+        uint32_t sub_iteration;
 
         SEPopulation(SEConfiguration config):
             se_config(config),
@@ -61,7 +62,8 @@ class SEPopulation {
             rng(),
             randomize_iteration(0),
             previous_best(0.0),
-            current_seed_counter(0)
+            current_seed_counter(0),
+            sub_iteration(0)
         {
             rng.seed();
             spdlog::drop("se_logger");
@@ -94,6 +96,7 @@ class SEPopulation {
             se_logger->info("Accept new best: {}", se_config.accept_new_best);
             se_logger->info("Mutation operations: {}", se_config.mutation_operations);
             se_logger->info("Reseed max count: {}", se_config.seed_count);
+            se_logger->info("Sub iteration max: {}", se_config.sub_iteration_max);
             se_logger->flush();
         }
 
@@ -321,6 +324,7 @@ class SEPopulation {
 
         void se_prepare_iteration(std::string_view population_title, std::vector<uint8_t> data) {
             se_logger->info(population_title);
+            sub_iteration = 0;
 
             current_seed_counter++;
             if (current_seed_counter >= se_config.seed_count) {
@@ -348,6 +352,24 @@ class SEPopulation {
             for (size_t i = 0; i < population.size(); i++) {
                 if (i != best_index) {
                     population[i]->se_copy_from_internal(*population[best_index]);
+                }
+            }
+        }
+
+        void se_sub_iteration(size_t iteration) {
+            const uint32_t sub_iter_max = se_config.sub_iteration_max;
+            const uint32_t num_iter = se_config.num_of_iterations;
+
+            if ((sub_iter_max > 1) && (num_iter - iteration > sub_iter_max)) {
+                sub_iteration++;
+
+                if (sub_iteration >= sub_iter_max) {
+                    sub_iteration = 0;
+                    se_logger->debug("Sub-iteration reset: {}", iteration);
+
+                    for (size_t i = 0; i < population.size(); i++) {
+                        population[i]->se_sub_iteration(i, iteration, num_iter);
+                    }
                 }
             }
         }

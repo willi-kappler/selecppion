@@ -54,7 +54,7 @@ class SEPopulationNode9: public NCNodeDataProcessor {
             const uint32_t num_of_iterations = population.se_config.num_of_iterations;
 
             for (uint32_t i = 0; i < num_of_iterations; i++) {
-                population.population[0]->se_current_iteration(i, num_of_iterations);
+                population.se_sub_iteration(i);
 
                 current_limit = population.se_config.sine_base + (population.se_config.sine_amplitude *
                     sin(population.se_config.sine_frequency * static_cast<std::float64_t>(i)));
@@ -83,6 +83,9 @@ class SEPopulationNode9: public NCNodeDataProcessor {
             population.se_find_best_and_worst_individual();
             population.se_calculate_fitness2();
             population.se_log_statistics();
+
+            population.se_get_best()->se_set_metadata(std::format("PN9, max_iter: {}, mut: {}",
+                population.se_config.num_of_iterations, population.se_config.num_of_mutations));
 
             return population.se_get_best()->se_to_vec_u8();
         }

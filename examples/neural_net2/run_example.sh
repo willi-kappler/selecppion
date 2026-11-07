@@ -3,20 +3,18 @@
 EXECUTABLE="../../builddir/neural_net2_example"
 
 run_type() {
-    echo "Run type $1."
-
     # Start 6 nodes:
     $EXECUTABLE -i 1000 -m 1 -t 1 &
+    sleep 1
+    $EXECUTABLE -i 1100 -m 1 -t 1 &
+    sleep 1
+    $EXECUTABLE -i 1200 -m 1 -t 1 -r &
     sleep 1
     $EXECUTABLE -i 1000 -m 1 -t 8 &
     sleep 1
     $EXECUTABLE -i 1100 -m 1 -t 8 &
     sleep 1
-    $EXECUTABLE -i 1200 -m 1 -t 8 &
-    sleep 1
-    $EXECUTABLE -i 1300 -m 1 -t 8 &
-    sleep 1
-    $EXECUTABLE -i 1400 -m 1 -t 8 &
+    $EXECUTABLE -i 1200 -m 1 -t 8 -r &
 }
 
 run_all_types() {
@@ -49,7 +47,7 @@ run_all_types() {
 $EXECUTABLE --server &
 sleep 1
 
-run_type 1
+run_type
 # run_all_types
 sleep 1
 echo ""

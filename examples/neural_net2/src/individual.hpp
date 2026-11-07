@@ -34,7 +34,6 @@
 using namespace secpion;
 
 DataProvider global_data_provider;
-uint32_t global_batch_counter;
 
 class NeuralNet2Individual: public SEIndividual {
     public:
@@ -44,6 +43,7 @@ class NeuralNet2Individual: public SEIndividual {
         const uint16_t new_connection_prob;
         const uint16_t max_network_size;
         std::vector<Neuron> hidden_layer;
+        std::string local_metadata;
 
         NeuralNet2Individual(size_t input_size, size_t output_size):
         SEIndividual(),
@@ -52,7 +52,8 @@ class NeuralNet2Individual: public SEIndividual {
         new_node_prob(10),
         new_connection_prob(10),
         max_network_size(10),
-        hidden_layer()
+        hidden_layer(),
+        local_metadata()
         {
             se_randomize();
         }
@@ -255,12 +256,52 @@ class NeuralNet2Individual: public SEIndividual {
                         neuron.mutate_hidden_connection();
                     }
                     break;
+
+
+                // The ones below are not needed:
                 case 4:
+                    neuron.swap_input_connection();
+                    break;
+                case 5:
+                    neuron.swap_hidden_connection();
+                    break;
+                case 6:
+                    neuron.rotate_right_input_connection();
+                    break;
+                case 7:
+                    neuron.rotate_left_input_connection();
+                    break;
+                case 8:
+                    neuron.rotate_right_hidden_connection();
+                    break;
+                case 9:
+                    neuron.rotate_left_hidden_connection();
+                    break;
+                case 10:
+                    // Rotate neurons right:
+                    if (current_size > 1) {
+                        std::ranges::rotate(hidden_layer, hidden_layer.end() - 1);
+                    } else {
+                        neuron.mutate_hidden_connection();
+                    }
+                    break;
+                case 11:
+                    // Rotate neurons left:
+                    if (current_size > 1) {
+                        std::ranges::rotate(hidden_layer, hidden_layer.begin() + 1);
+                    } else {
+                        neuron.mutate_hidden_connection();
+                    }
+                    break;
+
+
+                // These may be even harmful:
+                case 12:
                     // Replace input connection:
                     index2 = global_rng.get_size_t(input_size_local);
                     neuron.replace_input_connection(index2);
                     break;
-                case 5:
+                case 13:
                     // Replace hidden connection:
                     index2 = global_rng.get_size_t(current_size);
                     if (index2 == index1) {
@@ -269,7 +310,7 @@ class NeuralNet2Individual: public SEIndividual {
                         neuron.replace_hidden_connection(index2);
                     }
                     break;
-                case 6:
+                case 14:
                     // Split neuron:
                     prob = global_rng.get_uint16(new_node_prob);
                     if ((prob == 0) && (hidden_layer.size() < max_network_size)) {
@@ -285,27 +326,27 @@ class NeuralNet2Individual: public SEIndividual {
                         neuron.mutate_hidden_connection();
                     }
                     break;
-                case 7:
+                case 15:
                     // Prune one random neuron:
                     neuron.prune_connections();
                     break;
-                case 8:
+                case 16:
                     // Enhance one random neuron:
                     neuron.enhance_connections();
                     break;
-                case 9:
+                case 17:
                     // Prune all neurons:
                     for (Neuron &n: hidden_layer) {
                         n.prune_connections();
                     }
                     break;
-                case 10:
+                case 18:
                     // Enhance all neurons:
                     for (Neuron &n: hidden_layer) {
                         n.enhance_connections();
                     }
                     break;
-                case 11:
+                case 19:
                     {
                         // Swap neurons:
                         if (current_size > 1) {
@@ -319,40 +360,6 @@ class NeuralNet2Individual: public SEIndividual {
                         } else {
                             neuron.mutate_hidden_connection();
                         }
-                    }
-                    break;
-                case 12:
-                    neuron.swap_input_connection();
-                    break;
-                case 13:
-                    neuron.swap_hidden_connection();
-                    break;
-                case 14:
-                    neuron.rotate_right_input_connection();
-                    break;
-                case 15:
-                    neuron.rotate_left_input_connection();
-                    break;
-                case 16:
-                    neuron.rotate_right_hidden_connection();
-                    break;
-                case 17:
-                    neuron.rotate_left_hidden_connection();
-                    break;
-                case 18:
-                    // Rotate neurons right:
-                    if (current_size > 1) {
-                        std::ranges::rotate(hidden_layer, hidden_layer.end() - 1);
-                    } else {
-                        neuron.mutate_hidden_connection();
-                    }
-                    break;
-                case 19:
-                    // Rotate neurons left:
-                    if (current_size > 1) {
-                        std::ranges::rotate(hidden_layer, hidden_layer.begin() + 1);
-                    } else {
-                        neuron.mutate_hidden_connection();
                     }
                     break;
                 case 20:
@@ -506,19 +513,17 @@ class NeuralNet2Individual: public SEIndividual {
         [[nodiscard]] std::vector<uint8_t> se_to_vec_u8() override {
             nlohmann::json json_array = nlohmann::json::array();
 
-            uint32_t num_connections = 0;
-
             for (Neuron neuron: hidden_layer) {
                 json_array.push_back(neuron.to_json());
-                num_connections += neuron.total_connections();
             }
 
             const nlohmann::json json_data = {
                 {"neurons", hidden_layer.size()},
-                {"connections", num_connections},
+                {"connections", num_of_connections()},
                 {"fitness1", double(fitness1)},
                 {"fitness2", double(fitness2)},
-                {"hidden_layer", json_array}
+                {"hidden_layer", json_array},
+                {"metadata", local_metadata}
             };
 
             return se_json_to_vec_u8(json_data);
@@ -536,11 +541,14 @@ class NeuralNet2Individual: public SEIndividual {
                 n.from_json(item);
                 hidden_layer.push_back(n);
             }
+
+            local_metadata = restored_json["metadata"].get<std::string>();
         }
 
         void se_reseed_rng(size_t index) override {
             if (index == 0) {
                 global_rng.seed();
+                global_data_provider.reseed_rng();
             }
         }
 
@@ -550,7 +558,6 @@ class NeuralNet2Individual: public SEIndividual {
                 // This needs to be done only once, for the individual at index 0.
                 // They all share the same global data provider.
                 // This will create a new batch of training data:
-                global_batch_counter = 0;
                 global_data_provider.set_new_training_batch();
             }
 
@@ -558,21 +565,39 @@ class NeuralNet2Individual: public SEIndividual {
             // so it needs to be re-calculated!
             se_calculate_fitness1();
         }
-/*
-        void se_current_iteration(size_t iteration, uint32_t num_of_iterations) override {
-            // This method is only called for the individual at index 0.
 
-            // Avoid overfitting by randomly changeing the training batch:
-            if (num_of_iterations - iteration > 2000) {
-                global_batch_counter++;
+        void se_sub_iteration(size_t index, [[maybe_unused]] size_t iteration, [[maybe_unused]] uint32_t num_of_iterations) override {
+            if (index == 0) {
+                global_data_provider.set_new_training_batch();
 
-                if (global_batch_counter > 1000) {
-                    global_batch_counter = 0;
-                    global_data_provider.set_new_training_batch();
-                }
             }
+
+            // New batch means the old fitness value is no longer valid,
+            // so it needs to be re-calculated!
+            se_calculate_fitness1();
         }
-*/
+
+        void se_new_best_individual(std::shared_ptr<spdlog::logger> se_logger) override {
+            se_logger->debug("----- Network size: {}, num of connections: {}", hidden_layer.size(), num_of_connections());
+        }
+
+        void se_set_metadata(std::string metadata) override {
+            local_metadata = metadata;
+        }
+
+        std::string se_get_metadata() override {
+            return local_metadata;
+        }
+
+        uint32_t num_of_connections() {
+            uint32_t num_connections = 0;
+
+            for (Neuron neuron: hidden_layer) {
+                num_connections += neuron.total_connections();
+            }
+
+            return num_connections;
+        }
 
         void print_network() {
             for (Neuron n: hidden_layer) {

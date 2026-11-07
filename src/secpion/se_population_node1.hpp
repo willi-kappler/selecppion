@@ -14,6 +14,7 @@
 #include <cstdint>
 #include <vector>
 #include <memory>
+#include <format>
 
 // External includes:
 #include <nodcru2/nc_node.hpp>
@@ -56,7 +57,7 @@ class SEPopulationNode1: public NCNodeDataProcessor {
             const uint32_t num_of_iterations = population.se_config.num_of_iterations;
 
             for (size_t i = 0; i < num_of_iterations; i++) {
-                population.population[0]->se_current_iteration(i, num_of_iterations);
+                population.se_sub_iteration(i);
 
                 for (size_t j = 0; j < offset; j++) {
                     // Create a copy of each individual before mutating it (lower half):
@@ -82,6 +83,8 @@ class SEPopulationNode1: public NCNodeDataProcessor {
             population.best_index = 0;
             population.se_calculate_fitness2();
             population.se_log_statistics();
+            population.se_get_best()->se_set_metadata(std::format("PN1, max_iter: {}, mut: {}",
+                population.se_config.num_of_iterations, population.se_config.num_of_mutations));
 
             return population.se_get_best()->se_to_vec_u8();
         }

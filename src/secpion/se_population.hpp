@@ -291,6 +291,7 @@ class SEPopulation {
                 population[worst_index]->fitness1, population[worst_index]->fitness2);
             se_logger->debug("Actual best: {}, actual worst: {}",
                 population[best_index]->se_actual_fitness(), population[worst_index]->se_actual_fitness());
+            se_logger->debug("Best index: {}, worst index: {}", best_index, worst_index);
 
             se_logger->debug("Best mutations:");
             std::vector<std::pair<uint8_t, uint32_t>> mut_op_counter(

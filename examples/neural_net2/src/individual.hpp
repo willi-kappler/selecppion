@@ -460,6 +460,7 @@ class NeuralNet2Individual: public SEIndividual {
 
         void se_calculate_fitness1() override {
             fitness1 = 0.0;
+
             const uint16_t batch_size = global_data_provider.batch_size;
 
             for (uint16_t i = 0; i < batch_size; i++) {
@@ -485,6 +486,7 @@ class NeuralNet2Individual: public SEIndividual {
             se_logger->debug("fitness1: {}", log_fitness1);
         }
 
+        /*
         void se_calculate_fitness2() override {
             fitness2 = 0.0;
             const size_t test_size = global_data_provider.test_input_values.size();
@@ -494,8 +496,9 @@ class NeuralNet2Individual: public SEIndividual {
             }
 
             fitness2 = fitness2 / static_cast<std::float64_t>(test_size);
-            fitness2 = (fitness1 + fitness2) / 2.0;
+            // fitness2 = (fitness1 + fitness2) / 2.0;
         }
+        */
 
         [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() const override {
             std::unique_ptr<NeuralNet2Individual> result = std::make_unique<NeuralNet2Individual>(input_size_local, output_size_local);
@@ -548,10 +551,11 @@ class NeuralNet2Individual: public SEIndividual {
         void se_reseed_rng(size_t index) override {
             if (index == 0) {
                 global_rng.seed();
-                global_data_provider.reseed_rng();
+                //global_data_provider.reseed_rng();
             }
         }
 
+        /*
         void se_prepare_individual(size_t index) override {
             // This is called before the iteration begins.
             if (index == 0) {
@@ -565,7 +569,9 @@ class NeuralNet2Individual: public SEIndividual {
             // so it needs to be re-calculated!
             se_calculate_fitness1();
         }
+        */
 
+        /*
         void se_sub_iteration(size_t index, [[maybe_unused]] size_t iteration, [[maybe_unused]] uint32_t num_of_iterations) override {
             if (index == 0) {
                 global_data_provider.set_new_training_batch();
@@ -576,6 +582,7 @@ class NeuralNet2Individual: public SEIndividual {
             // so it needs to be re-calculated!
             se_calculate_fitness1();
         }
+        */
 
         void se_new_best_individual(std::shared_ptr<spdlog::logger> se_logger) override {
             se_logger->debug("----- Network size: {}, num of connections: {}", hidden_layer.size(), num_of_connections());

@@ -50,8 +50,6 @@ class SEPopulationNode8: public NCNodeDataProcessor {
 
         [[nodiscard]] std::vector<uint8_t> nc_process_data(std::vector<uint8_t> data) override {
             population.se_prepare_iteration("PN8: Process data.", data);
-            population.se_sort_population();
-            // std::unique_ptr<SEIndividual> cloned_indi = population.population[0]->se_clone_internal();
             const uint32_t num_of_iterations = population.se_config.num_of_iterations;
 
             for (uint32_t i = 0; i < num_of_iterations; i++) {

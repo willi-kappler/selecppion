@@ -189,6 +189,14 @@ class DataProvider {
             }
         }
 
+        void set_new_training_batch_one() {
+            const uint16_t index1 = local_rng.get_uint16(batch_size);
+            const size_t index2 = local_rng.get_size_t(training_set.size());
+
+            train_input_values[index1] = {training_set[index2].sl, training_set[index2].sw, training_set[index2].pl, training_set[index2].pw};
+            train_output_values[index1] = {training_set[index2].i1, training_set[index2].i2, training_set[index2].i3};
+        }
+
         void reseed_rng() {
             local_rng.seed();
         }

@@ -4,17 +4,17 @@ EXECUTABLE="../../builddir/neural_net2_example"
 
 run_type() {
     # Start 6 nodes:
-    $EXECUTABLE -i 1000 -m 1 -t 1 &
+    $EXECUTABLE -i 20000 -m 1 -t 2 &
     sleep 1
-    $EXECUTABLE -i 1100 -m 1 -t 1 &
+    $EXECUTABLE -i 21000 -m 1 -t 2 &
     sleep 1
-    $EXECUTABLE -i 1200 -m 1 -t 1 -r &
+    $EXECUTABLE -i 22000 -m 1 -t 2 &
     sleep 1
-    $EXECUTABLE -i 1000 -m 1 -t 8 &
+    $EXECUTABLE -i 23000 -m 1 -t 2 &
     sleep 1
-    $EXECUTABLE -i 1100 -m 1 -t 8 &
+    $EXECUTABLE -i 24000 -m 1 -t 2 &
     sleep 1
-    $EXECUTABLE -i 1200 -m 1 -t 8 -r &
+    $EXECUTABLE -i 25000 -m 1 -t 2 &
 }
 
 run_all_types() {

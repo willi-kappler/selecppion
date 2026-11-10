@@ -18,7 +18,7 @@
     "nc_server_log_level": "debug",
     "nc_node_log_file": "nc_node",
     "nc_node_log_level": "debug",
-    "randomize_count": 10,
+    "randomize_count": 1,
     "mutation_operations": [
         0, 1, 2, 3
     ],

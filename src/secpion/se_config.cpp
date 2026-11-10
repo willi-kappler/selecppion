@@ -42,6 +42,7 @@ SEConfiguration::SEConfiguration():
     se_node_log_level(""),
     seed_count(10),
     sub_iteration_max(0),
+    randomize_if_stuck(false),
 
     min_num_of_individuals(2),
     sine_base(100.0),
@@ -174,6 +175,10 @@ SEConfiguration::SEConfiguration():
 
     if (json_config.contains("sub_iteration_max")) {
         se_config.sub_iteration_max = json_config["sub_iteration_max"].get<uint32_t>();
+    }
+
+    if (json_config.contains("randomize_if_stuck")) {
+        se_config.randomize_if_stuck = json_config["randomize_if_stuck"].get<bool>();
     }
 
     if (json_config.contains("min_num_of_individuals")) {

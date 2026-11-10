@@ -72,23 +72,6 @@ class NeuralNet2Individual: public SEIndividual {
             }
         }
 
-        void evaluate_log(std::span<const std::float64_t> input_values, std::shared_ptr<spdlog::logger> se_logger) {
-            se_logger->debug("NeuralNet2Individual::evaluate_log()");
-
-            // First reset all neurons:
-            for (Neuron &neuron: hidden_layer) {
-                neuron.reset_value();
-            }
-
-            // Evaluate the whole network two times:
-            for (uint8_t i = 0; i < 2; i++) {
-                se_logger->debug("evaluate iteration: {}", i);
-                for (Neuron &neuron: hidden_layer) {
-                    neuron.evaluate_log(input_values, hidden_layer, se_logger);
-                }
-            }
-        }
-
         void evaluate(std::initializer_list<std::float64_t> input_values) {
             evaluate(std::span<const std::float64_t>{input_values.begin(), input_values.end()});
         }
@@ -107,53 +90,6 @@ class NeuralNet2Individual: public SEIndividual {
             return error;
         }
 
-        std::float64_t calculate_error_log(std::span<const std::float64_t> expected_output, std::shared_ptr<spdlog::logger> se_logger) {
-            se_logger->debug("NeuralNet2Individual::calculate_error_log()");
-            std::float64_t error = 0.0;
-            std::float64_t value = 0.0;
-
-            // First n neurons are ouput neurons:
-            // (n = output_size_local)
-            for (size_t i = 0; i < output_size_local; i++) {
-                se_logger->debug("iteration: {}", i);
-                value = expected_output[i] - hidden_layer[i].current_value;
-                se_logger->debug("value: {}, expected_output: {}, current_value: {}", value, expected_output[i], hidden_layer[i].current_value);
-                se_logger->debug("error: {}", error);
-                error += value * value;
-                se_logger->debug("error: {}", error);
-            }
-
-            return error;
-        }
-
-        std::float64_t calculate_error2(std::span<const std::float64_t> expected_output) {
-            std::float64_t error = 0.0;
-            std::float64_t value = 0.0;
-            std::float64_t max_value = 0.0;
-
-            // First n neurons are ouput neurons:
-            // (n = output_size_local)
-            for (size_t i = 0; i < output_size_local; i++) {
-                value = hidden_layer[i].current_value;
-                if (value > max_value) {
-                    max_value = value;
-                }
-            }
-
-            if (max_value == 0.0) {
-                // Do not divide by zero!
-                max_value = 1.0;
-            }
-
-            for (size_t i = 0; i < output_size_local; i++) {
-                // Scale values between 0.0 and 1.0:
-                value = hidden_layer[i].current_value / max_value;
-                value = expected_output[i] - value;
-                error += value * value;
-            }
-
-            return error;
-        }
 
         std::float64_t calculate_error(std::initializer_list<std::float64_t> expected_values) {
             return calculate_error(std::span<const std::float64_t>{expected_values.begin(), expected_values.end()});
@@ -162,13 +98,6 @@ class NeuralNet2Individual: public SEIndividual {
         std::float64_t evaluate_with_error(std::span<const std::float64_t> input_values, std::span<const std::float64_t> expected_outputs) {
             evaluate(input_values);
             return calculate_error(expected_outputs);
-        }
-
-        std::float64_t evaluate_with_error_log(std::span<const std::float64_t> input_values, std::span<const std::float64_t> expected_outputs, std::shared_ptr<spdlog::logger> se_logger) {
-            se_logger->debug("NeuralNet2::Individual::evaluate_with_error_log()");
-            // evaluate_log(input_values, se_logger);
-            evaluate(input_values);
-            return calculate_error_log(expected_outputs, se_logger);
         }
 
         std::float64_t evaluate_with_error(std::initializer_list<std::float64_t> input_values,
@@ -188,25 +117,6 @@ class NeuralNet2Individual: public SEIndividual {
             // Add a connection from this new neuron to a random existing neuron:
             index = global_rng.get_size_t(current_size);
             hidden_layer[index].add_hidden_connection(current_size);
-
-            // Finally add the neuron to the hidden layer:
-            hidden_layer.push_back(new_neuron);
-        }
-
-        void add_neuron2() {
-            size_t current_size = hidden_layer.size();
-            Neuron new_neuron = Neuron();
-
-            for (size_t i = 0; i < current_size; i++) {
-                // Add all hidden connections:
-                new_neuron.add_hidden_connection(i);
-                hidden_layer[i].add_hidden_connection(current_size);
-            }
-
-            for (size_t i = 0; i < input_size_local; i++) {
-                // Add all input connections:
-                new_neuron.add_input_connection(i);
-            }
 
             // Finally add the neuron to the hidden layer:
             hidden_layer.push_back(new_neuron);
@@ -256,191 +166,6 @@ class NeuralNet2Individual: public SEIndividual {
                         neuron.mutate_hidden_connection();
                     }
                     break;
-
-
-                // The ones below are not needed:
-                case 4:
-                    neuron.swap_input_connection();
-                    break;
-                case 5:
-                    neuron.swap_hidden_connection();
-                    break;
-                case 6:
-                    neuron.rotate_right_input_connection();
-                    break;
-                case 7:
-                    neuron.rotate_left_input_connection();
-                    break;
-                case 8:
-                    neuron.rotate_right_hidden_connection();
-                    break;
-                case 9:
-                    neuron.rotate_left_hidden_connection();
-                    break;
-                case 10:
-                    // Rotate neurons right:
-                    if (current_size > 1) {
-                        std::ranges::rotate(hidden_layer, hidden_layer.end() - 1);
-                    } else {
-                        neuron.mutate_hidden_connection();
-                    }
-                    break;
-                case 11:
-                    // Rotate neurons left:
-                    if (current_size > 1) {
-                        std::ranges::rotate(hidden_layer, hidden_layer.begin() + 1);
-                    } else {
-                        neuron.mutate_hidden_connection();
-                    }
-                    break;
-
-
-                // These may be even harmful:
-                case 12:
-                    // Replace input connection:
-                    index2 = global_rng.get_size_t(input_size_local);
-                    neuron.replace_input_connection(index2);
-                    break;
-                case 13:
-                    // Replace hidden connection:
-                    index2 = global_rng.get_size_t(current_size);
-                    if (index2 == index1) {
-                        neuron.mutate_hidden_connection();
-                    } else {
-                        neuron.replace_hidden_connection(index2);
-                    }
-                    break;
-                case 14:
-                    // Split neuron:
-                    prob = global_rng.get_uint16(new_node_prob);
-                    if ((prob == 0) && (hidden_layer.size() < max_network_size)) {
-                        Neuron new_neuron = neuron.split_neuron();
-                        // Add new neuron to the network:
-                        hidden_layer.push_back(new_neuron);
-
-                        // Add one connection from a random neuron to the new neuron:
-                        index2 = global_rng.get_size_t(current_size);
-                        // The new neuon will be placed at the last index:
-                        hidden_layer[index2].add_hidden_connection(current_size);
-                    } else {
-                        neuron.mutate_hidden_connection();
-                    }
-                    break;
-                case 15:
-                    // Prune one random neuron:
-                    neuron.prune_connections();
-                    break;
-                case 16:
-                    // Enhance one random neuron:
-                    neuron.enhance_connections();
-                    break;
-                case 17:
-                    // Prune all neurons:
-                    for (Neuron &n: hidden_layer) {
-                        n.prune_connections();
-                    }
-                    break;
-                case 18:
-                    // Enhance all neurons:
-                    for (Neuron &n: hidden_layer) {
-                        n.enhance_connections();
-                    }
-                    break;
-                case 19:
-                    {
-                        // Swap neurons:
-                        if (current_size > 1) {
-                            const auto [i1, i2] = global_rng.get_two_size_t(current_size);
-
-                            if (hidden_layer[i1].is_empty() || hidden_layer[i2].is_empty()) {
-                                neuron.mutate_hidden_connection();
-                            } else {
-                                std::swap(hidden_layer[i1], hidden_layer[i2]);
-                            }
-                        } else {
-                            neuron.mutate_hidden_connection();
-                        }
-                    }
-                    break;
-                case 20:
-                    {
-                        // Optimize bias:
-                        std::float64_t current_bias = neuron.get_bias();
-                        std::float64_t current_fitness1 = fitness1;
-                        std::float64_t new_bias = -2.0;
-                        const std::float64_t upper_bound = 2.0;
-
-                        while (new_bias <= upper_bound) {
-                            neuron.set_bias(new_bias);
-                            se_calculate_fitness1();
-
-                            if (fitness1 < current_fitness1) {
-                                current_fitness1 = fitness1;
-                                current_bias = new_bias;
-                            }
-
-                            new_bias += 0.1;
-                        }
-
-                        neuron.set_bias(current_bias);
-                    }
-                    break;
-                case 21:
-                    {
-                        // Optimize one input connection:
-                        if (neuron.is_empty()) {
-                            neuron.mutate_input_connection();
-                        } else {
-                            const size_t index = neuron.get_random_input_index();
-                            std::float64_t current_weight = neuron.get_input_weight(index);
-                            std::float64_t current_fitness1 = fitness1;
-                            std::float64_t new_weight = -2.0;
-                            const std::float64_t upper_bound = 2.0;
-
-                            while (new_weight <= upper_bound) {
-                                neuron.set_input_weight(index, new_weight);
-                                se_calculate_fitness1();
-
-                                if (fitness1 < current_fitness1) {
-                                    current_fitness1 = fitness1;
-                                    current_weight = new_weight;
-                                }
-
-                                new_weight += 0.1;
-                            }
-
-                            neuron.set_input_weight(index, current_weight);
-                        }
-                    }
-                    break;
-                case 22:
-                    {
-                        // Optimize one hidden connection:
-                        if (neuron.is_empty()) {
-                            neuron.mutate_hidden_connection();
-                        } else {
-                            const size_t index = neuron.get_random_hidden_index();
-                            std::float64_t current_weight = neuron.get_hidden_weight(index);
-                            std::float64_t current_fitness1 = fitness1;
-                            std::float64_t new_weight = -2.0;
-                            const std::float64_t upper_bound = 2.0;
-
-                            while (new_weight <= upper_bound) {
-                                neuron.set_hidden_weight(index, new_weight);
-                                se_calculate_fitness1();
-
-                                if (fitness1 < current_fitness1) {
-                                    current_fitness1 = fitness1;
-                                    current_weight = new_weight;
-                                }
-
-                                new_weight += 0.1;
-                            }
-
-                            neuron.set_hidden_weight(index, current_weight);
-                        }
-                    }
-                    break;
                 default:
                     throw std::runtime_error(fmt::format("Unknown mutation operation: {}", op));
                     break;
@@ -469,36 +194,6 @@ class NeuralNet2Individual: public SEIndividual {
 
             fitness1 = fitness1 / static_cast<std::float64_t>(batch_size);
         }
-
-        void calculate_fitness1_log(std::shared_ptr<spdlog::logger> se_logger) {
-            se_logger->debug("NeuralNet2Individual::calculate_fitness1_log()");
-            std::float64_t log_fitness1 = 0.0;
-            const uint16_t batch_size = global_data_provider.batch_size;
-
-            for (uint16_t i = 0; i < batch_size; i++) {
-                se_logger->debug("iteration: {}", i);
-                se_logger->debug("fitness1: {}", log_fitness1);
-                log_fitness1 += evaluate_with_error_log(global_data_provider.train_input_values[i], global_data_provider.train_output_values[i], se_logger);
-                se_logger->debug("fitness1: {}",log_fitness1);
-            }
-
-            log_fitness1 = log_fitness1 / static_cast<std::float64_t>(batch_size);
-            se_logger->debug("fitness1: {}", log_fitness1);
-        }
-
-        /*
-        void se_calculate_fitness2() override {
-            fitness2 = 0.0;
-            const size_t test_size = global_data_provider.test_input_values.size();
-
-            for (uint16_t i = 0; i < test_size; i++) {
-                fitness2 += evaluate_with_error(global_data_provider.test_input_values[i], global_data_provider.test_output_values[i]);
-            }
-
-            fitness2 = fitness2 / static_cast<std::float64_t>(test_size);
-            // fitness2 = (fitness1 + fitness2) / 2.0;
-        }
-        */
 
         [[nodiscard]] std::unique_ptr<SEIndividual> se_clone() const override {
             std::unique_ptr<NeuralNet2Individual> result = std::make_unique<NeuralNet2Individual>(input_size_local, output_size_local);
@@ -551,38 +246,8 @@ class NeuralNet2Individual: public SEIndividual {
         void se_reseed_rng(size_t index) override {
             if (index == 0) {
                 global_rng.seed();
-                //global_data_provider.reseed_rng();
             }
         }
-
-        /*
-        void se_prepare_individual(size_t index) override {
-            // This is called before the iteration begins.
-            if (index == 0) {
-                // This needs to be done only once, for the individual at index 0.
-                // They all share the same global data provider.
-                // This will create a new batch of training data:
-                global_data_provider.set_new_training_batch();
-            }
-
-            // New batch means the old fitness value is no longer valid,
-            // so it needs to be re-calculated!
-            se_calculate_fitness1();
-        }
-        */
-
-        /*
-        void se_sub_iteration(size_t index, [[maybe_unused]] size_t iteration, [[maybe_unused]] uint32_t num_of_iterations) override {
-            if (index == 0) {
-                global_data_provider.set_new_training_batch();
-
-            }
-
-            // New batch means the old fitness value is no longer valid,
-            // so it needs to be re-calculated!
-            se_calculate_fitness1();
-        }
-        */
 
         void se_new_best_individual(std::shared_ptr<spdlog::logger> se_logger) override {
             se_logger->debug("----- Network size: {}, num of connections: {}", hidden_layer.size(), num_of_connections());
@@ -604,13 +269,5 @@ class NeuralNet2Individual: public SEIndividual {
             }
 
             return num_connections;
-        }
-
-        void print_network() {
-            for (Neuron n: hidden_layer) {
-                n.print_neuron();
-                std::print("-----\n");
-            }
-            std::print("#####\n");
         }
 };

@@ -53,7 +53,6 @@ class Neuron {
         std::vector<Connection> input_connections;
         std::vector<Connection> hidden_connections;
         std::float64_t bias;
-        uint8_t activation_method;
 
     public:
         std::float64_t current_value;
@@ -62,7 +61,6 @@ class Neuron {
             input_connections(),
             hidden_connections(),
             bias(global_rng.get_float64_unif1()),
-            activation_method(0),
             current_value(0.0)
         {}
 
@@ -76,10 +74,6 @@ class Neuron {
 
         void mutate_bias() {
             bias = change_delta(bias);
-        }
-
-        void mutate_activation() {
-            activation_method = global_rng.get_uint8(9);
         }
 
         [[nodiscard]] bool has_input_connection(size_t index) {
@@ -113,77 +107,6 @@ class Neuron {
                 size_t index = global_rng.get_size_t(n);
                 std::float64_t value = input_connections[index].second;
                 input_connections[index].second = change_delta(value);
-            }
-        }
-
-        void mutate_all_input_connections() {
-            std::float64_t value;
-
-            for (size_t i = 0; i < input_connections.size(); i++) {
-                value = input_connections[i].second;
-                input_connections[i].second = change_delta(value);
-            }
-        }
-
-        void replace_input_connection(size_t new_index) {
-            size_t n = input_connections.size();
-
-            if (n == 0) {
-                mutate_bias();
-            } else if (n == 1) {
-                input_connections[0].first = new_index;
-            } else {
-                size_t index = global_rng.get_size_t(n);
-                if (has_input_connection(new_index)) {
-                    mutate_input_connection();
-                } else {
-                    input_connections[index].first = new_index;
-                }
-            }
-        }
-
-        void swap_input_connection() {
-            const size_t n = input_connections.size();
-
-            if (n > 1) {
-                const auto [index1, index2] = global_rng.get_two_size_t(n);
-                size_t connection_index = input_connections[index1].first;
-                input_connections[index1].first = input_connections[index2].first;
-                input_connections[index2].first = connection_index;
-            } else {
-                mutate_input_connection();
-            }
-        }
-
-        void rotate_right_input_connection() {
-            const size_t n = input_connections.size();
-
-            if (n > 1) {
-                const size_t last_index = input_connections[n - 1].first;
-
-                for (size_t i = n - 1; i >= 1; i--) {
-                    input_connections[i].first = input_connections[i - 1].first;
-                }
-
-                input_connections[0].first = last_index;
-            } else {
-                mutate_input_connection();
-            }
-        }
-
-        void rotate_left_input_connection() {
-            const size_t n = input_connections.size();
-
-            if (n > 1) {
-                const size_t first_index = input_connections[0].first;
-
-                for (size_t i = 0; i < n - 1; i++) {
-                    input_connections[i].first = input_connections[i + 1].first;
-                }
-
-                input_connections[n - 1].first = first_index;
-            } else {
-                mutate_input_connection();
             }
         }
 
@@ -221,167 +144,6 @@ class Neuron {
             }
         }
 
-        void mutate_all_hidden_connections() {
-            std::float64_t value;
-
-            for (size_t i = 0; i < hidden_connections.size(); i++) {
-                value = hidden_connections[i].second;
-                hidden_connections[i].second = change_delta(value);
-            }
-        }
-
-        void replace_hidden_connection(size_t new_index) {
-            size_t n = hidden_connections.size();
-
-            if (n == 0) {
-                mutate_bias();
-            } else if (n == 1) {
-                hidden_connections[0].first = new_index;
-            } else {
-                if (has_hidden_connection(new_index)) {
-                    mutate_hidden_connection();
-                } else {
-                    size_t index = global_rng.get_size_t(n);
-                    hidden_connections[index].first = new_index;
-                }
-            }
-        }
-
-        void swap_hidden_connection() {
-            const size_t n = hidden_connections.size();
-
-            if (n > 1) {
-                const auto [index1, index2] = global_rng.get_two_size_t(n);
-                size_t connection_index = hidden_connections[index1].first;
-                hidden_connections[index1].first = hidden_connections[index2].first;
-                hidden_connections[index2].first = connection_index;
-            } else {
-                mutate_hidden_connection();
-            }
-        }
-
-        void rotate_right_hidden_connection() {
-            const size_t n = hidden_connections.size();
-
-            if (n > 1) {
-                const size_t last_index = hidden_connections[n - 1].first;
-
-                for (size_t i = n - 1; i >= 1; i--) {
-                    hidden_connections[i].first = hidden_connections[i - 1].first;
-                }
-
-                hidden_connections[0].first = last_index;
-            } else {
-                mutate_hidden_connection();
-            }
-        }
-
-        void rotate_left_hidden_connection() {
-            const size_t n = hidden_connections.size();
-
-            if (n > 1) {
-                const size_t first_index = hidden_connections[0].first;
-
-                for (size_t i = 0; i < n - 1; i++) {
-                    hidden_connections[i].first = hidden_connections[i + 1].first;
-                }
-
-                hidden_connections[n - 1].first = first_index;
-            } else {
-                mutate_input_connection();
-            }
-        }
-
-        [[nodiscard]] Neuron split_neuron() {
-            Neuron new_neuron;
-
-            new_neuron.bias = bias;
-            new_neuron.activation_method = activation_method;
-
-            const size_t input_size = input_connections.size();
-            const size_t input_size_2 = input_size / 2;
-            const size_t hidden_size = hidden_connections.size();
-            const size_t hidden_size_2 = hidden_size / 2;
-
-            if ((input_size > 1) && (hidden_size > 1)) {
-                // Move half of the input connections into the new neuron:
-                new_neuron.input_connections.assign(input_connections.begin() + input_size_2, input_connections.end());
-                input_connections.erase(input_connections.begin() + input_size_2, input_connections.end());
-
-                // Move half of the hidden connections into the new neuron:
-                new_neuron.hidden_connections.assign(hidden_connections.begin() + hidden_size_2, hidden_connections.end());
-                hidden_connections.erase(hidden_connections.begin() + hidden_size_2, hidden_connections.end());
-            }
-
-            return new_neuron;
-        }
-
-        void prune_connections() {
-            const std::float64_t threshold = 0.01;
-
-            std::erase_if(input_connections, [threshold](Connection c) {
-                return std::abs(c.second) < threshold;
-            });
-
-            std::erase_if(hidden_connections, [threshold](Connection c) {
-                return std::abs(c.second) < threshold;
-            });
-        }
-
-        void enhance_connections() {
-            for (auto &[index, weight]: input_connections) {
-                if ((weight > 0.5) || (weight < -0.5)) {
-                    weight *= 1.01;
-                } else {
-                    weight *= 0.99;
-                }
-            }
-        }
-
-        void randomize_all_connections() {
-            bias = global_rng.get_float64_unif1();
-
-            for (auto &[index, weight]: input_connections) {
-                weight = global_rng.get_float64_unif1();
-            }
-
-            for (auto &[index, weight]: hidden_connections) {
-                weight = global_rng.get_float64_unif1();
-            }
-        }
-
-        size_t get_random_input_index() {
-            return global_rng.get_size_t(input_connections.size());
-        }
-
-        std::float64_t get_input_weight(size_t index) {
-            return input_connections[index].second;
-        }
-
-        void set_input_weight(size_t index, std::float64_t weight) {
-            input_connections[index].second = weight;
-        }
-
-        size_t get_random_hidden_index() {
-            return global_rng.get_size_t(hidden_connections.size());
-        }
-
-        std::float64_t get_hidden_weight(size_t index) {
-            return hidden_connections[index].second;
-        }
-
-        void set_hidden_weight(size_t index, std::float64_t weight) {
-            hidden_connections[index].second = weight;
-        }
-
-        std::float64_t get_bias() {
-            return bias;
-        }
-
-        void set_bias(std::float64_t new_bias) {
-            bias = new_bias;
-        }
-
         void evaluate(std::span<const std::float64_t> input_values, std::span<const Neuron> hidden_layer) {
             std::float64_t new_value = bias;
 
@@ -393,104 +155,14 @@ class Neuron {
                 new_value += weight * hidden_layer[index].current_value;
             }
 
-            switch (activation_method) {
-                case 0:
-                    // ReLU:
-                    if (new_value < 0.0) {
-                        new_value = 0.0;
-                    }
-                    break;
-                case 1:
-                    // Leaky ReLU:
-                    if (new_value < 0.0) {
-                        new_value = 0.01 * new_value;
-                    }
-                    break;
-                case 2:
-                    // Scale by connections:
-                    if (new_value <= 0.0) {
-                        new_value = 0.0;
-                    } else {
-                        new_value = new_value / static_cast<std::float64_t>(input_connections.size() + hidden_connections.size() + 1);
-                    }
-                    break;
-                case 3:
-                    // Min-Max limit 1:
-                    if (new_value <= -10.0) {
-                        new_value = -10.0;
-                    } else if (new_value >= 10.0) {
-                        new_value = 10.0;
-                    }
-                    break;
-                case 4:
-                    // Min-Max limit 2:
-                    if (new_value < 0.0) {
-                        new_value = 0.0;
-                    } else if (new_value >= 10.0) {
-                        new_value = 10.0;
-                    }
-                    break;
-                case 5:
-                    // Sigmoid (standard logistic function):
-                    new_value = std::clamp<std::float64_t>(new_value, -100.0, 100.0);
-                    new_value = 1.0 / (1.0 + std::exp(-new_value));
-                    break;
-                case 6:
-                    // Hyperbolic tangent:
-                    {
-                        new_value = std::clamp<std::float64_t>(new_value, -100.0, 100.0);
-                        std::float64_t e1 = std::exp(new_value);
-                        std::float64_t e2 = std::exp(-new_value);
-                        new_value = (e1 - e2) / (e1 + e2);
-                    }
-                    break;
-                case 7:
-                    // Exponential linear unit (ELU):
-                    if (new_value < 0.0) {
-                        new_value = std::clamp<std::float64_t>(new_value, -100.0, 100.0);
-                        new_value = std::exp(new_value) - 1.0;
-                    }
-                    break;
-                case 8:
-                    // Algebraic function:
-                    // new_value = std::abs(new_value);
-                    new_value = new_value * new_value;
-                    new_value = new_value / (1.0 + new_value);
-                    break;
-            }
-
-            current_value = new_value;
-        }
-
-        void evaluate_log(std::span<const std::float64_t> input_values, std::span<const Neuron> hidden_layer, std::shared_ptr<spdlog::logger> se_logger) {
-            std::float64_t new_value = bias;
-
-            se_logger->debug("Neuron::evaluate_log()");
-
-            for (auto [index, weight]: input_connections) {
-                se_logger->debug("input_connection: index: {}, weight: {}, new_value: {}", index, weight, new_value);
-                new_value += weight * input_values[index];
-                se_logger->debug("input_value: {}", input_values[index]);
-                se_logger->debug("new_value: {}", new_value);
-            }
-
-            for (auto [index, weight]: hidden_connections) {
-                se_logger->debug("hidden_connection: index: {}, weight: {}, new_value: {}", index, weight, new_value);
-                new_value += weight * hidden_layer[index].current_value;
-                se_logger->debug("hidden_layer value: {}", hidden_layer[index].current_value);
-                se_logger->debug("new_value: {}", new_value);
-            }
-
+            // ReLU:
             if (new_value < 0.0) {
                 new_value = 0.0;
             }
 
-            se_logger->debug("activation: new_value: {}", new_value);
-
             current_value = new_value;
-            se_logger->flush();
         }
-
+/*
         [[nodiscard]] Neuron clone() {
             Neuron result;
 
@@ -501,7 +173,7 @@ class Neuron {
 
             return result;
         }
-
+*/
         [[nodiscard]] nlohmann::json to_json() {
             nlohmann::json json_input_con = nlohmann::json::array();
             nlohmann::json json_hidden_con = nlohmann::json::array();
@@ -516,7 +188,6 @@ class Neuron {
 
             const nlohmann::json result = {
                 {"bias", double(bias)},
-                {"activation", activation_method},
                 {"input_connections", json_input_con},
                 {"hidden_connections", json_hidden_con}
             };
@@ -526,7 +197,6 @@ class Neuron {
 
         void from_json(nlohmann::json neuron) {
             bias = neuron["bias"].get<double>();
-            activation_method = neuron["activation"].get<uint8_t>();
             input_connections.clear();
             hidden_connections.clear();
 
@@ -541,12 +211,5 @@ class Neuron {
 
         [[nodiscard]] uint32_t total_connections() {
             return static_cast<uint32_t>(input_connections.size() + hidden_connections.size());
-        }
-
-        void print_neuron() {
-            std::print("Bias: {}, value: {}\n", bias, current_value);
-            std::print("Activation method: {}\n", activation_method);
-            std::print("Input: {}\n", input_connections);
-            std::print("Hidden: {}\n", hidden_connections);
         }
 };

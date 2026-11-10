@@ -41,26 +41,18 @@ struct DataPoint {
 class DataProvider {
     private:
         std::vector<DataPoint> training_set;
-        //secpion::SE_RNG_L64 local_rng;
 
     public:
         const uint16_t batch_size;
         std::vector<std::vector<std::float64_t>> train_input_values;
         std::vector<std::vector<std::float64_t>> train_output_values;
-        //std::vector<std::vector<std::float64_t>> test_input_values;
-        //std::vector<std::vector<std::float64_t>> test_output_values;
 
         DataProvider(uint16_t training_batch_size = 150):
             training_set(),
-            //local_rng(),
             batch_size(training_batch_size),
             train_input_values(),
             train_output_values()
-            //test_input_values(),
-            //test_output_values()
         {
-            //local_rng.seed(19725);
-
             for (uint16_t i = 0; i < batch_size; i++) {
                 train_input_values.push_back({0.0, 0.0, 0.0, 0.0});
                 train_output_values.push_back({0.0, 0.0, 0.0});
@@ -139,81 +131,24 @@ class DataProvider {
                 const std::float64_t pl_diff = pl_max - pl_min;
                 const std::float64_t pw_diff = pw_max - pw_min;
 
-                for (uint16_t i = 0; i < training_set.size(); i++) {
+                for (uint16_t i = 0; i < batch_size; i++) {
                     training_set[i].sl = (training_set[i].sl - sl_min) / sl_diff;
                     training_set[i].sw = (training_set[i].sw - sw_min) / sw_diff;
                     training_set[i].pl = (training_set[i].pl - pl_min) / pl_diff;
                     training_set[i].pw = (training_set[i].pw - pw_min) / pw_diff;
                 }
 
-                // Define training set:
-                //const size_t training_size = training_set.size();
                 std::print("Num of data points: {}\n", training_set.size());
-                //local_rng.shuffle(training_set);
-
-                // Split all data points into training set (80%) and test set (20%):
-                //const size_t test_size = training_size * 20 / 100;
-
-                //std::print("Test size: {}\n", test_size);
-
-                /*
-                test_input_values.clear();
-                test_input_values.reserve(test_size);
-                test_output_values.clear();
-                test_output_values.reserve(test_size);
-
-                const size_t offset = training_size - test_size;
-
-                for (uint16_t i = 0; i < test_size; i++) {
-                    test_input_values.push_back({training_set[i + offset].sl, training_set[i + offset].sw, training_set[i + offset].pl, training_set[i + offset].pw});
-                    test_output_values.push_back({training_set[i + offset].i1, training_set[i + offset].i2, training_set[i + offset].i3});
-                }
-                */
-
-                //training_set.resize(offset);
-                //training_set.shrink_to_fit();
-
                 set_new_training_batch();
-                // local_rng.seed();
             } else {
                 throw std::runtime_error("Could not open data file!");
             }
         }
 
         void set_new_training_batch() {
-
-            for (uint16_t i = 0; i < training_set.size(); i++) {
+            for (uint16_t i = 0; i < batch_size; i++) {
                 train_input_values[i] = {training_set[i].sl, training_set[i].sw, training_set[i].pl, training_set[i].pw};
                 train_output_values[i] = {training_set[i].i1, training_set[i].i2, training_set[i].i3};
             }
         }
-
-        /*
-        void set_new_training_batch_old() {
-            const size_t training_size = training_set.size();
-            size_t pos = 0;
-
-            for (uint16_t i = 0; i < batch_size; i++) {
-                pos = local_rng.get_size_t(training_size);
-                train_input_values[i] = {training_set[pos].sl, training_set[pos].sw, training_set[pos].pl, training_set[pos].pw};
-                train_output_values[i] = {training_set[pos].i1, training_set[pos].i2, training_set[pos].i3};
-            }
-        }
-        */
-
-        /*
-        void set_new_training_batch_one() {
-            const uint16_t index1 = local_rng.get_uint16(batch_size);
-            const size_t index2 = local_rng.get_size_t(training_set.size());
-
-            train_input_values[index1] = {training_set[index2].sl, training_set[index2].sw, training_set[index2].pl, training_set[index2].pw};
-            train_output_values[index1] = {training_set[index2].i1, training_set[index2].i2, training_set[index2].i3};
-        }
-        */
-
-        /*
-        void reseed_rng() {
-            local_rng.seed();
-        }
-        */
 };

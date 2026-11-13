@@ -37,7 +37,7 @@ class SEPopulationNode3: public NCNodeDataProcessor {
             population.se_fill_population(individual);
 
             population.se_logger->info("Population type 3.");
-            population.se_logger->info("Randomly pick an individual and mutate it.");
+            population.se_logger->info("Start at index 1 and iterate through population.");
             population.se_logger->info("If it's better than the best replace it.");
             population.se_logger->info("Else if it's better than the worst replace it.");
         }
@@ -52,15 +52,13 @@ class SEPopulationNode3: public NCNodeDataProcessor {
 
             std::unique_ptr<SEIndividual> cloned_indi = population.population[0]->se_clone_internal();
             const uint32_t num_of_iterations = population.se_config.num_of_iterations;
-            size_t k = 0;
             bool exit_iteration = false;
 
             for (size_t i = 0; i < num_of_iterations; i++) {
                 population.se_sub_iteration(i);
 
-                for (size_t j = 0; j < population.se_config.node_population_size; j++) {
-                    k = population.rng.get_size_t(population.se_config.node_population_size);
-                    cloned_indi->se_copy_from_internal(*population.population[k]);
+                for (size_t j = 1; j < population.se_config.node_population_size; j++) {
+                    cloned_indi->se_copy_from_internal(*population.population[j]);
 
                     for (uint32_t l = 0; l < population.se_config.num_of_mutations; l++) {
                         cloned_indi->se_mutate_internal(population.se_get_mut_op());

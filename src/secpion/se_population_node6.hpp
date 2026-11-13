@@ -71,6 +71,12 @@ class SEPopulationNode6: public NCNodeDataProcessor {
             std::unique_ptr<SEIndividual> cloned_indi3 = population.population[0]->se_clone_internal();
             const uint32_t num_of_iterations = population.se_config.num_of_iterations;
 
+            // Copy the best to all other individuals.
+            population.se_sort_population();
+            for (size_t i = 1; i < population.se_config.node_population_size; i++) {
+                population.population[i]->se_copy_from_internal(*population.population[0]);
+            }
+
             for (uint32_t i = 0; i < num_of_iterations; i++) {
                 population.se_sub_iteration(i);
 

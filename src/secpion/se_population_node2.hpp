@@ -49,11 +49,18 @@ class SEPopulationNode2: public NCNodeDataProcessor {
             population.se_prepare_iteration("PN2: Process data.", data);
             std::unique_ptr<SEIndividual> cloned_indi = population.population[0]->se_clone_internal();
             const uint32_t num_of_iterations = population.se_config.num_of_iterations;
+            const uint32_t population_size = population.se_config.node_population_size;
+
+            // Replace the worst with the second worst, if they differ:
+            population.se_sort_population();
+            if (population.population[population_size - 2]->fitness1 < population.population[population_size - 1]->fitness1) {
+                population.population[population_size - 1]->se_copy_from_internal(*population.population[population_size - 2]);
+            }
 
             for (size_t i = 0; i < num_of_iterations; i++) {
                 population.se_sub_iteration(i);
 
-                for (size_t j = 0; j < population.se_config.node_population_size; j++) {
+                for (size_t j = 0; j < population_size; j++) {
                     cloned_indi->se_copy_from_internal(*population.population[j]);
 
                     for (uint32_t k = 0; k < population.se_config.num_of_mutations; k++) {

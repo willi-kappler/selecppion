@@ -17,30 +17,19 @@ run_type() {
     $EXECUTABLE -i 10000 -m 1 -t 8 -r &
 }
 
-run_all_types() {
-    echo "Run all types."
-
-    $EXECUTABLE -i 20000 -m 1 -t 1 &
+run_type2() {
+    # Start 6 nodes:
+    $EXECUTABLE -i 10000 -m 1 -t 1 &
     sleep 1
-    $EXECUTABLE -i 20000 -m 1 -t 2 &
+    $EXECUTABLE -i 10000 -m 2 -t 1 &
     sleep 1
-    $EXECUTABLE -i 20000 -m 1 -t 3 &
+    $EXECUTABLE -i 10000 -m 3 -t 1 &
     sleep 1
-    $EXECUTABLE -i 20000 -m 1 -t 4 &
+    $EXECUTABLE -i 10000 -m 4 -t 1 &
     sleep 1
-    $EXECUTABLE -i 20000 -m 1 -t 5 &
+    $EXECUTABLE -i 10000 -m 5 -t 1 &
     sleep 1
-    $EXECUTABLE -i 2000 -m 10 -t 6 &
-    sleep 1
-    $EXECUTABLE -i 20000 -m 1 -t 7 &
-    sleep 1
-    $EXECUTABLE -i 20000 -m 1 -t 8 &
-    sleep 1
-    $EXECUTABLE -i 20000 -m 1 -t 9 &
-    sleep 1
-    $EXECUTABLE -i 20000 -m 1 -t 10 &
-    sleep 1
-    $EXECUTABLE -i 20000 -m 1 -t 11 &
+    $EXECUTABLE -i 10000 -m 1 -t 8 &
 }
 
 # Start the server:
@@ -48,6 +37,5 @@ $EXECUTABLE --server &
 sleep 1
 
 run_type
-# run_all_types
 sleep 1
 echo ""

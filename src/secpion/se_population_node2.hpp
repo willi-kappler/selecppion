@@ -51,12 +51,6 @@ class SEPopulationNode2: public NCNodeDataProcessor {
             const uint32_t num_of_iterations = population.se_config.num_of_iterations;
             const uint32_t population_size = population.se_config.node_population_size;
 
-            // Replace the worst with the second worst, if they differ:
-            population.se_sort_population();
-            if (population.population[population_size - 2]->fitness1 < population.population[population_size - 1]->fitness1) {
-                population.population[population_size - 1]->se_copy_from_internal(*population.population[population_size - 2]);
-            }
-
             for (size_t i = 0; i < num_of_iterations; i++) {
                 population.se_sub_iteration(i);
 

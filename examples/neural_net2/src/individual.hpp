@@ -109,7 +109,6 @@ class NeuralNet2Individual: public SEIndividual {
         void add_neuron1() {
             size_t current_size = hidden_layer.size();
             Neuron new_neuron = Neuron();
-
             // Add a random connection to the neuron:
             size_t index = global_rng.get_size_t(current_size);
             new_neuron.add_hidden_connection(index);
@@ -127,7 +126,7 @@ class NeuralNet2Individual: public SEIndividual {
             const size_t index1 = global_rng.get_size_t(current_size);
             size_t index2 = 0;
             Neuron &neuron = hidden_layer[index1];
-            uint16_t prob = 0;
+            uint16_t rnd_val = 0;
 
             switch (op) {
                 case 0:
@@ -135,8 +134,8 @@ class NeuralNet2Individual: public SEIndividual {
                     break;
                 case 1:
                     // Add input connection:
-                    prob = global_rng.get_uint16(new_connection_prob);
-                    if (prob == 0) {
+                    rnd_val = global_rng.get_uint16(new_connection_prob);
+                    if (rnd_val == 0) {
                         index2 = global_rng.get_size_t(input_size_local);
                         neuron.add_input_connection(index2);
                     } else {
@@ -145,23 +144,28 @@ class NeuralNet2Individual: public SEIndividual {
                     break;
                 case 2:
                     // Add hidden connection:
-                    prob = global_rng.get_uint16(new_connection_prob);
-                    if (prob == 0) {
+                    rnd_val = global_rng.get_uint16(new_connection_prob);
+                    if (rnd_val == 0) {
                         index2 = global_rng.get_size_t(current_size);
-                        if (index2 == index1) {
+                        neuron.add_hidden_connection(index2);
+                        /*
+                        index2 = global_rng.get_size_t(current_size);
+                        if (index1 == index2) {
                             neuron.mutate_hidden_connection();
                         } else {
                             neuron.add_hidden_connection(index2);
                         }
+                        */
                     } else {
                         neuron.mutate_hidden_connection();
                     }
                     break;
                 case 3:
                     // Add neuron:
-                    prob = global_rng.get_uint16(new_node_prob);
-                    if ((prob == 0) && (hidden_layer.size() < max_network_size)) {
-                        add_neuron1();
+                    rnd_val = global_rng.get_uint16(new_node_prob);
+                    if ((rnd_val == 0) && (hidden_layer.size() < max_network_size)) {
+                        // add_neuron1();
+                        hidden_layer.push_back(Neuron());
                     } else {
                         neuron.mutate_hidden_connection();
                     }
@@ -180,7 +184,8 @@ class NeuralNet2Individual: public SEIndividual {
             }
 
             // Start with one normal neuron (at least one is needed):
-            add_neuron1();
+            // add_neuron1();
+            hidden_layer.push_back(Neuron());
         }
 
         void se_calculate_fitness1() override {

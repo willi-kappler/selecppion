@@ -145,35 +145,22 @@ class Neuron {
         }
 
         void evaluate(std::span<const std::float64_t> input_values, std::span<const Neuron> hidden_layer) {
-            std::float64_t new_value = bias;
+            current_value = bias;
 
             for (auto [index, weight]: input_connections) {
-                new_value += weight * input_values[index];
+                current_value += weight * input_values[index];
             }
 
             for (auto [index, weight]: hidden_connections) {
-                new_value += weight * hidden_layer[index].current_value;
+                current_value += weight * hidden_layer[index].current_value;
             }
 
             // ReLU:
-            if (new_value < 0.0) {
-                new_value = 0.0;
+            if (current_value < 0.0) {
+                current_value = 0.0;
             }
-
-            current_value = new_value;
         }
-/*
-        [[nodiscard]] Neuron clone() {
-            Neuron result;
 
-            result.input_connections = input_connections;
-            result.hidden_connections = hidden_connections;
-            result.bias = bias;
-            result.activation_method = activation_method;
-
-            return result;
-        }
-*/
         [[nodiscard]] nlohmann::json to_json() {
             nlohmann::json json_input_con = nlohmann::json::array();
             nlohmann::json json_hidden_con = nlohmann::json::array();

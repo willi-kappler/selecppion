@@ -118,7 +118,7 @@ void SEIndividual::se_set_metadata([[maybe_unused]] std::string metadata) {
     // The metadata will be set by the population node.
 }
 
-std::string SEIndividual::se_get_metadata() {
+[[nodiscard]] std::string SEIndividual::se_get_metadata() {
     // Can be implemented but is not needed.
     // This method allows the user to add some more information to the individual.
     // It will be logged on the server if this individual is a new best one.

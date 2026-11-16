@@ -144,6 +144,34 @@ class Neuron {
             }
         }
 
+        void optimize() {
+            const std::float64_t factor = 1.1;
+            const std::float64_t limit1 = 0.7;
+            const std::float64_t limit2 = 1.0 - limit1;
+
+            if ((bias > limit1) || (bias < -limit1)) {
+                bias = bias * factor;
+            } else if ((bias > -limit2) && (bias < limit2)) {
+                bias = bias / factor;
+            }
+
+            for (auto &[index, weight]: input_connections) {
+                if ((weight > limit1) || (weight < -limit1)) {
+                    weight = weight * factor;
+                } else if ((weight > -limit2) && (weight < limit2)) {
+                    weight = weight / factor;
+                }
+            }
+
+            for (auto &[index, weight]: hidden_connections) {
+                if ((weight > limit1) || (weight < -limit1)) {
+                    weight = weight * factor;
+                } else if ((weight > -limit2) && (weight < limit2)) {
+                    weight = weight / factor;
+                }
+            }
+        }
+
         void evaluate(std::span<const std::float64_t> input_values, std::span<const Neuron> hidden_layer) {
             current_value = bias;
 

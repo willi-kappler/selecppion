@@ -170,6 +170,10 @@ class NeuralNet2Individual: public SEIndividual {
                         neuron.mutate_hidden_connection();
                     }
                     break;
+                case 4:
+                    // Optimize neuron:
+                    neuron.optimize();
+                    break;
                 default:
                     throw std::runtime_error(fmt::format("Unknown mutation operation: {}", op));
                     break;

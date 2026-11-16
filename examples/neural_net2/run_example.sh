@@ -4,6 +4,21 @@ EXECUTABLE="../../builddir/neural_net2_example"
 
 run_type() {
     # Start 6 nodes:
+    $EXECUTABLE -i 10000 -m 1 -t 1 -r &
+    sleep 1
+    $EXECUTABLE -i 10000 -m 1 -t 8 &
+    sleep 1
+    $EXECUTABLE -i 10000 -m 1 -t 1 &
+    sleep 1
+    $EXECUTABLE -i 10000 -m 2 -t 1 &
+    sleep 1
+    $EXECUTABLE -i 10000 -m 3 -t 1 &
+    sleep 1
+    $EXECUTABLE -i 10000 -m 4 -t 1 &
+}
+
+run_type2() {
+    # Start 6 nodes:
     $EXECUTABLE -i 10000 -m 1 -t 1 &
     sleep 1
     $EXECUTABLE -i 10000 -m 1 -t 2 &
@@ -15,21 +30,6 @@ run_type() {
     $EXECUTABLE -i 10000 -m 1 -t 2 -r &
     sleep 1
     $EXECUTABLE -i 10000 -m 1 -t 8 -r &
-}
-
-run_type2() {
-    # Start 6 nodes:
-    $EXECUTABLE -i 10000 -m 1 -t 1 &
-    sleep 1
-    $EXECUTABLE -i 10000 -m 2 -t 1 &
-    sleep 1
-    $EXECUTABLE -i 10000 -m 3 -t 1 &
-    sleep 1
-    $EXECUTABLE -i 10000 -m 4 -t 1 &
-    sleep 1
-    $EXECUTABLE -i 10000 -m 5 -t 1 &
-    sleep 1
-    $EXECUTABLE -i 10000 -m 1 -t 8 &
 }
 
 # Start the server:

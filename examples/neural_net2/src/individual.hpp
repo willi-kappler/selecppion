@@ -140,6 +140,7 @@ class NeuralNet2Individual: public SEIndividual {
                         neuron.add_input_connection(index2);
                     } else {
                         neuron.mutate_input_connection();
+                        current_mut_op = 4;
                     }
                     break;
                 case 2:
@@ -148,16 +149,9 @@ class NeuralNet2Individual: public SEIndividual {
                     if (rnd_val == 0) {
                         index2 = global_rng.get_size_t(current_size);
                         neuron.add_hidden_connection(index2);
-                        /*
-                        index2 = global_rng.get_size_t(current_size);
-                        if (index1 == index2) {
-                            neuron.mutate_hidden_connection();
-                        } else {
-                            neuron.add_hidden_connection(index2);
-                        }
-                        */
                     } else {
                         neuron.mutate_hidden_connection();
+                        current_mut_op = 5;
                     }
                     break;
                 case 3:
@@ -171,6 +165,12 @@ class NeuralNet2Individual: public SEIndividual {
                     }
                     break;
                 case 4:
+                    neuron.mutate_input_connection();
+                    break;
+                case 5:
+                    neuron.mutate_hidden_connection();
+                    break;
+                case 6:
                     // Optimize neuron:
                     neuron.optimize();
                     break;

@@ -65,7 +65,7 @@ class SEPopulationNode7: public NCNodeDataProcessor {
                     for (uint32_t k = 0; k < population.se_config.num_of_mutations; k++) {
                         cloned_indi->se_mutate_internal(population.se_get_mut_op());
                     }
-                    cloned_indi->se_calculate_fitness1();
+                    cloned_indi->se_calculate_fitness1_internal();
 
                     if (cloned_indi->fitness1 < current_best_fitness) {
                         current_best_fitness = cloned_indi->fitness1;

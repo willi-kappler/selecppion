@@ -29,6 +29,7 @@ class SEIndividual {
     public:
         std::float64_t fitness1;
         std::float64_t fitness2;
+        uint8_t current_mut_op;
         std::unordered_map<uint8_t, uint32_t> mut_op_counter;
 
         SEIndividual();
@@ -42,6 +43,7 @@ class SEIndividual {
         void se_mutate_internal(uint8_t);
         virtual void se_mutate(uint8_t);
         virtual void se_randomize();
+        void se_calculate_fitness1_internal();
         virtual void se_calculate_fitness1();
         virtual void se_calculate_fitness2();
         [[nodiscard]] std::unique_ptr<SEIndividual> se_clone_internal() const;

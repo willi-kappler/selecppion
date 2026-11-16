@@ -16,6 +16,7 @@ namespace secpion {
 SEIndividual::SEIndividual():
     fitness1(SE_FLOAT_MAX),
     fitness2(SE_FLOAT_MAX),
+    current_mut_op(),
     mut_op_counter()
 {}
 
@@ -24,7 +25,8 @@ void SEIndividual::se_reset_counter() {
 }
 
 void SEIndividual::se_mutate_internal(uint8_t mut_op) {
-    mut_op_counter[mut_op]++;
+    current_mut_op = mut_op;
+    // mut_op_counter[mut_op]++;
     se_mutate(mut_op);
 }
 
@@ -34,6 +36,17 @@ void SEIndividual::se_mutate([[maybe_unused]] uint8_t mut_op) {
 
 void SEIndividual::se_randomize() {
     throw SEIndividualException("se_randomize() must be implemented!");
+}
+
+void SEIndividual::se_calculate_fitness1_internal() {
+    std::float64_t prev_fitness1 = fitness1;
+
+    se_calculate_fitness1();
+
+    if (fitness1 < prev_fitness1) {
+        // Mutation was successful!
+        mut_op_counter[current_mut_op]++;
+    }
 }
 
 void SEIndividual::se_calculate_fitness1() {

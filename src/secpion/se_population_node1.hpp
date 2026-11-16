@@ -67,7 +67,7 @@ class SEPopulationNode1: public NCNodeDataProcessor {
                         cloned_indi->se_mutate_internal(population.se_get_mut_op());
                     }
 
-                    cloned_indi->se_calculate_fitness1();
+                    cloned_indi->se_calculate_fitness1_internal();
                     // Overwrite upper half (the bad ones):
                     population.population[j + offset]->se_copy_from_internal(*cloned_indi);
                 }

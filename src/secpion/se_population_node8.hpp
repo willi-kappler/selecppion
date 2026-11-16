@@ -63,7 +63,7 @@ class SEPopulationNode8: public NCNodeDataProcessor {
                 for (size_t j = 1; j < population.se_config.node_population_size; j++) {
                     for (uint32_t k = 0; k < population.se_config.num_of_mutations; k++) {
                         population.population[j]->se_mutate_internal(population.se_get_mut_op());
-                        population.population[j]->se_calculate_fitness1();
+                        population.population[j]->se_calculate_fitness1_internal();
 
                         if (population.population[j]->fitness1 < population.population[0]->fitness1) {
                             population.population[0]->se_copy_from_internal(*population.population[j]);

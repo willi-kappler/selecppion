@@ -64,7 +64,7 @@ class SEPopulationNode5: public NCNodeDataProcessor {
                         cloned_indi->se_mutate_internal(population.se_get_mut_op());
                     }
 
-                    cloned_indi->se_calculate_fitness1();
+                    cloned_indi->se_calculate_fitness1_internal();
                     if (cloned_indi->fitness1 < fitness_limit) {
                         fitness_limit = (fitness_limit + cloned_indi->fitness1) / 2.0;
                         population.population[j]->se_copy_from_internal(*cloned_indi);

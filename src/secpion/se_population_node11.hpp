@@ -75,7 +75,7 @@ class SEPopulationNode11: public NCNodeDataProcessor {
                             population.population[k1]->se_mutate_internal(population.se_get_mut_op());
                         }
 
-                        population.population[k1]->se_calculate_fitness1();
+                        population.population[k1]->se_calculate_fitness1_internal();
                     }
 
                     if (population.rng.get_float64() <= population.se_config.crossover_probability) {
@@ -86,7 +86,7 @@ class SEPopulationNode11: public NCNodeDataProcessor {
                         }
 
                         new_indi = population.population[k1]->se_crossover(*population.population[k2]);
-                        new_indi->se_calculate_fitness1();
+                        new_indi->se_calculate_fitness1_internal();
 
                         if (new_indi->fitness1 < population.se_get_worst_fitness()) {
                             population.se_replace_worst(*new_indi);

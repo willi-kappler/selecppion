@@ -64,7 +64,7 @@ class SEPopulationNode3: public NCNodeDataProcessor {
                         cloned_indi->se_mutate_internal(population.se_get_mut_op());
                     }
 
-                    cloned_indi->se_calculate_fitness1();
+                    cloned_indi->se_calculate_fitness1_internal();
 
                     if (cloned_indi->fitness1 < population.se_get_best_fitness()) {
                         population.se_replace_best(*cloned_indi);

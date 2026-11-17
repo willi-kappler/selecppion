@@ -145,30 +145,41 @@ class Neuron {
         }
 
         void optimize() {
-            const std::float64_t factor = 1.1;
-            const std::float64_t limit1 = 0.7;
+            const std::float64_t factor = 1.001;
+            const std::float64_t limit1 = 0.8;
             const std::float64_t limit2 = 1.0 - limit1;
+            bool mutation_needed = true;
 
             if ((bias > limit1) || (bias < -limit1)) {
                 bias = bias * factor;
+                mutation_needed = false;
             } else if ((bias > -limit2) && (bias < limit2)) {
                 bias = bias / factor;
+                mutation_needed = false;
             }
 
             for (auto &[index, weight]: input_connections) {
                 if ((weight > limit1) || (weight < -limit1)) {
                     weight = weight * factor;
+                    mutation_needed = false;
                 } else if ((weight > -limit2) && (weight < limit2)) {
                     weight = weight / factor;
+                    mutation_needed = false;
                 }
             }
 
             for (auto &[index, weight]: hidden_connections) {
                 if ((weight > limit1) || (weight < -limit1)) {
                     weight = weight * factor;
+                    mutation_needed = false;
                 } else if ((weight > -limit2) && (weight < limit2)) {
                     weight = weight / factor;
+                    mutation_needed = false;
                 }
+            }
+
+            if (mutation_needed) {
+                mutate_hidden_connection();
             }
         }
 

@@ -158,7 +158,7 @@ class Neuron {
 
         void optimize() {
             const std::float64_t factor = 1.001;
-            const std::float64_t limit1 = 0.8;
+            const std::float64_t limit1 = 0.6;
             const std::float64_t limit2 = 1.0 - limit1;
             bool mutation_needed = true;
 

@@ -50,6 +50,8 @@ class SEPopulationNode2: public NCNodeDataProcessor {
             std::unique_ptr<SEIndividual> cloned_indi = population.population[0]->se_clone_internal();
             const uint32_t num_of_iterations = population.se_config.num_of_iterations;
             const uint32_t population_size = population.se_config.node_population_size;
+            population.se_find_best_and_worst_individual();
+            population.se_randomize_worst();
 
             for (size_t i = 0; i < num_of_iterations; i++) {
                 population.se_sub_iteration(i);

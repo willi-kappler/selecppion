@@ -65,6 +65,8 @@ class SEPopulationNode6: public NCNodeDataProcessor {
 
         [[nodiscard]] std::vector<uint8_t> nc_process_data(std::vector<uint8_t> data) override {
             population.se_prepare_iteration("PN6: Process data.", data);
+            population.se_find_best_and_worst_individual();
+            population.se_randomize_worst();
 
             std::unique_ptr<SEIndividual> cloned_indi1 = population.population[0]->se_clone_internal();
             std::unique_ptr<SEIndividual> cloned_indi2 = population.population[0]->se_clone_internal();

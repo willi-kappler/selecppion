@@ -107,7 +107,7 @@ class NeuralNet2Individual: public SEIndividual {
         }
 
         void add_neuron1() {
-            size_t current_size = hidden_layer.size();
+            const size_t current_size = hidden_layer.size();
             Neuron new_neuron = Neuron();
             // Add a random connection to the neuron:
             size_t index = global_rng.get_size_t(current_size);
@@ -116,6 +116,24 @@ class NeuralNet2Individual: public SEIndividual {
             // Add a connection from this new neuron to a random existing neuron:
             index = global_rng.get_size_t(current_size);
             hidden_layer[index].add_hidden_connection(current_size);
+
+            // Finally add the neuron to the hidden layer:
+            hidden_layer.push_back(new_neuron);
+        }
+
+        void add_neuron2() {
+            const size_t current_size = hidden_layer.size();
+            Neuron new_neuron = Neuron();
+
+            // Add all input connections:
+            for (size_t i = 0; i < input_size_local; i++) {
+                new_neuron.add_input_connection(i);
+            }
+
+            // Add all output connections to this new neuron:
+            for (size_t i = 0; i < output_size_local; i++) {
+                hidden_layer[i].add_hidden_connection(current_size);
+            }
 
             // Finally add the neuron to the hidden layer:
             hidden_layer.push_back(new_neuron);
@@ -130,6 +148,7 @@ class NeuralNet2Individual: public SEIndividual {
 
             switch (op) {
                 case 0:
+                    // Mutate bias:
                     neuron.mutate_bias();
                     break;
                 case 1:
@@ -166,10 +185,12 @@ class NeuralNet2Individual: public SEIndividual {
                     }
                     break;
                 case 4:
+                    // Mutate input connection:
                     neuron.mutate_input_connection();
                     current_mut_op = neuron.current_mut_op;
                     break;
                 case 5:
+                    // Mutate hidden connection:
                     neuron.mutate_hidden_connection();
                     current_mut_op = neuron.current_mut_op;
                     break;

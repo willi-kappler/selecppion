@@ -140,7 +140,7 @@ class NeuralNet2Individual: public SEIndividual {
                         neuron.add_input_connection(index2);
                     } else {
                         neuron.mutate_input_connection();
-                        current_mut_op = 4;
+                        current_mut_op = neuron.current_mut_op;
                     }
                     break;
                 case 2:
@@ -151,7 +151,7 @@ class NeuralNet2Individual: public SEIndividual {
                         neuron.add_hidden_connection(index2);
                     } else {
                         neuron.mutate_hidden_connection();
-                        current_mut_op = 5;
+                        current_mut_op = neuron.current_mut_op;
                     }
                     break;
                 case 3:
@@ -162,17 +162,21 @@ class NeuralNet2Individual: public SEIndividual {
                         hidden_layer.push_back(Neuron());
                     } else {
                         neuron.mutate_hidden_connection();
+                        current_mut_op = neuron.current_mut_op;
                     }
                     break;
                 case 4:
                     neuron.mutate_input_connection();
+                    current_mut_op = neuron.current_mut_op;
                     break;
                 case 5:
                     neuron.mutate_hidden_connection();
+                    current_mut_op = neuron.current_mut_op;
                     break;
                 case 6:
                     // Optimize neuron:
                     neuron.optimize();
+                    current_mut_op = neuron.current_mut_op;
                     break;
                 default:
                     throw std::runtime_error(fmt::format("Unknown mutation operation: {}", op));

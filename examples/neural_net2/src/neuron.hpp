@@ -55,12 +55,14 @@ class Neuron {
         std::float64_t bias;
 
     public:
+        uint8_t current_mut_op;
         std::float64_t current_value;
 
         Neuron():
             input_connections(),
             hidden_connections(),
             bias(global_rng.get_float64_unif1()),
+            current_mut_op(0),
             current_value(0.0)
         {}
 
@@ -89,9 +91,11 @@ class Neuron {
         void add_input_connection(size_t index) {
             if (has_input_connection(index)) {
                 mutate_input_connection();
+                current_mut_op = 4;
             } else {
                 std::float64_t weight = global_rng.get_float64_unif1();
                 input_connections.push_back({index, weight});
+                current_mut_op = 1;
             }
         }
 
@@ -100,13 +104,16 @@ class Neuron {
 
             if (n == 0) {
                 mutate_bias();
+                current_mut_op = 0;
             } else if (n == 1) {
                 std::float64_t value = input_connections[0].second;
                 input_connections[0].second = change_delta(value);
+                current_mut_op = 4;
             } else {
                 size_t index = global_rng.get_size_t(n);
                 std::float64_t value = input_connections[index].second;
                 input_connections[index].second = change_delta(value);
+                current_mut_op = 4;
             }
         }
 
@@ -123,9 +130,11 @@ class Neuron {
         void add_hidden_connection(size_t index) {
             if (has_hidden_connection(index)) {
                 mutate_hidden_connection();
+                current_mut_op = 5;
             } else {
                 std::float64_t weight = global_rng.get_float64_unif1();
                 hidden_connections.push_back({index, weight});
+                current_mut_op = 2;
             }
         }
 
@@ -134,13 +143,16 @@ class Neuron {
 
             if (n == 0) {
                 mutate_bias();
+                current_mut_op = 0;
             } else if (n == 1) {
                 std::float64_t value = hidden_connections[0].second;
                 hidden_connections[0].second = change_delta(value);
+                current_mut_op = 5;
             } else {
                 size_t index = global_rng.get_size_t(n);
                 std::float64_t value = hidden_connections[index].second;
                 hidden_connections[index].second = change_delta(value);
+                current_mut_op = 5;
             }
         }
 
@@ -180,6 +192,9 @@ class Neuron {
 
             if (mutation_needed) {
                 mutate_hidden_connection();
+                current_mut_op = 5;
+            } else {
+                current_mut_op = 6;
             }
         }
 

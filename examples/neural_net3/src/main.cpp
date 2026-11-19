@@ -22,7 +22,6 @@ using namespace secpion;
 
 int main(int argc, char *argv[]) {
     global_data_provider.load_data("Iris.csv");
-    global_batch_counter = 0;
 
     std::unique_ptr<NeuralNet3Individual> neuralnet3_individual =
         std::make_unique<NeuralNet3Individual>(4, 3);

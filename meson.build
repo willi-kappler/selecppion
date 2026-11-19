@@ -246,11 +246,11 @@ executable(
    dependencies: [selecppion_dep, argparse_dep]
 )
 
-#executable(
-#  'neural_net3_example', files('examples/neural_net3/src/main.cpp'),
-#  include_directories: include_directories('examples/neural_net3/src', 'examples/utils'),
-#   dependencies: [selecppion_dep, argparse_dep]
-#)
+executable(
+  'neural_net3_example', files('examples/neural_net3/src/main.cpp'),
+  include_directories: include_directories('examples/neural_net3/src', 'examples/utils'),
+   dependencies: [selecppion_dep, argparse_dep]
+)
 
 #executable(
 #  'neural_net4_example', files('examples/neural_net4/src/main.cpp'),

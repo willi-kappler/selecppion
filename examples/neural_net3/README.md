@@ -1,4 +1,4 @@
-The neuralnet3 example.
+The neuralnet2 example.
 
 Run with:
 

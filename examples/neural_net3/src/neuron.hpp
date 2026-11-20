@@ -96,6 +96,8 @@ class Neuron {
 
         void mutate_neuron_type() {
             neuron_type = random_neuron_type();
+            input_connections.clear();
+            hidden_connections.clear();
         }
 
         [[nodiscard]] bool has_input_connection(size_t index) {

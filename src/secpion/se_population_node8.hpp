@@ -52,14 +52,6 @@ class SEPopulationNode8: public NCNodeDataProcessor {
             population.se_prepare_iteration("PN8: Process data.", data);
             const uint32_t num_of_iterations = population.se_config.num_of_iterations;
 
-            if (population.se_config.mutate_before_iteration > 0) {
-                for (uint8_t i = 0; i < population.se_config.mutate_before_iteration; i++) {
-                    population.population[0]->se_mutate_internal(population.se_get_mut_op());
-                }
-
-                population.population[0]->se_calculate_fitness1_internal();
-            }
-
             for (uint32_t i = 0; i < num_of_iterations; i++) {
                 population.se_sub_iteration(i);
 

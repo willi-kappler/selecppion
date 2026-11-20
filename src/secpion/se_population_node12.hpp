@@ -52,21 +52,12 @@ class SEPopulationNode12: public NCNodeDataProcessor {
             const uint32_t num_of_iterations = population.se_config.num_of_iterations;
             const uint32_t population_size = population.se_config.node_population_size;
 
-            population.se_find_best_and_worst_individual();
-            population.se_randomize_worst();
             std::float64_t start_fitness1 = population.se_get_best_fitness();
             std::float64_t current_fitness1_factor = 0.0;
 
             while (true) {
-                if (population.se_config.mutate_before_iteration > 0) {
-                    for (size_t i = 0; i < population.se_config.node_population_size; i++) {
-                        for (uint8_t j = 0; j < population.se_config.mutate_before_iteration; j++) {
-                            population.population[i]->se_mutate_internal(population.se_get_mut_op());
-                        }
-
-                        population.population[i]->se_calculate_fitness1_internal();
-                    }
-                }
+                population.se_find_best_and_worst_individual();
+                population.se_randomize_worst();
 
                 for (size_t i = 0; i < num_of_iterations; i++) {
                     population.se_sub_iteration(i);

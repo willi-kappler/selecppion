@@ -348,6 +348,17 @@ class SEPopulation {
             }
 
             se_shuffle_mutation_operations();
+
+            // Mutate each individual before starting the iteration:
+            if (se_config.mutate_before_iteration > 0) {
+                for (size_t i = 0; i < se_config.node_population_size; i++) {
+                    for (uint32_t j = 0; j < se_config.mutate_before_iteration; j++) {
+                        population[i]->se_mutate_internal(se_get_mut_op());
+                    }
+
+                    population[i]->se_calculate_fitness1_internal();
+                }
+            }
         }
 
         void se_fill_with_best() {

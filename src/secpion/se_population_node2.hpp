@@ -53,16 +53,6 @@ class SEPopulationNode2: public NCNodeDataProcessor {
             population.se_find_best_and_worst_individual();
             population.se_randomize_worst();
 
-            if (population.se_config.mutate_before_iteration > 0) {
-                for (size_t i = 0; i < population.se_config.node_population_size; i++) {
-                    for (uint8_t j = 0; j < population.se_config.mutate_before_iteration; j++) {
-                        population.population[i]->se_mutate_internal(population.se_get_mut_op());
-                    }
-
-                    population.population[i]->se_calculate_fitness1_internal();
-                }
-            }
-
             for (size_t i = 0; i < num_of_iterations; i++) {
                 population.se_sub_iteration(i);
 

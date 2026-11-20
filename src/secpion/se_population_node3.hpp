@@ -54,16 +54,6 @@ class SEPopulationNode3: public NCNodeDataProcessor {
             const uint32_t num_of_iterations = population.se_config.num_of_iterations;
             bool exit_iteration = false;
 
-            if (population.se_config.mutate_before_iteration > 0) {
-                for (size_t i = 0; i < population.se_config.node_population_size; i++) {
-                    for (uint8_t j = 0; j < population.se_config.mutate_before_iteration; j++) {
-                        population.population[i]->se_mutate_internal(population.se_get_mut_op());
-                    }
-
-                    population.population[i]->se_calculate_fitness1_internal();
-                }
-            }
-
             for (size_t i = 0; i < num_of_iterations; i++) {
                 population.se_sub_iteration(i);
 

@@ -50,6 +50,7 @@ class SEPopulation {
         std::float64_t previous_best;
         uint32_t current_seed_counter;
         uint32_t sub_iteration;
+        std::float64_t fitness1_before_iteration;
 
         SEPopulation(SEConfiguration config):
             se_config(config),
@@ -63,7 +64,8 @@ class SEPopulation {
             randomize_iteration(0),
             previous_best(0.0),
             current_seed_counter(0),
-            sub_iteration(0)
+            sub_iteration(0),
+            fitness1_before_iteration(0.0)
         {
             rng.seed();
             spdlog::drop("se_logger");
@@ -349,6 +351,8 @@ class SEPopulation {
 
             se_shuffle_mutation_operations();
 
+            fitness1_before_iteration = population[0]->fitness1;
+
             // Mutate each individual before starting the iteration:
             if (se_config.mutate_before_iteration > 0) {
                 for (size_t i = 0; i < se_config.node_population_size; i++) {
@@ -356,7 +360,7 @@ class SEPopulation {
                         population[i]->se_mutate_internal(se_get_mut_op());
                     }
 
-                    population[i]->se_calculate_fitness1_internal();
+                    population[i]->se_calculate_fitness1();
                 }
             }
         }

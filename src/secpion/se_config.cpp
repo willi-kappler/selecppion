@@ -44,6 +44,7 @@ SEConfiguration::SEConfiguration():
     sub_iteration_max(0),
     randomize_if_stuck(false),
     mutate_before_iteration(0),
+    mutate_before_count(1),
 
     min_num_of_individuals(2),
     sine_base(100.0),
@@ -184,6 +185,10 @@ SEConfiguration::SEConfiguration():
 
     if (json_config.contains("mutate_before_iteration")) {
         se_config.mutate_before_iteration = json_config["mutate_before_iteration"].get<uint32_t>();
+    }
+
+    if (json_config.contains("mutate_before_count")) {
+        se_config.mutate_before_count = json_config["mutate_before_count"].get<uint32_t>();
     }
 
     if (json_config.contains("min_num_of_individuals")) {

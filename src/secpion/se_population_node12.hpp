@@ -52,12 +52,24 @@ class SEPopulationNode12: public NCNodeDataProcessor {
             const uint32_t num_of_iterations = population.se_config.num_of_iterations;
             const uint32_t population_size = population.se_config.node_population_size;
 
-            std::float64_t start_fitness1 = population.se_get_best_fitness();
             std::float64_t current_fitness1_factor = 0.0;
+            // uint8_t factor_counter = 0;
+            size_t index1, index2;
 
             while (true) {
-                population.se_find_best_and_worst_individual();
-                population.se_randomize_worst();
+                index1 = population.rng.get_size_t(population.se_config.node_population_size);
+                index2 = population.rng.get_size_t(population.se_config.node_population_size);
+
+                population.se_logger->debug("index1: {}, index2: {}", index1, index2);
+
+                population.population[index1]->se_reset_counter();
+                population.population[index1]->se_randomize();
+                population.population[index1]->se_calculate_fitness1();
+
+                for (uint32_t i = 0; i < population.se_config.mutate_before_iteration; i++) {
+                    population.population[index2]->se_mutate_internal(population.se_get_mut_op());
+                }
+                population.population[index2]->se_calculate_fitness1();
 
                 for (size_t i = 0; i < num_of_iterations; i++) {
                     population.se_sub_iteration(i);
@@ -92,12 +104,19 @@ class SEPopulationNode12: public NCNodeDataProcessor {
                 }
 
                 population.se_find_best_and_worst_individual();
-                current_fitness1_factor = start_fitness1 / population.se_get_best_fitness();
-                population.se_logger->debug("Current fitness1 factor: {}", current_fitness1_factor);
+                current_fitness1_factor = population.fitness1_before_iteration / population.se_get_best_fitness();
+                population.se_logger->debug("Current fitness1 factor: {}, best_index: {}", current_fitness1_factor, population.best_index);
+                population.se_logger->flush();
 
                 if (current_fitness1_factor >= 1.5) {
                     break;
-                }
+                }/* else {
+                    factor_counter++;
+
+                    if (factor_counter >= 20) {
+                        break;
+                    }
+                }*/
             }
 
             population.se_calculate_fitness2();

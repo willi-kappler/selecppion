@@ -4,13 +4,13 @@ EXECUTABLE="../../builddir/neural_net3_example"
 
 run_type() {
     # Start 6 nodes:
-    $EXECUTABLE -i 7000 -m 1 -t 1 -r &
+    $EXECUTABLE -i 10000 -m 1 -b 100 -t 1 &
     sleep 1
-    $EXECUTABLE -i 8000 -m 1 -t 1 -r &
+    $EXECUTABLE -i 10000 -m 1 -b 200 -t 1 &
     sleep 1
-    $EXECUTABLE -i 9000 -m 1 -t 1 -r &
+    $EXECUTABLE -i 10000 -m 1 -b 300 -t 1 &
     sleep 1
-    $EXECUTABLE -i 10000 -m 1 -t 1 -r &
+    $EXECUTABLE -i 10000 -m 1 -b 400 -t 1 &
     sleep 1
     $EXECUTABLE -i 10000 -m 1 -t 1 &
     sleep 1

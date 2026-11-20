@@ -61,7 +61,11 @@ void make_and_run_example(int argc, char *argv[], const SEIndividual &individual
         .nargs(1, 6)
         .scan<'i', uint8_t>();
 
-    try {
+    program.add_argument("-b")
+    .help("Mutate before iteration")
+    .scan<'i', uint32_t>();
+
+        try {
         program.parse_args(argc, argv);
     }
         catch (const std::exception& err) {
@@ -92,6 +96,10 @@ void make_and_run_example(int argc, char *argv[], const SEIndividual &individual
 
     if (program.is_used("-o")) {
         se_config.mutation_operations = program.get<std::vector<uint8_t>>("-o");
+    }
+
+    if (program.is_used("-b")) {
+        se_config.mutate_before_iteration = program.get<uint32_t>("-b");
     }
 
     if (program["--server"] == true) {

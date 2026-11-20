@@ -52,6 +52,14 @@ class SEPopulationNode8: public NCNodeDataProcessor {
             population.se_prepare_iteration("PN8: Process data.", data);
             const uint32_t num_of_iterations = population.se_config.num_of_iterations;
 
+            if (population.se_config.mutate_before_iteration > 0) {
+                for (uint8_t i = 0; i < population.se_config.mutate_before_iteration; i++) {
+                    population.population[0]->se_mutate_internal(population.se_get_mut_op());
+                }
+
+                population.population[0]->se_calculate_fitness1_internal();
+            }
+
             for (uint32_t i = 0; i < num_of_iterations; i++) {
                 population.se_sub_iteration(i);
 
@@ -63,11 +71,12 @@ class SEPopulationNode8: public NCNodeDataProcessor {
                 for (size_t j = 1; j < population.se_config.node_population_size; j++) {
                     for (uint32_t k = 0; k < population.se_config.num_of_mutations; k++) {
                         population.population[j]->se_mutate_internal(population.se_get_mut_op());
-                        population.population[j]->se_calculate_fitness1_internal();
+                    }
 
-                        if (population.population[j]->fitness1 < population.population[0]->fitness1) {
-                            population.population[0]->se_copy_from_internal(*population.population[j]);
-                        }
+                    population.population[j]->se_calculate_fitness1_internal();
+
+                    if (population.population[j]->fitness1 < population.population[0]->fitness1) {
+                        population.population[0]->se_copy_from_internal(*population.population[j]);
                     }
 
                     if (population.population[0]->fitness1 <= population.se_config.target_fitness1) {

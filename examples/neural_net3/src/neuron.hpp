@@ -53,6 +53,7 @@ enum class NeuronType: uint8_t {
     WeightProduct,
     Min,
     Max,
+    Average,
     EndOfEnum
 };
 
@@ -234,6 +235,9 @@ class Neuron {
                 case NeuronType::Max:
                     evaluate_max(input_values, hidden_layer);
                     break;
+                case NeuronType::Average:
+                    evaluate_average(input_values, hidden_layer);
+                    break;
                 default:
                     throw std::runtime_error(fmt::format("Unknown neuron type operation: {}", std::to_underlying(neuron_type)));
                     break;
@@ -273,32 +277,28 @@ class Neuron {
             current_value = bias;
 
             if (input_connections.size() > 0) {
-                std::float64_t chosen_value = input_values[input_connections[0].first];
-                std::float64_t chosen_weight = 0.0;
+                std::float64_t chosen_value = input_values[input_connections[0].first] * input_connections[0].second;
 
                 for (auto [index, weight]: input_connections) {
-                    if (input_values[index] < chosen_value) {
-                        chosen_value = input_values[index];
-                        chosen_weight = weight;
+                    if (input_values[index] * weight < chosen_value) {
+                        chosen_value = input_values[index] * weight;
                     }
                 }
 
-                current_value += chosen_weight * chosen_value;
+                current_value += chosen_value;
             }
 
 
             if (hidden_connections.size() > 0) {
-                std::float64_t chosen_value = hidden_layer[hidden_connections[0].first].current_value;
-                std::float64_t chosen_weight = 0.0;
+                std::float64_t chosen_value = hidden_layer[hidden_connections[0].first].current_value * hidden_connections[0].second;
 
                 for (auto [index, weight]: hidden_connections) {
-                    if (hidden_layer[index].current_value < chosen_value) {
-                        chosen_value = hidden_layer[index].current_value;
-                        chosen_weight = weight;
+                    if (hidden_layer[index].current_value * weight < chosen_value) {
+                        chosen_value = hidden_layer[index].current_value * weight;
                     }
                 }
 
-                current_value += chosen_weight * chosen_value;
+                current_value += chosen_value;
             }
         }
 
@@ -306,33 +306,53 @@ class Neuron {
             current_value = bias;
 
             if (input_connections.size() > 0) {
-                std::float64_t chosen_value = input_values[input_connections[0].first];
-                std::float64_t chosen_weight = 0.0;
+                std::float64_t chosen_value = input_values[input_connections[0].first] * input_connections[0].second;
 
                 for (auto [index, weight]: input_connections) {
-                    if (input_values[index] > chosen_value) {
-                        chosen_value = input_values[index];
-                        chosen_weight = weight;
+                    if (input_values[index] * weight > chosen_value) {
+                        chosen_value = input_values[index] * weight;
                     }
                 }
 
-                current_value += chosen_weight * chosen_value;
+                current_value += chosen_value;
             }
 
 
             if (hidden_connections.size() > 0) {
-                std::float64_t chosen_value = hidden_layer[hidden_connections[0].first].current_value;
-                std::float64_t chosen_weight = 0.0;
+                std::float64_t chosen_value = hidden_layer[hidden_connections[0].first].current_value * hidden_connections[0].second;
 
                 for (auto [index, weight]: hidden_connections) {
-                    if (hidden_layer[index].current_value > chosen_value) {
-                        chosen_value = hidden_layer[index].current_value;
-                        chosen_weight = weight;
+                    if (hidden_layer[index].current_value * weight > chosen_value) {
+                        chosen_value = hidden_layer[index].current_value * weight;
                     }
                 }
 
-                current_value += chosen_weight * chosen_value;
+                current_value += chosen_value;
             }
+        }
+
+        void evaluate_average(std::span<const std::float64_t> input_values, std::span<const Neuron> hidden_layer) {
+            current_value = bias;
+            std::float64_t input_avg = 0.0;
+            std::float64_t hidden_avg = 0.0;
+
+            for (auto [index, weight]: input_connections) {
+                input_avg += weight * input_values[index];
+            }
+
+            if (input_connections.size() > 0) {
+                input_avg /= static_cast<std::float64_t>(input_connections.size());
+            }
+
+            for (auto [index, weight]: hidden_connections) {
+                hidden_avg += weight * hidden_layer[index].current_value;
+            }
+
+            if (hidden_layer.size() > 0) {
+                hidden_avg /= static_cast<std::float64_t>(hidden_layer.size());
+            }
+
+            current_value += input_avg + hidden_avg;
         }
 
         [[nodiscard]] nlohmann::json to_json() {

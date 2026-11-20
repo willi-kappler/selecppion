@@ -97,6 +97,7 @@ class SEPopulation {
             se_logger->info("Mutation operations: {}", se_config.mutation_operations);
             se_logger->info("Reseed max count: {}", se_config.seed_count);
             se_logger->info("Sub iteration max: {}", se_config.sub_iteration_max);
+            se_logger->info("Mutate before iteration: {}", se_config.mutate_before_iteration);
             se_logger->flush();
         }
 

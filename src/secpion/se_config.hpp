@@ -50,6 +50,7 @@ class SEConfiguration {
         uint32_t seed_count;
         uint32_t sub_iteration_max;
         bool randomize_if_stuck;
+        uint32_t mutate_before_iteration;
 
         // Population specific configuration:
         uint8_t min_num_of_individuals;

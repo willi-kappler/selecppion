@@ -52,7 +52,7 @@ class NeuralNet3Individual: public SEIndividual {
         output_size_local(output_size),
         new_node_prob(10),
         new_connection_prob(10),
-        node_type_prob(100),
+        node_type_prob(10),
         max_network_size(10),
         hidden_layer(),
         local_metadata()

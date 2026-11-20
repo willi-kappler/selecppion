@@ -43,6 +43,7 @@ SEConfiguration::SEConfiguration():
     seed_count(10),
     sub_iteration_max(0),
     randomize_if_stuck(false),
+    mutate_before_iteration(0),
 
     min_num_of_individuals(2),
     sine_base(100.0),
@@ -179,6 +180,10 @@ SEConfiguration::SEConfiguration():
 
     if (json_config.contains("randomize_if_stuck")) {
         se_config.randomize_if_stuck = json_config["randomize_if_stuck"].get<bool>();
+    }
+
+    if (json_config.contains("mutate_before_iteration")) {
+        se_config.mutate_before_iteration = json_config["mutate_before_iteration"].get<uint32_t>();
     }
 
     if (json_config.contains("min_num_of_individuals")) {

@@ -42,8 +42,8 @@ class SEPopulationNode14: public NCNodeDataProcessor {
                 population.worst_index = population.se_config.node_population_size - 1;
 
                 population.se_logger->info("Population type 14.");
-                population.se_logger->info("Clone the best one a few times per iteration.");
-                population.se_logger->info("Keep mutating it and overwrite the rest of the sorted population.");
+                population.se_logger->info("Clone the best one a few times before iteration and mutate the clones.");
+                population.se_logger->info("Then clone and mutate each individual separatly and if it's better, keep it.");
             }
 
         void nc_init([[maybe_unused]] std::vector<uint8_t> data, NCNodeID node_id) override {
@@ -58,36 +58,53 @@ class SEPopulationNode14: public NCNodeDataProcessor {
             size_t i = 0, j = 0, k = 0;
             uint8_t clone_counter = 0;
 
+            // Prepare the individuals:
+            for (i = 1; i < population_size; i++) {
+                for (j = 0; j < population.se_config.num_of_mutations; j++) {
+                    cloned_indi->se_mutate_internal(population.se_get_mut_op());
+                }
+
+                cloned_indi->se_calculate_fitness1_internal();
+
+                population.population[i]->se_copy_from_internal(*cloned_indi);
+
+                clone_counter++;
+
+                if (clone_counter >= 20) {
+                    clone_counter = 0;
+                    cloned_indi->se_copy_from_internal(*population.population[0]);
+                }
+            }
+
+            // Do the actual iteration:
             for (i = 0; i < num_of_iterations; i++) {
                 population.se_sub_iteration(i);
-                clone_counter = 0;
 
-                for (j = 1; j < population_size; j++) {
+                for (j = 0; j < population_size; j++) {
+                    cloned_indi->se_copy_from_internal(*population.population[j]);
+
                     for (k = 0; k < population.se_config.num_of_mutations; k++) {
                         cloned_indi->se_mutate_internal(population.se_get_mut_op());
                     }
 
                     cloned_indi->se_calculate_fitness1_internal();
 
-                    population.population[j]->se_copy_from_internal(*cloned_indi);
+                    if (cloned_indi->fitness1 < population.population[j]->fitness1) {
+                        population.population[j]->se_copy_from_internal(*cloned_indi);
 
-                    clone_counter++;
-
-                    if (clone_counter >= 10) {
-                        clone_counter = 0;
-                        cloned_indi->se_copy_from_internal(*population.population[0]);
+                        if (cloned_indi->fitness1 <= population.se_config.target_fitness1) {
+                            population.se_early_exit(i);
+                            break;
+                        }
                     }
                 }
 
-                population.se_sort_population();
-
-                if (population.population[0]->fitness1 <= population.se_config.target_fitness1) {
-                    population.se_early_exit(i);
+                if (population.minimum_found) {
                     break;
                 }
-
-                cloned_indi->se_copy_from_internal(*population.population[0]);
             }
+
+            population.se_sort_population();
 
             population.best_index = 0;
             population.se_calculate_fitness2();

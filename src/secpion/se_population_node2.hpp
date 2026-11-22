@@ -74,7 +74,6 @@ class SEPopulationNode2: public NCNodeDataProcessor {
                             break;
                         }
                     }
-
                 }
 
                 if (population.minimum_found) {

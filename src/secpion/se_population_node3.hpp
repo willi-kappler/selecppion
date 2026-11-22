@@ -37,8 +37,9 @@ class SEPopulationNode3: public NCNodeDataProcessor {
             population.se_fill_population(individual);
 
             population.se_logger->info("Population type 3.");
-            population.se_logger->info("Start at index 1 and iterate through population.");
+            population.se_logger->info("Iterate through population and mutate a clone.");
             population.se_logger->info("If it's better than the best replace it.");
+            population.se_logger->info("Else if it's better than the current replace it.");
             population.se_logger->info("Else if it's better than the worst replace it.");
         }
 
@@ -52,12 +53,13 @@ class SEPopulationNode3: public NCNodeDataProcessor {
 
             std::unique_ptr<SEIndividual> cloned_indi = population.population[0]->se_clone_internal();
             const uint32_t num_of_iterations = population.se_config.num_of_iterations;
-            bool exit_iteration = false;
+            std::float64_t current_best_fitness = population.se_get_best_fitness();;
+            std::float64_t current_fitness = 0.0;
 
             for (size_t i = 0; i < num_of_iterations; i++) {
                 population.se_sub_iteration(i);
 
-                for (size_t j = 1; j < population.se_config.node_population_size; j++) {
+                for (size_t j = 0; j < population.se_config.node_population_size; j++) {
                     cloned_indi->se_copy_from_internal(*population.population[j]);
 
                     for (uint32_t l = 0; l < population.se_config.num_of_mutations; l++) {
@@ -65,22 +67,28 @@ class SEPopulationNode3: public NCNodeDataProcessor {
                     }
 
                     cloned_indi->se_calculate_fitness1_internal();
+                    current_fitness = cloned_indi->fitness1;
 
-                    if (cloned_indi->fitness1 < population.se_get_best_fitness()) {
+                    if (current_fitness < current_best_fitness) {
                         population.se_replace_best(*cloned_indi);
-                    } else if ((cloned_indi->fitness1 < population.se_get_worst_fitness()) && (cloned_indi->fitness1 > population.se_get_best_fitness())) {
-                        population.se_replace_worst(*cloned_indi);
-                        population.se_find_worst_individual();
-                    }
+                        current_best_fitness = current_fitness;
 
-                    if (population.se_get_best_fitness() <= population.se_config.target_fitness1) {
-                        exit_iteration = true;
-                        break;
+                        if (current_fitness <= population.se_config.target_fitness1) {
+                            population.se_early_exit(i);
+                            break;
+                        }
+                    } else if (current_fitness > current_best_fitness) {
+                        if (current_fitness < population.population[j]->fitness1) {
+                            population.population[j]->se_copy_from_internal(*cloned_indi);
+                        } else if (current_fitness < population.se_get_worst_fitness()) {
+                            population.se_replace_worst(*cloned_indi);
+                            // Do not update the worst index yet!
+                            //population.se_find_worst_individual();
+                        }
                     }
                 }
 
-                if (exit_iteration) {
-                    population.se_early_exit(i);
+                if (population.minimum_found) {
                     break;
                 }
             }

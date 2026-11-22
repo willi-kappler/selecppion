@@ -69,11 +69,11 @@ class SEPopulationNode8: public NCNodeDataProcessor {
 
                     if (population.population[j]->fitness1 < population.population[0]->fitness1) {
                         population.population[0]->se_copy_from_internal(*population.population[j]);
-                    }
 
-                    if (population.population[0]->fitness1 <= population.se_config.target_fitness1) {
-                        population.se_early_exit(i);
-                        break;
+                        if (population.population[0]->fitness1 <= population.se_config.target_fitness1) {
+                            population.se_early_exit(i);
+                            break;
+                        }
                     }
                 }
 

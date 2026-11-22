@@ -162,11 +162,15 @@ class SEPopulation {
         }
 
         void se_random_population() {
-            for (auto &individual: population) {
-                individual->se_reset_counter();
-                individual->se_randomize();
-                individual->se_calculate_fitness1();
+            for (size_t i = 0; i < population.size(); i++) {
+                se_random_individual(i);
             }
+        }
+
+        void se_random_individual(size_t index) {
+            population[index]->se_reset_counter();
+            population[index]->se_randomize();
+            population[index]->se_calculate_fitness1();
         }
 
         void se_randomize_or_accept_best(std::span<const uint8_t> data) {
@@ -354,15 +358,7 @@ class SEPopulation {
             fitness1_before_iteration = population[0]->fitness1;
 
             // Mutate each individual before starting the iteration:
-            if (se_config.mutate_before_iteration > 0) {
-                for (size_t i = 0; i < se_config.node_population_size; i++) {
-                    for (uint32_t j = 0; j < se_config.mutate_before_iteration; j++) {
-                        population[i]->se_mutate_internal(se_get_mut_op());
-                    }
-
-                    population[i]->se_calculate_fitness1();
-                }
-            }
+            se_mutate_all_before_iteration();
         }
 
         void se_fill_with_best() {
@@ -388,6 +384,28 @@ class SEPopulation {
                         population[i]->se_sub_iteration(i, iteration, num_iter);
                     }
                 }
+            }
+        }
+
+        void se_mutate_all_before_iteration() {
+            if (se_config.mutate_before_iteration > 0) {
+                for (size_t i = 0; i < se_config.node_population_size; i++) {
+                    se_mutate_one_before_iteration(i);
+                }
+            }
+        }
+
+        void se_mutate_one_before_iteration(size_t index) {
+            for (uint32_t i = 0; i < se_config.mutate_before_iteration; i++) {
+                population[index]->se_mutate_internal(se_get_mut_op());
+            }
+
+            population[index]->se_calculate_fitness1();
+        }
+
+        void se_debug_whole_population() {
+            for (size_t i = 0; i < population.size(); i++) {
+                se_logger->debug("{}, fitness1: {}, fitness2: {}", i, population[i]->fitness1, population[i]->fitness2);
             }
         }
 };

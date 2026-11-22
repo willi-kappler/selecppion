@@ -53,24 +53,10 @@ class SEPopulationNode12: public NCNodeDataProcessor {
             const uint32_t population_size = population.se_config.node_population_size;
 
             std::float64_t current_fitness1_factor = 0.0;
-            // uint8_t factor_counter = 0;
-            size_t index1, index2;
+            uint8_t factor_counter = 0;
+            population.se_config.mutate_before_iteration = 0;
 
             while (true) {
-                index1 = population.rng.get_size_t(population.se_config.node_population_size);
-                index2 = population.rng.get_size_t(population.se_config.node_population_size);
-
-                population.se_logger->debug("index1: {}, index2: {}", index1, index2);
-
-                population.population[index1]->se_reset_counter();
-                population.population[index1]->se_randomize();
-                population.population[index1]->se_calculate_fitness1();
-
-                for (uint32_t i = 0; i < population.se_config.mutate_before_iteration; i++) {
-                    population.population[index2]->se_mutate_internal(population.se_get_mut_op());
-                }
-                population.population[index2]->se_calculate_fitness1();
-
                 for (size_t i = 0; i < num_of_iterations; i++) {
                     population.se_sub_iteration(i);
 
@@ -86,11 +72,11 @@ class SEPopulationNode12: public NCNodeDataProcessor {
                         // Only replace with clone if better then original:
                         if (cloned_indi->fitness1 < population.population[j]->fitness1) {
                             population.population[j]->se_copy_from_internal(*cloned_indi);
-                        }
 
-                        if (population.population[j]->fitness1 <= population.se_config.target_fitness1) {
-                            population.se_early_exit(i);
-                            break;
+                            if (population.population[j]->fitness1 <= population.se_config.target_fitness1) {
+                                population.se_early_exit(i);
+                                break;
+                            }
                         }
                     }
 
@@ -110,13 +96,16 @@ class SEPopulationNode12: public NCNodeDataProcessor {
 
                 if (current_fitness1_factor >= 1.5) {
                     break;
-                }/* else {
+                } else {
                     factor_counter++;
 
                     if (factor_counter >= 20) {
-                        break;
+                        factor_counter = 0;
+                        population.se_config.mutate_before_iteration += 10;
+                        population.se_mutate_all_before_iteration();
+                        population.se_logger->debug("Mutate all before iteration: {}", population.se_config.mutate_before_iteration);
                     }
-                }*/
+                }
             }
 
             population.se_calculate_fitness2();

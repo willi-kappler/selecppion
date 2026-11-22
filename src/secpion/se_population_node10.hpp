@@ -51,19 +51,14 @@ class SEPopulationNode10: public NCNodeDataProcessor {
 
             std::unique_ptr<SEIndividual> cloned_indi = population.population[0]->se_clone_internal();
             const uint32_t num_of_iterations = population.se_config.num_of_iterations;
+            const uint32_t population_size = population.se_config.node_population_size;
             size_t k = 0;
-            bool exit_iteration = false;
 
             for (size_t i = 0; i < num_of_iterations; i++) {
                 population.se_sub_iteration(i);
 
-                for (size_t j = 0; j < population.se_config.node_population_size; j++) {
-                    k = population.rng.get_size_t(population.se_config.node_population_size);
-
-                    if (population.population[k]->fitness1 <= population.se_config.target_fitness1) {
-                        exit_iteration = true;
-                        break;
-                    }
+                for (size_t j = 0; j < population_size; j++) {
+                    k = population.rng.get_size_t(population_size);
 
                     cloned_indi->se_copy_from_internal(*population.population[k]);
 
@@ -76,11 +71,15 @@ class SEPopulationNode10: public NCNodeDataProcessor {
                     if (cloned_indi->fitness1 < population.se_get_worst_fitness()) {
                         population.se_replace_worst(*cloned_indi);
                         population.se_find_worst_individual();
+
+                        if (cloned_indi->fitness1 <= population.se_config.target_fitness1) {
+                            population.se_early_exit(i);
+                            break;
+                        }
                     }
                 }
 
-                if (exit_iteration) {
-                    population.se_early_exit(i);
+                if (population.minimum_found) {
                     break;
                 }
             }

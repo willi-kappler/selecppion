@@ -68,12 +68,13 @@ class SEPopulationNode2: public NCNodeDataProcessor {
                     // Only replace with clone if better then original:
                     if (cloned_indi->fitness1 < population.population[j]->fitness1) {
                         population.population[j]->se_copy_from_internal(*cloned_indi);
+
+                        if (cloned_indi->fitness1 <= population.se_config.target_fitness1) {
+                            population.se_early_exit(i);
+                            break;
+                        }
                     }
 
-                    if (population.population[j]->fitness1 <= population.se_config.target_fitness1) {
-                        population.se_early_exit(i);
-                        break;
-                    }
                 }
 
                 if (population.minimum_found) {

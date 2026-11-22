@@ -57,7 +57,6 @@ class SEPopulationNode11: public NCNodeDataProcessor {
             const uint32_t num_of_iterations = population.se_config.num_of_iterations;
             size_t k1 = 0;
             size_t k2 = 0;
-            bool exit_iteration = false;
 
             for (size_t i = 0; i < num_of_iterations; i++) {
                 population.se_sub_iteration(i);
@@ -66,7 +65,7 @@ class SEPopulationNode11: public NCNodeDataProcessor {
                     k1 = population.rng.get_size_t(population.se_config.node_population_size);
 
                     if (population.population[k1]->fitness1 <= population.se_config.target_fitness1) {
-                        exit_iteration = true;
+                        population.se_early_exit(i);
                         break;
                     }
 
@@ -95,8 +94,7 @@ class SEPopulationNode11: public NCNodeDataProcessor {
                     }
                 }
 
-                if (exit_iteration) {
-                    population.se_early_exit(i);
+                if (population.minimum_found) {
                     break;
                 }
             }

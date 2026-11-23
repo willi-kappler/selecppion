@@ -62,10 +62,13 @@ void make_and_run_example(int argc, char *argv[], const SEIndividual &individual
         .scan<'i', uint8_t>();
 
     program.add_argument("-b")
-    .help("Mutate before iteration")
-    .scan<'i', uint32_t>();
+        .help("Mutate before iteration")
+        .scan<'i', uint32_t>();
 
-        try {
+    program.add_argument("--prefix")
+        .help("Set the prefix for the node id.");
+
+    try {
         program.parse_args(argc, argv);
     }
         catch (const std::exception& err) {
@@ -113,8 +116,11 @@ void make_and_run_example(int argc, char *argv[], const SEIndividual &individual
         std::cout << "Node (client) mode" << std::endl;
 
         if (program.is_used("--ip")) {
-            std::string server_address = program.get<std::string>("--ip");
-            nc_config.server_address = server_address;
+            nc_config.server_address = program.get<std::string>("--ip");
+        }
+
+        if (program.is_used("--prefix")) {
+            nc_config.nc_node_prefix = program.get<std::string>("--prefix");
         }
 
         uint8_t population_type = program.get<uint8_t>("-t");

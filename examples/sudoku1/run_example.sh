@@ -3,16 +3,14 @@
 EXECUTABLE="../../builddir/sudoku1_example"
 
 run_type() {
-    echo "Run type $1."
-
     # Start 4 nodes:
-    $EXECUTABLE -i 10000 -m 1 -t $1 &
+    $EXECUTABLE --prefix "1_1_" -i 10000 -m 1 -t 1 &
     sleep 1
-    $EXECUTABLE -i 20000 -m 1 -t $1 &
+    $EXECUTABLE --prefix "2_1_r_" -i 10000 -m 1 -t 1 -r &
     sleep 1
-    $EXECUTABLE -i 40000 -m 1 -t $1 &
+    $EXECUTABLE --prefix "3_13_" -i 10000 -m 1 -t 13 &
     sleep 1
-    $EXECUTABLE -i 80000 -m 1 -t $1 &
+    $EXECUTABLE --prefix "4_14_" -i 10000 -m 1 -t 14 &
 }
 
 run_all_types() {
@@ -45,7 +43,7 @@ run_all_types() {
 $EXECUTABLE --server &
 sleep 1
 
-run_type 1
+run_type
 # run_all_types
 sleep 1
 echo ""

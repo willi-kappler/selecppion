@@ -6,13 +6,13 @@ run_type() {
     echo "Run type $1."
 
     # Start 4 nodes:
-    $EXECUTABLE -i 10000 -m 1 -t $1 &
+    $EXECUTABLE --prefix "1_10_" -i 10000 -m 1 -t $1 &
     sleep 1
-    $EXECUTABLE -i 20000 -m 1 -t $1 &
+    $EXECUTABLE --prefix "1_20_" -i 20000 -m 1 -t $1 &
     sleep 1
-    $EXECUTABLE -i 40000 -m 1 -t $1 &
+    $EXECUTABLE --prefix "3_40_" -i 40000 -m 1 -t $1 &
     sleep 1
-    $EXECUTABLE -i 80000 -m 1 -t $1 &
+    $EXECUTABLE --prefix "4_80_" -i 80000 -m 1 -t $1 &
 }
 
 run_all_types() {

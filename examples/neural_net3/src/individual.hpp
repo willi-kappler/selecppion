@@ -179,8 +179,8 @@ class NeuralNet3Individual: public SEIndividual {
                     // Add neuron:
                     rnd_val = global_rng.get_uint16(new_node_prob);
                     if ((rnd_val == 0) && (hidden_layer.size() < max_network_size)) {
-                        // add_neuron1();
-                        hidden_layer.push_back(Neuron());
+                        add_neuron1();
+                        // hidden_layer.push_back(Neuron());
                     } else {
                         neuron.mutate_hidden_connection();
                         current_mut_op = neuron.current_mut_op;
@@ -225,8 +225,8 @@ class NeuralNet3Individual: public SEIndividual {
             }
 
             // Start with one normal neuron (at least one is needed):
-            // add_neuron1();
-            hidden_layer.push_back(Neuron());
+            add_neuron1();
+            // hidden_layer.push_back(Neuron());
         }
 
         void se_calculate_fitness1() override {

@@ -182,7 +182,6 @@ class SEServerDP: public NCServerDataProcessor {
             std::float64_t current_worst_fitness = population[last]->fitness1;
             bool use_fitness2 = new_fitness2 < SE_FLOAT_MAX;
             std::float64_t improvement_factor = 0.0;
-            const std::string indi_metadata = new_indi->se_get_metadata();
 
             if (use_fitness2) {
                 new_fitness = new_fitness2;
@@ -241,7 +240,6 @@ class SEServerDP: public NCServerDataProcessor {
 
                     se_logger->info("Best from node: {}", node_id.to_string());
                     population[0]->se_new_best_individual(se_logger);
-                    se_logger->info("Metadata: {}", indi_metadata);
                     se_logger->info("New fitness counter: {}", new_fitness_counter);
 
                     node_stats[node_id]++;

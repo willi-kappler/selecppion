@@ -33,7 +33,16 @@ using namespace secpion;
 
 SE_RNG_L64 global_rng;
 
+const std::float64_t opt_factor = 1.001;
+const std::float64_t opt_limit1 = 0.6;
+const std::float64_t opt_limit2 = 1.0 - opt_limit1;
+const std::float64_t value_limit = 10.0;
+
 using Connection = std::pair<size_t, std::float64_t>;
+
+[[nodiscard]] std::float64_t clamp_value(std::float64_t value) {
+    return std::clamp<std::float64_t>(value, -value_limit, value_limit);
+}
 
 [[nodiscard]] std::float64_t change_delta(std::float64_t value) {
     const uint8_t n = global_rng.get_uint8(10);
@@ -44,8 +53,16 @@ using Connection = std::pair<size_t, std::float64_t>;
         const std::float64_t delta = global_rng.get_float64_unif2();
 
         value += delta;
-        return std::clamp<std::float64_t>(value, -10.0, 10.0);
+        return clamp_value(value);
     }
+}
+
+[[nodiscard]] bool outside_limit(std::float64_t value, std::float64_t limit) {
+    return ((value < -limit) || (value > limit));
+}
+
+[[nodiscard]] bool inside_limit(std::float64_t value, std::float64_t limit) {
+    return ((value > -limit) && (value < limit));
 }
 
 class Neuron {
@@ -75,6 +92,7 @@ class Neuron {
         }
 
         void mutate_bias() {
+            current_mut_op = 0;
             bias = change_delta(bias);
         }
 
@@ -89,31 +107,29 @@ class Neuron {
         }
 
         void add_input_connection(size_t index) {
+            current_mut_op = 1;
+
             if (has_input_connection(index)) {
                 mutate_input_connection();
-                current_mut_op = 4;
             } else {
                 std::float64_t weight = global_rng.get_float64_unif1();
                 input_connections.push_back({index, weight});
-                current_mut_op = 1;
             }
         }
 
         void mutate_input_connection() {
-            size_t n = input_connections.size();
+            current_mut_op = 4;
+            const size_t n = input_connections.size();
 
             if (n == 0) {
                 mutate_bias();
-                current_mut_op = 0;
             } else if (n == 1) {
                 std::float64_t value = input_connections[0].second;
                 input_connections[0].second = change_delta(value);
-                current_mut_op = 4;
             } else {
                 size_t index = global_rng.get_size_t(n);
                 std::float64_t value = input_connections[index].second;
                 input_connections[index].second = change_delta(value);
-                current_mut_op = 4;
             }
         }
 
@@ -128,73 +144,173 @@ class Neuron {
         }
 
         void add_hidden_connection(size_t index) {
+            current_mut_op = 2;
+
             if (has_hidden_connection(index)) {
                 mutate_hidden_connection();
-                current_mut_op = 5;
             } else {
                 std::float64_t weight = global_rng.get_float64_unif1();
                 hidden_connections.push_back({index, weight});
-                current_mut_op = 2;
             }
         }
 
         void mutate_hidden_connection() {
-            size_t n = hidden_connections.size();
+            current_mut_op = 5;
+            const size_t n = hidden_connections.size();
 
             if (n == 0) {
                 mutate_bias();
-                current_mut_op = 0;
             } else if (n == 1) {
                 std::float64_t value = hidden_connections[0].second;
                 hidden_connections[0].second = change_delta(value);
-                current_mut_op = 5;
             } else {
                 size_t index = global_rng.get_size_t(n);
                 std::float64_t value = hidden_connections[index].second;
                 hidden_connections[index].second = change_delta(value);
-                current_mut_op = 5;
             }
         }
 
-        void optimize() {
-            const std::float64_t factor = 1.001;
-            const std::float64_t limit1 = 0.6;
-            const std::float64_t limit2 = 1.0 - limit1;
-            bool mutation_needed = true;
+        void optimize_bias() {
+            current_mut_op = 6;
 
-            if ((bias > limit1) || (bias < -limit1)) {
-                bias = bias * factor;
-                mutation_needed = false;
-            } else if ((bias > -limit2) && (bias < limit2)) {
-                bias = bias / factor;
-                mutation_needed = false;
-            }
-
-            for (auto &[index, weight]: input_connections) {
-                if ((weight > limit1) || (weight < -limit1)) {
-                    weight = weight * factor;
-                    mutation_needed = false;
-                } else if ((weight > -limit2) && (weight < limit2)) {
-                    weight = weight / factor;
-                    mutation_needed = false;
-                }
-            }
-
-            for (auto &[index, weight]: hidden_connections) {
-                if ((weight > limit1) || (weight < -limit1)) {
-                    weight = weight * factor;
-                    mutation_needed = false;
-                } else if ((weight > -limit2) && (weight < limit2)) {
-                    weight = weight / factor;
-                    mutation_needed = false;
-                }
-            }
-
-            if (mutation_needed) {
-                mutate_hidden_connection();
-                current_mut_op = 5;
+            if (outside_limit(bias, opt_limit1)) {
+                bias = clamp_value(bias * opt_factor);
+            } else if (inside_limit(bias, opt_limit2)) {
+                bias /= opt_factor;
             } else {
-                current_mut_op = 6;
+                mutate_bias();
+            }
+        }
+
+        void optimize_input_connection() {
+            current_mut_op = 7;
+
+            const size_t n = input_connections.size();
+
+            if (n == 0) {
+                mutate_bias();
+            } else {
+                size_t index = 0;
+
+                if (n > 1) {
+                    index = global_rng.get_size_t(n);
+                }
+
+                std::float64_t &value = input_connections[index].second;
+
+                if (outside_limit(value, opt_limit1)) {
+                    value = clamp_value(value * opt_factor);
+                } else if (inside_limit(value, opt_limit2)) {
+                    value *= opt_factor;
+                } else {
+                    mutate_input_connection();
+                }
+            }
+        }
+
+        void optimize_hidden_connection() {
+            current_mut_op = 8;
+
+            const size_t n = hidden_connections.size();
+
+            if (n == 0) {
+                mutate_bias();
+            } else {
+                size_t index = 0;
+
+                if (n > 1) {
+                    index = global_rng.get_size_t(n);
+                }
+
+                std::float64_t &value = hidden_connections[index].second;
+
+                if (outside_limit(value, opt_limit1)) {
+                    value = clamp_value(value * opt_factor);
+                } else if (inside_limit(value, opt_limit2)) {
+                    value *= opt_factor;
+                } else {
+                    mutate_hidden_connection();
+                }
+            }
+        }
+
+        void multiply_bias(std::float64_t factor) {
+            bias = clamp_value(bias * factor);
+        }
+
+        void multiply_input_connection(std::float64_t factor, uint8_t mut_op) {
+            current_mut_op = mut_op;
+            const size_t n = input_connections.size();
+
+            if (n == 0) {
+                mutate_bias();
+            } else {
+                size_t index = 0;
+
+                if (n > 1) {
+                    index = global_rng.get_size_t(n);
+                }
+
+                std::float64_t &value = input_connections[index].second;
+                value = clamp_value(value * factor);
+            }
+        }
+
+        void multiply_hidden_connection(std::float64_t factor, uint8_t mut_op) {
+            current_mut_op = mut_op;
+            const size_t n = hidden_connections.size();
+
+            if (n == 0) {
+                mutate_bias();
+            } else {
+                size_t index = 0;
+
+                if (n > 1) {
+                    index = global_rng.get_size_t(n);
+                }
+
+                std::float64_t &value = hidden_connections[index].second;
+                value = clamp_value(value * factor);
+            }
+        }
+
+        void set_bias_to(std::float64_t new_value) {
+            bias = clamp_value(new_value);
+        }
+
+        void set_input_connection_to(std::float64_t new_value, uint8_t mut_op) {
+            current_mut_op = mut_op;
+            const size_t n = input_connections.size();
+
+            if (n == 0) {
+                mutate_bias();
+            } else {
+                size_t index = 0;
+
+                if (n > 1) {
+                    index = global_rng.get_size_t(n);
+                }
+
+                std::float64_t &value = input_connections[index].second;
+                value = clamp_value(new_value);
+            }
+        }
+
+        void set_hidden_connection_to(std::float64_t new_value, uint8_t mut_op) {
+            current_mut_op = mut_op;
+            const size_t n = hidden_connections.size();
+
+            if (n == 0) {
+                mutate_bias();
+            } else {
+                size_t index = 0;
+
+                if (n > 1) {
+                    index = global_rng.get_size_t(n);
+                }
+
+                std::float64_t &value = hidden_connections[index].second;
+                value = clamp_value(new_value);
             }
         }
 

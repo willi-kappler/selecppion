@@ -31,19 +31,21 @@ class SEPopulationNode13: public NCNodeDataProcessor {
     private:
         SEPopulation<T> population;
         uint32_t offset;
-        std::vector<std::unique_ptr<SEIndividual>> list_of_best;
 
     public:
         SEPopulationNode13(SEConfiguration se_config, const SEIndividual &individual):
             NCNodeDataProcessor(),
             population(se_config),
-            offset(se_config.node_population_size / 10),
-            list_of_best()
+            offset(se_config.population_offset)
             {
                 population.se_fill_population(individual);
                 population.se_sort_population();
                 population.best_index = 0;
                 population.worst_index = population.se_config.node_population_size - 1;
+
+                if (offset > population.se_config.node_population_size / 2) {
+                    offset = population.se_config.node_population_size / 2;
+                }
 
                 population.se_logger->info("Population type 13.");
                 population.se_logger->info("Clone one tenth of the population and mutate all the other individuals in place.");
@@ -60,13 +62,7 @@ class SEPopulationNode13: public NCNodeDataProcessor {
             population.se_prepare_iteration("PN13: Process data.", data);
             const uint32_t num_of_iterations = population.se_config.num_of_iterations;
             const size_t population_size = population.se_config.node_population_size;
-            // const size_t offset2 = population_size / 2;
             size_t i = 0, j = 0, k = 0;
-            const size_t max_best_size = std::min<size_t>(20, population_size / 2);
-
-            for (i = 0; i < list_of_best.size(); i++) {
-                population.population[i + 1]->se_copy_from_internal(*list_of_best[i]);
-            }
 
             for (i = 0; i < num_of_iterations; i++) {
                 population.se_sub_iteration(i);
@@ -125,17 +121,6 @@ class SEPopulationNode13: public NCNodeDataProcessor {
             population.best_index = 0;
             population.se_calculate_fitness2();
             population.se_log_statistics();
-            population.se_get_best()->se_set_metadata(std::format("PN13, max_iter: {}, mut: {}",
-                population.se_config.num_of_iterations, population.se_config.num_of_mutations));
-
-            // Insert new best at the beginning:
-            auto list_begin = list_of_best.begin();
-            list_of_best.insert(list_begin, population.se_get_best()->se_clone_internal());
-
-            if (list_of_best.size() > max_best_size) {
-                // Remove the last element:
-                list_of_best.resize(max_best_size);
-            }
 
             return population.se_get_best()->se_to_vec_u8();
         }

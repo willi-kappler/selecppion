@@ -19,23 +19,38 @@ run_type() {
 
 run_type1() {
     # Start 6 nodes:
-    $EXECUTABLE -i 10000 -m 1 -t 13 &
+    $EXECUTABLE --prefix "1_14_" --poffset 5 -i 10000 -m 1 -t 14 &
     sleep 1
-    $EXECUTABLE -i 10000 -m 1 -t 13 &
+    $EXECUTABLE --prefix "2_14_" --poffset 10 -i 10000 -m 1 -t 14 &
     sleep 1
-    $EXECUTABLE -i 10000 -m 1 -t 13 &
+    $EXECUTABLE --prefix "3_14_" --poffset 15 -i 10000 -m 1 -t 14 &
     sleep 1
-    $EXECUTABLE -i 10000 -m 1 -t 13 &
+    $EXECUTABLE --prefix "4_14_" --poffset 20 -i 10000 -m 1 -t 14 &
     sleep 1
-    $EXECUTABLE -i 10000 -m 1 -t 13 &
+    $EXECUTABLE --prefix "5_14_" --poffset 25 -i 10000 -m 1 -t 14 &
     sleep 1
-    $EXECUTABLE -i 10000 -m 1 -t 13 &
+    $EXECUTABLE --prefix "6_14_" --poffset 30 -i 10000 -m 1 -t 14 &
+}
+
+run_type2() {
+    # Start 6 nodes:
+    $EXECUTABLE --prefix "1_1_r_" -i 10000 -m 1 -t 1 -r &
+    sleep 1
+    $EXECUTABLE --prefix "2_1_r_" -i 10000 -m 1 -t 1 -r &
+    sleep 1
+    $EXECUTABLE --prefix "3_1_r_" -i 10000 -m 1 -t 1 -r &
+    sleep 1
+    $EXECUTABLE --prefix "4_1_r_" -i 10000 -m 1 -t 1 -r &
+    sleep 1
+    $EXECUTABLE --prefix "5_1_r_" -i 10000 -m 1 -t 1 -r &
+    sleep 1
+    $EXECUTABLE --prefix "6_1_" -i 10000 -m 1 -t 1 &
 }
 
 # Start the server:
 $EXECUTABLE --server &
 sleep 1
 
-run_type
+run_type2
 sleep 1
 echo ""

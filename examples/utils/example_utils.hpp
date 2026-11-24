@@ -66,7 +66,11 @@ void make_and_run_example(int argc, char *argv[], const SEIndividual &individual
         .scan<'i', uint32_t>();
 
     program.add_argument("--prefix")
-        .help("Set the prefix for the node id.");
+        .help("Set the prefix for the node id");
+
+    program.add_argument("--poffset")
+        .help("Population offset (for type 13 and 14)")
+        .scan<'i', uint32_t>();
 
     try {
         program.parse_args(argc, argv);
@@ -80,30 +84,6 @@ void make_and_run_example(int argc, char *argv[], const SEIndividual &individual
     std::string file_contents = se_file_to_string("example_config.json");
     NCConfiguration nc_config = nc_config_from_string(file_contents);
     SEConfiguration se_config = se_config_from_string(file_contents);
-
-    if (program["-r"] == true) {
-        se_config.randomize_population = true;
-    }
-
-    if (program.is_used("-m")) {
-        se_config.num_of_mutations = program.get<uint32_t>("-m");
-    }
-
-    if (program.is_used("-i")) {
-        se_config.num_of_iterations = program.get<uint32_t>("-i");
-    }
-
-    if (program.is_used("-p")) {
-        se_config.node_population_size = program.get<uint32_t>("-p");
-    }
-
-    if (program.is_used("-o")) {
-        se_config.mutation_operations = program.get<std::vector<uint8_t>>("-o");
-    }
-
-    if (program.is_used("-b")) {
-        se_config.mutate_before_iteration = program.get<uint32_t>("-b");
-    }
 
     if (program["--server"] == true) {
         std::cout << "Server mode" << std::endl;
@@ -121,6 +101,34 @@ void make_and_run_example(int argc, char *argv[], const SEIndividual &individual
 
         if (program.is_used("--prefix")) {
             nc_config.nc_node_prefix = program.get<std::string>("--prefix");
+        }
+
+        if (program["-r"] == true) {
+            se_config.randomize_population = true;
+        }
+
+        if (program.is_used("-m")) {
+            se_config.num_of_mutations = program.get<uint32_t>("-m");
+        }
+
+        if (program.is_used("-i")) {
+            se_config.num_of_iterations = program.get<uint32_t>("-i");
+        }
+
+        if (program.is_used("-p")) {
+            se_config.node_population_size = program.get<uint32_t>("-p");
+        }
+
+        if (program.is_used("-o")) {
+            se_config.mutation_operations = program.get<std::vector<uint8_t>>("-o");
+        }
+
+        if (program.is_used("-b")) {
+            se_config.mutate_before_iteration = program.get<uint32_t>("-b");
+        }
+
+        if (program.is_used("--poffset")) {
+            se_config.population_offset = program.get<uint32_t>("--poffset");
         }
 
         uint8_t population_type = program.get<uint8_t>("-t");

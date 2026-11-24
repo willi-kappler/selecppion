@@ -89,9 +89,6 @@ class SEPopulationNode5: public NCNodeDataProcessor {
             population.se_calculate_fitness2();
             population.se_log_statistics();
 
-            population.se_get_best()->se_set_metadata(std::format("PN5, max_iter: {}, mut: {}",
-                population.se_config.num_of_iterations, population.se_config.num_of_mutations));
-
             return population.se_get_best()->se_to_vec_u8();
         }
 

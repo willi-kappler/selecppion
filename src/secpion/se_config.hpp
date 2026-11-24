@@ -52,6 +52,7 @@ class SEConfiguration {
         bool randomize_if_stuck;
         uint32_t mutate_before_iteration;
         uint32_t mutate_before_count;
+        uint32_t population_offset;
 
         // Population specific configuration:
         uint8_t min_num_of_individuals;

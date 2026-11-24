@@ -44,7 +44,6 @@ class NeuralNet3Individual: public SEIndividual {
         const uint16_t node_type_prob;
         const uint16_t max_network_size;
         std::vector<Neuron> hidden_layer;
-        std::string local_metadata;
 
         NeuralNet3Individual(size_t input_size, size_t output_size):
         SEIndividual(),
@@ -54,8 +53,7 @@ class NeuralNet3Individual: public SEIndividual {
         new_connection_prob(10),
         node_type_prob(10),
         max_network_size(10),
-        hidden_layer(),
-        local_metadata()
+        hidden_layer()
         {
             se_randomize();
         }
@@ -267,7 +265,6 @@ class NeuralNet3Individual: public SEIndividual {
                 {"fitness1", double(fitness1)},
                 {"fitness2", double(fitness2)},
                 {"hidden_layer", json_array},
-                {"metadata", local_metadata}
             };
 
             return se_json_to_vec_u8(json_data);
@@ -285,8 +282,6 @@ class NeuralNet3Individual: public SEIndividual {
                 n.from_json(item);
                 hidden_layer.push_back(n);
             }
-
-            local_metadata = restored_json["metadata"].get<std::string>();
         }
 
         void se_reseed_rng(size_t index) override {
@@ -297,14 +292,6 @@ class NeuralNet3Individual: public SEIndividual {
 
         void se_new_best_individual(std::shared_ptr<spdlog::logger> se_logger) override {
             se_logger->debug("----- Network size: {}, num of connections: {}", hidden_layer.size(), num_of_connections());
-        }
-
-        void se_set_metadata(std::string metadata) override {
-            local_metadata = metadata;
-        }
-
-        std::string se_get_metadata() override {
-            return local_metadata;
         }
 
         uint32_t num_of_connections() {

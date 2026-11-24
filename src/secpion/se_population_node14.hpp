@@ -30,11 +30,13 @@ template<typename T>
 class SEPopulationNode14: public NCNodeDataProcessor {
     private:
         SEPopulation<T> population;
+        uint32_t clone_counter_max;
 
     public:
         SEPopulationNode14(SEConfiguration se_config, const SEIndividual &individual):
             NCNodeDataProcessor(),
-            population(se_config)
+            population(se_config),
+            clone_counter_max(se_config.population_offset)
             {
                 population.se_fill_population(individual);
                 population.se_sort_population();
@@ -44,6 +46,7 @@ class SEPopulationNode14: public NCNodeDataProcessor {
                 population.se_logger->info("Population type 14.");
                 population.se_logger->info("Clone the best one a few times before iteration and mutate the clones.");
                 population.se_logger->info("Then clone and mutate each individual separatly and if it's better, keep it.");
+                population.se_logger->info("clone counter max: {}", clone_counter_max);
             }
 
         void nc_init([[maybe_unused]] std::vector<uint8_t> data, NCNodeID node_id) override {
@@ -70,7 +73,7 @@ class SEPopulationNode14: public NCNodeDataProcessor {
 
                 clone_counter++;
 
-                if (clone_counter >= 20) {
+                if (clone_counter >= clone_counter_max) {
                     clone_counter = 0;
                     cloned_indi->se_copy_from_internal(*population.population[0]);
                 }
@@ -109,8 +112,6 @@ class SEPopulationNode14: public NCNodeDataProcessor {
             population.best_index = 0;
             population.se_calculate_fitness2();
             population.se_log_statistics();
-            population.se_get_best()->se_set_metadata(std::format("PN14, max_iter: {}, mut: {}",
-                population.se_config.num_of_iterations, population.se_config.num_of_mutations));
 
             return population.se_get_best()->se_to_vec_u8();
         }

@@ -45,6 +45,7 @@ SEConfiguration::SEConfiguration():
     randomize_if_stuck(false),
     mutate_before_iteration(0),
     mutate_before_count(1),
+    population_offset(10),
 
     min_num_of_individuals(2),
     sine_base(100.0),
@@ -189,6 +190,10 @@ SEConfiguration::SEConfiguration():
 
     if (json_config.contains("mutate_before_count")) {
         se_config.mutate_before_count = json_config["mutate_before_count"].get<uint32_t>();
+    }
+
+    if (json_config.contains("population_offset")) {
+        se_config.population_offset = json_config["population_offset"].get<uint32_t>();
     }
 
     if (json_config.contains("min_num_of_individuals")) {

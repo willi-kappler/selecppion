@@ -43,7 +43,6 @@ class NeuralNet2Individual: public SEIndividual {
         const uint16_t new_connection_prob;
         const uint16_t max_network_size;
         std::vector<Neuron> hidden_layer;
-        std::string local_metadata;
 
         NeuralNet2Individual(size_t input_size, size_t output_size):
         SEIndividual(),
@@ -52,8 +51,7 @@ class NeuralNet2Individual: public SEIndividual {
         new_node_prob(10),
         new_connection_prob(10),
         max_network_size(10),
-        hidden_layer(),
-        local_metadata()
+        hidden_layer()
         {
             se_randomize();
         }
@@ -195,8 +193,88 @@ class NeuralNet2Individual: public SEIndividual {
                     current_mut_op = neuron.current_mut_op;
                     break;
                 case 6:
-                    // Optimize neuron:
-                    neuron.optimize();
+                    // Optimize bias:
+                    neuron.optimize_bias();
+                    current_mut_op = neuron.current_mut_op;
+                    break;
+                case 7:
+                    // Optimize input connection:
+                    neuron.optimize_input_connection();
+                    current_mut_op = neuron.current_mut_op;
+                    break;
+                case 8:
+                    // Optimize hidden connection:
+                    neuron.optimize_hidden_connection();
+                    current_mut_op = neuron.current_mut_op;
+                    break;
+                case 9:
+                    // Multiply bias by 2.0:
+                    neuron.multiply_bias(2.0);
+                    break;
+                case 10:
+                    // Multiply input connection by 2.0:
+                    neuron.multiply_input_connection(2.0, op);
+                    current_mut_op = neuron.current_mut_op;
+                    break;
+                case 11:
+                    // Multiply hidden connection by 0.5:
+                    neuron.multiply_hidden_connection(0.5, op);
+                    current_mut_op = neuron.current_mut_op;
+                    break;
+                case 12:
+                    // Multiply bias by 0.5:
+                    neuron.multiply_bias(0.5);
+                    break;
+                case 13:
+                    // Multiply input connection by 0.5:
+                    neuron.multiply_input_connection(0.5, op);
+                    current_mut_op = neuron.current_mut_op;
+                    break;
+                case 14:
+                    // Multiply hidden connection by 0.5:
+                    neuron.multiply_hidden_connection(0.5, op);
+                    current_mut_op = neuron.current_mut_op;
+                    break;
+                case 15:
+                    // Set bias to -1.0;
+                    neuron.set_bias_to(-1.0);
+                    break;
+                case 16:
+                    // Set input connection to -1.0;
+                    neuron.set_input_connection_to(-1.0, op);
+                    current_mut_op = neuron.current_mut_op;
+                    break;
+                case 17:
+                    // Set hidden connection to -1.0;
+                    neuron.set_hidden_connection_to(-1.0, op);
+                    current_mut_op = neuron.current_mut_op;
+                    break;
+                case 18:
+                    // Set bias to 0.0;
+                    neuron.set_bias_to(0.0);
+                    break;
+                case 19:
+                    // Set input connection to 0.0;
+                    neuron.set_input_connection_to(0.0, op);
+                    current_mut_op = neuron.current_mut_op;
+                    break;
+                case 20:
+                    // Set hidden connection to 0.0;
+                    neuron.set_hidden_connection_to(0.0, op);
+                    current_mut_op = neuron.current_mut_op;
+                    break;
+                case 21:
+                    // Set bias to 1.0;
+                    neuron.set_bias_to(1.0);
+                    break;
+                case 22:
+                    // Set input connection to 1.0;
+                    neuron.set_input_connection_to(1.0, op);
+                    current_mut_op = neuron.current_mut_op;
+                    break;
+                case 23:
+                    // Set hidden connection to 1.0;
+                    neuron.set_hidden_connection_to(1.0, op);
                     current_mut_op = neuron.current_mut_op;
                     break;
                 default:
@@ -255,7 +333,6 @@ class NeuralNet2Individual: public SEIndividual {
                 {"fitness1", double(fitness1)},
                 {"fitness2", double(fitness2)},
                 {"hidden_layer", json_array},
-                {"metadata", local_metadata}
             };
 
             return se_json_to_vec_u8(json_data);
@@ -273,8 +350,6 @@ class NeuralNet2Individual: public SEIndividual {
                 n.from_json(item);
                 hidden_layer.push_back(n);
             }
-
-            local_metadata = restored_json["metadata"].get<std::string>();
         }
 
         void se_reseed_rng(size_t index) override {
@@ -285,14 +360,6 @@ class NeuralNet2Individual: public SEIndividual {
 
         void se_new_best_individual(std::shared_ptr<spdlog::logger> se_logger) override {
             se_logger->debug("----- Network size: {}, num of connections: {}", hidden_layer.size(), num_of_connections());
-        }
-
-        void se_set_metadata(std::string metadata) override {
-            local_metadata = metadata;
-        }
-
-        std::string se_get_metadata() override {
-            return local_metadata;
         }
 
         uint32_t num_of_connections() {

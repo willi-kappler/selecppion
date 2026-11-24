@@ -101,9 +101,6 @@ class SEPopulationNode4: public NCNodeDataProcessor {
             population.se_log_statistics();
             //population.se_clone_best_to_worst();
 
-            population.se_get_best()->se_set_metadata(std::format("PN4, max_iter: {}, mut: {}",
-                population.se_config.num_of_iterations, population.se_config.num_of_mutations));
-
             return population.se_get_best()->se_to_vec_u8();
         }
 

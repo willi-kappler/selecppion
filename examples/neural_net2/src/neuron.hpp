@@ -57,12 +57,12 @@ using Connection = std::pair<size_t, std::float64_t>;
     }
 }
 
-[[nodiscard]] bool outside_limit(std::float64_t value, std::float64_t limit) {
-    return ((value < -limit) || (value > limit));
+[[nodiscard]] bool outside_limit(std::float64_t value) {
+    return ((value < -opt_limit1) || (value > opt_limit1));
 }
 
-[[nodiscard]] bool inside_limit(std::float64_t value, std::float64_t limit) {
-    return ((value > -limit) && (value < limit));
+[[nodiscard]] bool inside_limit(std::float64_t value) {
+    return ((value > -opt_limit2) && (value < opt_limit2));
 }
 
 class Neuron {
@@ -173,9 +173,9 @@ class Neuron {
         void optimize_bias() {
             current_mut_op = 6;
 
-            if (outside_limit(bias, opt_limit1)) {
+            if (outside_limit(bias)) {
                 bias = clamp_value(bias * opt_factor);
-            } else if (inside_limit(bias, opt_limit2)) {
+            } else if (inside_limit(bias)) {
                 bias /= opt_factor;
             } else {
                 mutate_bias();
@@ -198,10 +198,10 @@ class Neuron {
 
                 std::float64_t &value = input_connections[index].second;
 
-                if (outside_limit(value, opt_limit1)) {
+                if (outside_limit(value)) {
                     value = clamp_value(value * opt_factor);
-                } else if (inside_limit(value, opt_limit2)) {
-                    value *= opt_factor;
+                } else if (inside_limit(value)) {
+                    value /= opt_factor;
                 } else {
                     mutate_input_connection();
                 }
@@ -224,13 +224,50 @@ class Neuron {
 
                 std::float64_t &value = hidden_connections[index].second;
 
-                if (outside_limit(value, opt_limit1)) {
+                if (outside_limit(value)) {
                     value = clamp_value(value * opt_factor);
-                } else if (inside_limit(value, opt_limit2)) {
-                    value *= opt_factor;
+                } else if (inside_limit(value)) {
+                    value /= opt_factor;
                 } else {
                     mutate_hidden_connection();
                 }
+            }
+        }
+
+        void optimize() {
+            current_mut_op = 9;
+            bool other_mutation_needed = true;
+
+            if (outside_limit(bias)) {
+                bias = clamp_value(bias * opt_factor);
+                other_mutation_needed = false;
+            } else if (inside_limit(bias)) {
+                bias /= opt_factor;
+                other_mutation_needed = false;
+            }
+
+            for (auto &[index, weight]: input_connections) {
+                if (outside_limit(weight)) {
+                    weight = clamp_value(weight * opt_factor);
+                    other_mutation_needed = false;
+                } else if (inside_limit(weight)) {
+                    weight /= opt_factor;
+                    other_mutation_needed = false;
+                }
+            }
+
+            for (auto &[index, weight]: hidden_connections) {
+                if (outside_limit(weight)) {
+                    weight = clamp_value(weight * opt_factor);
+                    other_mutation_needed = false;
+                } else if (inside_limit(weight)) {
+                    weight /= opt_factor;
+                    other_mutation_needed = false;
+                }
+            }
+
+            if (other_mutation_needed) {
+                mutate_hidden_connection();
             }
         }
 

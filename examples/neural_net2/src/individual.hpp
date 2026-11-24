@@ -208,71 +208,76 @@ class NeuralNet2Individual: public SEIndividual {
                     current_mut_op = neuron.current_mut_op;
                     break;
                 case 9:
+                    // Optimize whole neuron:
+                    neuron.optimize();
+                    current_mut_op = neuron.current_mut_op;
+                    break;
+                case 10:
                     // Multiply bias by 2.0:
                     neuron.multiply_bias(2.0);
                     break;
-                case 10:
+                case 11:
                     // Multiply input connection by 2.0:
                     neuron.multiply_input_connection(2.0, op);
                     current_mut_op = neuron.current_mut_op;
                     break;
-                case 11:
+                case 12:
                     // Multiply hidden connection by 0.5:
                     neuron.multiply_hidden_connection(0.5, op);
                     current_mut_op = neuron.current_mut_op;
                     break;
-                case 12:
+                case 13:
                     // Multiply bias by 0.5:
                     neuron.multiply_bias(0.5);
                     break;
-                case 13:
+                case 14:
                     // Multiply input connection by 0.5:
                     neuron.multiply_input_connection(0.5, op);
                     current_mut_op = neuron.current_mut_op;
                     break;
-                case 14:
+                case 15:
                     // Multiply hidden connection by 0.5:
                     neuron.multiply_hidden_connection(0.5, op);
                     current_mut_op = neuron.current_mut_op;
                     break;
-                case 15:
+                case 16:
                     // Set bias to -1.0;
                     neuron.set_bias_to(-1.0);
                     break;
-                case 16:
+                case 17:
                     // Set input connection to -1.0;
                     neuron.set_input_connection_to(-1.0, op);
                     current_mut_op = neuron.current_mut_op;
                     break;
-                case 17:
+                case 18:
                     // Set hidden connection to -1.0;
                     neuron.set_hidden_connection_to(-1.0, op);
                     current_mut_op = neuron.current_mut_op;
                     break;
-                case 18:
+                case 19:
                     // Set bias to 0.0;
                     neuron.set_bias_to(0.0);
                     break;
-                case 19:
+                case 20:
                     // Set input connection to 0.0;
                     neuron.set_input_connection_to(0.0, op);
                     current_mut_op = neuron.current_mut_op;
                     break;
-                case 20:
+                case 21:
                     // Set hidden connection to 0.0;
                     neuron.set_hidden_connection_to(0.0, op);
                     current_mut_op = neuron.current_mut_op;
                     break;
-                case 21:
+                case 22:
                     // Set bias to 1.0;
                     neuron.set_bias_to(1.0);
                     break;
-                case 22:
+                case 23:
                     // Set input connection to 1.0;
                     neuron.set_input_connection_to(1.0, op);
                     current_mut_op = neuron.current_mut_op;
                     break;
-                case 23:
+                case 24:
                     // Set hidden connection to 1.0;
                     neuron.set_hidden_connection_to(1.0, op);
                     current_mut_op = neuron.current_mut_op;

@@ -55,12 +55,11 @@ class SEPopulationNode8: public NCNodeDataProcessor {
             for (uint32_t i = 0; i < num_of_iterations; i++) {
                 population.se_sub_iteration(i);
 
-                // Overwrite all other individuals from population with the best one:
                 for (size_t j = 1; j < population.se_config.node_population_size; j++) {
+                    // Overwrite all other individuals from population with the best one:
                     population.population[j]->se_copy_from_internal(*population.population[0]);
-                }
 
-                for (size_t j = 1; j < population.se_config.node_population_size; j++) {
+                    // Now mutate that cloned best one:
                     for (uint32_t k = 0; k < population.se_config.num_of_mutations; k++) {
                         population.population[j]->se_mutate_internal(population.se_get_mut_op());
                     }

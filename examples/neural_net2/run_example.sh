@@ -2,22 +2,37 @@
 
 EXECUTABLE="../../builddir/neural_net2_example"
 
-run_type() {
+run_1() {
     # Start 6 nodes:
-    $EXECUTABLE --prefix "1_1_r_" -i 10000 -m 1 -t 1 -r &
+    $EXECUTABLE --prefix "1_1_b_" -i 10000 -m 1 -t 1 -b 5 &
     sleep 1
-    $EXECUTABLE --prefix "2_1_r_" -i 10000 -m 1 -t 1 -r &
+    $EXECUTABLE --prefix "2_1_b_" -i 10000 -m 1 -t 1 -b 10 &
     sleep 1
-    $EXECUTABLE --prefix "3_1_" -i 10000 -m 1 -t 1 &
+    $EXECUTABLE --prefix "3_1_b_" -i 10000 -m 1 -t 1 -b 15 &
     sleep 1
-    $EXECUTABLE --prefix "4_8_" -i 10000 -m 1 -t 8 &
+    $EXECUTABLE --prefix "4_1_b_" -i 10000 -m 1 -t 1 -b 20 &
     sleep 1
-    $EXECUTABLE --prefix "5_13_" -i 10000 -m 1 -t 13 &
+    $EXECUTABLE --prefix "5_1_b_" -i 10000 -m 1 -t 1 -b 25 &
     sleep 1
-    $EXECUTABLE --prefix "6_14_" -i 10000 -m 1 -t 14 &
+    $EXECUTABLE --prefix "6_8_" -i 10000 -m 1 -t 8 &
 }
 
-run_type1() {
+run_2() {
+    # Start 6 nodes:
+    $EXECUTABLE --prefix "1_01_r_" -i 10000 -m 1 -t 1 -r &
+    sleep 1
+    $EXECUTABLE --prefix "2_01_" -i 10000 -m 1 -t 1 &
+    sleep 1
+    $EXECUTABLE --prefix "3_08_" -i 10000 -m 1 -t 8 &
+    sleep 1
+    $EXECUTABLE --prefix "4_13_" --poffset 5 -i 10000 -m 1 -t 13 &
+    sleep 1
+    $EXECUTABLE --prefix "5_13_" --poffset 10 -i 10000 -m 1 -t 13 &
+    sleep 1
+    $EXECUTABLE --prefix "6_13_" --poffset 15 -i 10000 -m 1 -t 13 &
+}
+
+run_3() {
     # Start 6 nodes:
     $EXECUTABLE --prefix "1_13_" --poffset 5 -i 10000 -m 1 -t 13 &
     sleep 1
@@ -32,7 +47,7 @@ run_type1() {
     $EXECUTABLE --prefix "6_14_" --poffset 15 -i 10000 -m 1 -t 14 &
 }
 
-run_type2() {
+run_4() {
     # Start 6 nodes:
     $EXECUTABLE --prefix "1_1_r_" -i 10000 -m 1 -t 1 -r &
     sleep 1
@@ -51,6 +66,6 @@ run_type2() {
 $EXECUTABLE --server &
 sleep 1
 
-run_type
+run_1
 sleep 1
 echo ""

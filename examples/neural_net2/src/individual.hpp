@@ -174,7 +174,7 @@ class NeuralNet2Individual: public SEIndividual {
                 case 3:
                     // Add neuron:
                     rnd_val = global_rng.get_uint16(new_node_prob);
-                    if ((rnd_val == 0) && (hidden_layer.size() < max_network_size)) {
+                    if ((rnd_val == 0) && (current_size < max_network_size)) {
                         add_neuron1();
                         // hidden_layer.push_back(Neuron());
                     } else {

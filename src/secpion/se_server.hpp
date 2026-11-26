@@ -51,7 +51,7 @@ class SEServerDP: public NCServerDataProcessor {
         bool best_fitness_found;
 
     public:
-        SEServerDP(SEConfiguration config, const SEIndividual &individual):
+        SEServerDP(SEConfiguration config, SEIndividual &individual):
             se_config(config),
             se_logger(),
             population(),
@@ -81,6 +81,10 @@ class SEServerDP: public NCServerDataProcessor {
                 se_logger->set_level(spdlog::level::level_enum::err);
             } else {
                 throw SEConfigurationException(fmt::format("Unknown log level: {}", se_config.se_server_log_level).c_str());
+            }
+
+            if (se_config.se_initial_file.size() > 0) {
+                // TODO: load file and use individual->se_from_span_u8(file_content);
             }
 
             se_fill_population(individual);

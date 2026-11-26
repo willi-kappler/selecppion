@@ -123,4 +123,10 @@ void SEIndividual::se_sub_iteration([[maybe_unused]] size_t index, [[maybe_unuse
     // This method is called for each individual
     // when the sub iteration is finished.
 }
+
+void SEIndividual::se_apply_config([[maybe_unused]] SEConfiguration config) {
+    // Can be implemented if some more configuration options are needed.
+    // This should be only called once for the very first individual.
+}
+
 }

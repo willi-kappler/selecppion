@@ -22,6 +22,9 @@
 // External includes:
 #include <spdlog/spdlog.h>
 
+// Local includes:
+#include "se_config.hpp"
+
 namespace secpion {
 const std::float64_t SE_FLOAT_MAX = std::numeric_limits<std::float64_t>::max();
 
@@ -58,6 +61,7 @@ class SEIndividual {
         [[nodiscard]] virtual std::unique_ptr<SEIndividual> se_crossover(const SEIndividual &);
         virtual void se_prepare_individual(size_t);
         virtual void se_sub_iteration(size_t, size_t, uint32_t);
+        virtual void se_apply_config(SEConfiguration);
 };
 }
 

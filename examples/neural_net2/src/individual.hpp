@@ -34,23 +34,20 @@
 using namespace secpion;
 
 DataProvider global_data_provider;
+uint16_t new_node_prob = 10;
+uint16_t new_connection_prob = 10;
+uint16_t max_network_size = 10;
 
 class NeuralNet2Individual: public SEIndividual {
     public:
         size_t input_size_local;
         size_t output_size_local;
-        const uint16_t new_node_prob;
-        const uint16_t new_connection_prob;
-        const uint16_t max_network_size;
         std::vector<Neuron> hidden_layer;
 
         NeuralNet2Individual(size_t input_size, size_t output_size):
         SEIndividual(),
         input_size_local(input_size),
         output_size_local(output_size),
-        new_node_prob(10),
-        new_connection_prob(10),
-        max_network_size(10),
         hidden_layer()
         {
             se_randomize();
@@ -375,5 +372,19 @@ class NeuralNet2Individual: public SEIndividual {
             }
 
             return num_connections;
+        }
+
+        void se_apply_config(SEConfiguration config) override {
+            if (config.user_config.contains("new_node_prob")) {
+                new_node_prob = config.user_config["new_node_prob"].get<uint16_t>();
+            }
+
+            if (config.user_config.contains("new_connection_prob")) {
+                new_connection_prob = config.user_config["new_connection_prob"].get<uint16_t>();
+            }
+
+            if (config.user_config.contains("max_network_size")) {
+                max_network_size = config.user_config["max_network_size"].get<uint16_t>();
+            }
         }
 };

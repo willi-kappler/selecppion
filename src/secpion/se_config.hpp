@@ -33,6 +33,7 @@ class SEConfiguration {
         uint32_t server_population_size;
         std::string se_server_log_file;
         std::string se_server_log_level;
+        std::string se_initial_file;
 
         // Node configuration:
         uint32_t node_population_size;
@@ -62,6 +63,9 @@ class SEConfiguration {
         std::float64_t limit_factor;
         std::float64_t mutation_probability;
         std::float64_t crossover_probability;
+
+        // User defined configuration:
+        nlohmann::json user_config;
 
         // Constructor:
         SEConfiguration();

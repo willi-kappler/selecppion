@@ -27,6 +27,7 @@ SEConfiguration::SEConfiguration():
     server_population_size(10),
     se_server_log_file(""),
     se_server_log_level(""),
+    se_initial_file(""),
 
     // Node configuration:
     node_population_size(10),
@@ -53,7 +54,9 @@ SEConfiguration::SEConfiguration():
     sine_frequency(0.01),
     limit_factor(2.0),
     mutation_probability(0.1),
-    crossover_probability(0.9)
+    crossover_probability(0.9),
+
+    user_config()
 {}
 
 [[nodiscard]] SEConfiguration se_config_from_json(const nlohmann::json json_config) {
@@ -101,6 +104,10 @@ SEConfiguration::SEConfiguration():
 
     if (json_config.contains("se_server_log_level")) {
         se_config.se_server_log_level = json_config["se_server_log_level"].get<std::string>();
+    }
+
+    if (json_config.contains("se_initial_file")) {
+        se_config.se_initial_file = json_config["se_initial_file"].get<std::string>();
     }
 
     // Node settings:
@@ -230,6 +237,10 @@ SEConfiguration::SEConfiguration():
 
     if (json_config.contains("crossover_probability")) {
         se_config.crossover_probability = json_config["crossover_probability"].get<double>();
+    }
+
+    if (json_config.contains("user_config")) {
+        se_config.user_config = json_config["user_config"];
     }
 
     return se_config;

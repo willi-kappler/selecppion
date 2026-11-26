@@ -12,9 +12,9 @@ run_1() {
     sleep 1
     $EXECUTABLE --prefix "4_1_b_" -i 10000 -m 1 -t 1 -b 20 &
     sleep 1
-    $EXECUTABLE --prefix "5_1_b_" -i 10000 -m 1 -t 1 -b 25 &
+    $EXECUTABLE --prefix "5_1_r_" -i 10000 -m 1 -t 1 -r &
     sleep 1
-    $EXECUTABLE --prefix "6_8_" -i 10000 -m 1 -t 8 &
+    $EXECUTABLE --prefix "6_1_" -i 10000 -m 1 -t 1 &
 }
 
 run_2() {

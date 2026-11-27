@@ -296,6 +296,7 @@ class SEServerDP: public NCServerDataProcessor {
 };
 
 typedef SEServerDP<SE_RNG_L64> SEServerDP_L64;
+typedef SEServerDP<SE_RNG_WY> SEServerDP_WY;
 }
 
 #endif // FILE_SE_SERVER_HPP_INCLUDED

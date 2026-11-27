@@ -4,17 +4,17 @@ EXECUTABLE="../../builddir/neural_net2_example"
 
 run_1() {
     # Start 6 nodes:
-    $EXECUTABLE --prefix "1_1_b_" -i 10000 -m 1 -t 1 -b 5 &
+    $EXECUTABLE --prefix "1_1_" -i 10000 -m 1 -t 1 &
     sleep 1
-    $EXECUTABLE --prefix "2_1_b_" -i 10000 -m 1 -t 1 -b 10 &
+    $EXECUTABLE --prefix "2_1_r_" -i 10000 -m 1 -t 1 -r &
     sleep 1
-    $EXECUTABLE --prefix "3_1_b_" -i 10000 -m 1 -t 1 -b 15 &
+    $EXECUTABLE --prefix "3_1_b_" -i 10000 -m 1 -t 1 -b 5 &
     sleep 1
-    $EXECUTABLE --prefix "4_1_b_" -i 10000 -m 1 -t 1 -b 20 &
+    $EXECUTABLE --prefix "4_1_b_" -i 10000 -m 1 -t 1 -b 10 &
     sleep 1
-    $EXECUTABLE --prefix "5_1_r_" -i 10000 -m 1 -t 1 -r &
+    $EXECUTABLE --prefix "5_1_b_" -i 10000 -m 1 -t 1 -b 15 &
     sleep 1
-    $EXECUTABLE --prefix "6_1_" -i 10000 -m 1 -t 1 &
+    $EXECUTABLE --prefix "6_1_b_" -i 10000 -m 1 -t 1 -b 20 &
 }
 
 run_2() {

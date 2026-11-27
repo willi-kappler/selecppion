@@ -26,5 +26,10 @@
     "sine_base": 22.0,
     "sine_amplitude": 5.0,
     "sine_frequency": 0.001,
-    "limit_factor": 1.5
+    "limit_factor": 1.5,
+    "user_config": {
+        "new_node_prob": 10,
+        "new_connection_prob": 10,
+        "max_network_size": 10
+    }
 }

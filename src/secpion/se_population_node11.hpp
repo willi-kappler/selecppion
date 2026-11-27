@@ -121,6 +121,7 @@ class SEPopulationNode11: public NCNodeDataProcessor {
 };
 
 typedef SEPopulationNode11<SE_RNG_L64> SEPop11_L64;
+typedef SEPopulationNode11<SE_RNG_WY> SEPop11_WY;
 }
 
 #endif // FILE_SE_POPULATION_NODE11_HPP_INCLUDED

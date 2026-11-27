@@ -31,7 +31,8 @@
 
 using namespace secpion;
 
-SE_RNG_L64 global_rng;
+//SE_RNG_L64 global_rng;
+SE_RNG_WY global_rng;
 
 const std::float64_t opt_factor = 1.001;
 const std::float64_t opt_limit1 = 0.6;

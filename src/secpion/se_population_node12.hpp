@@ -94,14 +94,14 @@ class SEPopulationNode12: public NCNodeDataProcessor {
                 population.se_logger->debug("Current fitness1 factor: {}, best_index: {}", current_fitness1_factor, population.best_index);
                 population.se_logger->flush();
 
-                if (current_fitness1_factor >= 1.5) {
+                if (current_fitness1_factor >= 1.1) {
                     break;
                 } else {
                     factor_counter++;
 
                     if (factor_counter >= 20) {
                         factor_counter = 0;
-                        population.se_config.mutate_before_iteration += 10;
+                        population.se_config.mutate_before_iteration += 1;
                         population.se_mutate_all_before_iteration();
                         population.se_logger->debug("Mutate all before iteration: {}", population.se_config.mutate_before_iteration);
                     }
@@ -129,6 +129,7 @@ class SEPopulationNode12: public NCNodeDataProcessor {
 };
 
 typedef SEPopulationNode12<SE_RNG_L64> SEPop12_L64;
+typedef SEPopulationNode12<SE_RNG_WY> SEPop12_WY;
 }
 
 #endif // FILE_SE_POPULATION_NODE12_HPP_INCLUDED

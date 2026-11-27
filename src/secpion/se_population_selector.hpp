@@ -35,46 +35,46 @@ std::shared_ptr<NCNodeDataProcessor> se_select_population(SEConfiguration se_con
 
     switch (population_type) {
         case 1:
-            result = std::make_shared<SEPop1_L64>(se_configuration, individual);
+            result = std::make_shared<SEPop1_WY>(se_configuration, individual);
             break;
         case 2:
-            result = std::make_shared<SEPop2_L64>(se_configuration, individual);
+            result = std::make_shared<SEPop2_WY>(se_configuration, individual);
             break;
         case 3:
-            result = std::make_shared<SEPop3_L64>(se_configuration, individual);
+            result = std::make_shared<SEPop3_WY>(se_configuration, individual);
             break;
         case 4:
-            result = std::make_shared<SEPop4_L64>(se_configuration, individual);
+            result = std::make_shared<SEPop4_WY>(se_configuration, individual);
             break;
         case 5:
-            result = std::make_shared<SEPop5_L64>(se_configuration, individual);
+            result = std::make_shared<SEPop5_WY>(se_configuration, individual);
             break;
         case 6:
-            result = std::make_shared<SEPop6_L64>(se_configuration, individual);
+            result = std::make_shared<SEPop6_WY>(se_configuration, individual);
             break;
         case 7:
-            result = std::make_shared<SEPop7_L64>(se_configuration, individual);
+            result = std::make_shared<SEPop7_WY>(se_configuration, individual);
             break;
         case 8:
-            result = std::make_shared<SEPop8_L64>(se_configuration, individual);
+            result = std::make_shared<SEPop8_WY>(se_configuration, individual);
             break;
         case 9:
-            result = std::make_shared<SEPop9_L64>(se_configuration, individual);
+            result = std::make_shared<SEPop9_WY>(se_configuration, individual);
             break;
         case 10:
-            result = std::make_shared<SEPop10_L64>(se_configuration, individual);
+            result = std::make_shared<SEPop10_WY>(se_configuration, individual);
             break;
         case 11:
-            result = std::make_shared<SEPop11_L64>(se_configuration, individual);
+            result = std::make_shared<SEPop11_WY>(se_configuration, individual);
             break;
         case 12:
-            result = std::make_shared<SEPop12_L64>(se_configuration, individual);
+            result = std::make_shared<SEPop12_WY>(se_configuration, individual);
             break;
         case 13:
-            result = std::make_shared<SEPop13_L64>(se_configuration, individual);
+            result = std::make_shared<SEPop13_WY>(se_configuration, individual);
             break;
         case 14:
-            result = std::make_shared<SEPop14_L64>(se_configuration, individual);
+            result = std::make_shared<SEPop14_WY>(se_configuration, individual);
             break;
         default:
             throw SEPopulationException("Unknown population type: ");

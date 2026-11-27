@@ -89,8 +89,8 @@ void make_and_run_example(int argc, char *argv[], SEIndividual &individual) {
     if (program["--server"] == true) {
         std::cout << "Server mode" << std::endl;
 
-        std::shared_ptr<SEServerDP_L64> selecppion_server =
-            std::make_shared<SEServerDP_L64>(se_config, individual);
+        std::shared_ptr<SEServerDP_WY> selecppion_server =
+            std::make_shared<SEServerDP_WY>(se_config, individual);
         NCServer nc_server(nc_config, selecppion_server);
         nc_server.nc_run();
     } else {
